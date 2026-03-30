@@ -1,0 +1,17 @@
+task_id: HERMES-003
+statement: "Populate the 4 automation stubs and build the BizBuilders intake-to-engagement workflow"
+surface: _OS/05-Automations/ + BIZBUILDERS/systems/workflows/
+outcome_type: operational_automation_docs
+why_now: "The automations directory contains 4 stubs from Wave 1. These govern how tasks, routing, validation, and deployment work across the entire system. Without them, the execution engine has no operational rules."
+risk_tier: operational
+assigned_agent: hermes
+status: active
+created: 2026-03-30T21:07:00Z
+depends_on: HERMES-002
+
+acceptance_criteria:
+  - TASK_ENVELOPE_SCHEMA.md populated from HERMES-001/002 real examples
+  - ROUTING_RULES.md populated from canon Sections 8, 9
+  - VALIDATION_RULES.md populated from canon Section 16
+  - DEPLOY_CHECKLIST.md populated from canon Section 16
+  - BIZBUILDERS intake-to-engagement workflow documented
