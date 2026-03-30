@@ -1,0 +1,23 @@
+task_id: HERMES-002
+statement: "Build the BizBuilders Context Architecture assessment — the intake system that maps where digital friction blocks momentum"
+surface: BIZBUILDERS/systems/intake/
+outcome_type: working_intake_form
+why_now: "BizBuilders is Step 2 in the offer path. Without a functioning intake, there is no operational entry point for the infrastructure offer."
+risk_tier: operational
+assigned_agent: hermes
+status: active
+created: 2026-03-30T20:44:00Z
+depends_on: HERMES-001
+
+canon_references:
+  - _OS/02-Canon/CANONICAL_SOURCE_OF_TRUTH.md (Sections 3, 6, 10, 11)
+  - BIZBUILDERS/docs/ASSESSMENT_AS_INTAKE.md
+  - BIZBUILDERS/docs/CONTEXT_ARCHITECTURE.md
+
+acceptance_criteria:
+  - Assessment maps 6 architecture layers (Context, Governance, Orchestration, Execution, Memory, Adaptation)
+  - Questions diagnose digital fog, not sell services
+  - Output is observable baseline, not a score
+  - Form submits to retrievable destination (webhook or mailto fallback)
+  - No dead buttons, no placeholder sections
+  - Canon-compliant terminology throughout
