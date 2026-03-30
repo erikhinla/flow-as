@@ -1,0 +1,18 @@
+task_id: HERMES-004
+statement: "Populate BizBuilders delivery templates — handoff checklists and asset templates for client engagements"
+surface: BIZBUILDERS/systems/handoffs/ + BIZBUILDERS/systems/assets/
+outcome_type: operational_templates
+why_now: "BizBuilders has docs, intake, and workflow — but no standardized delivery templates. Without these, every engagement will be ad hoc. The templates make delivery repeatable."
+risk_tier: operational
+assigned_agent: hermes
+status: active
+created: 2026-03-30T21:11:00Z
+depends_on: HERMES-003
+
+acceptance_criteria:
+  - Handoff checklist for BizBuilders → BizBot transition
+  - Client onboarding checklist
+  - Engagement milestone tracker template
+  - Context Architecture deliverable template
+  - System Architecture deliverable template
+  - All templates reference canon and produce observable outputs
