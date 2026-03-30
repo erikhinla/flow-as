@@ -1,9 +1,29 @@
-# HEARTBEAT POLICY
+# Heartbeat Policy
 
-> Stub file per MASTER OVERVIEW OF TBTX 2.0 prescribed structure.
-> Content to be populated from canon during Wave 2.
+Authority: _OS/02-Canon/CANONICAL_SOURCE_OF_TRUTH.md (Section 7)
 
-Authority: _OS/02-Canon
+## Purpose
 
-This repository is subordinate to PROJECTS/_OS/02-Canon.
-If any file in this repository conflicts with canon, canon wins.
+The heartbeat is the periodic check that keeps the execution engine aligned with canon.
+
+## Heartbeat Checks
+
+At each heartbeat interval:
+
+1. Is the current WIN still valid?
+2. Has the active task completed?
+3. Are there escalated items waiting?
+4. Has any output drifted from canon?
+5. Is the memory layer current?
+
+## Frequency
+
+Heartbeat runs at the cadence appropriate to the active task.
+Short tasks: per-step.
+Long tasks: periodic intervals.
+
+## What Heartbeat Produces
+
+- Status update (running, completed, blocked, escalated)
+- Canon compliance check (pass/fail)
+- Next action recommendation
