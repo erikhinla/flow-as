@@ -1,0 +1,25 @@
+task_id: HERMES-002
+statement: "Build the Context Architecture Assessment intake system in BIZBUILDERS/systems/intake/ — a working form that captures client current state, maps where digital friction blocks momentum, produces an observable baseline, and routes the submission to a retrievable destination."
+surface: "BIZBUILDERS/systems/intake/"
+outcome_type: "Working intake form + routing logic (functional, not advisory)"
+why_now: "BizBuilders is Step 2 in the canonical offer path. Without a functioning intake, there is no operational entry point for the infrastructure offer. HERMES-001 validated the activation loop. HERMES-002 installs the first client-facing system."
+risk_tier: operational
+assigned_agent: hermes
+status: active
+created: "2026-04-02T17:01:00Z"
+depends_on: HERMES-001
+
+canon_references:
+  - "CANONICAL_SOURCE_OF_TRUTH.md Section 10 — Offer Path"
+  - "CANONICAL_SOURCE_OF_TRUTH.md Section 11 — Definition of Done"
+  - "ROUTING_RULES.md — Intake Routing"
+  - "NEXT_WIN.md — HERMES-002 statement"
+
+acceptance_criteria:
+  - "Assessment form exists as a functional markdown + JSON schema at BIZBUILDERS/systems/intake/"
+  - "Form captures: current state across all four layers, friction indicators, operational gaps"
+  - "Routing logic exists as a separate doc with clear if/then rules"
+  - "Submission destination is defined and retrievable (not abstract)"
+  - "No use of score, recommendation, or advice-only outputs"
+  - "Canon compliance check passes"
+  - "Output record committed to FLOW_AGENT_OS/memory/hermes/outputs/"
