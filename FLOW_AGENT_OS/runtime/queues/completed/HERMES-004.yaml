@@ -1,0 +1,29 @@
+task_id: HERMES-004
+statement: "Wire intake submissions to AgentZero for automatic review dispatch"
+surface: "FLOW_AGENT_OS/runtime/"
+outcome_type: "Working automation — intake submissions trigger AgentZero review task"
+risk_tier: gamma
+assigned_agent: agent_zero
+status: completed
+created: "2026-04-02T18:00:00Z"
+depends_on: HERMES-003
+
+canon_references:
+  - "ROUTING_RULES.md — Intake Routing"
+  - "CANONICAL_SOURCE_OF_TRUTH.md Section 11 — Definition of Done"
+
+acceptance_criteria:
+  - "intake-webhook container running and healthy"
+  - "Submissions persisted to intake_submissions Docker volume"
+  - "intake_submissions volume mounted into AgentZero at /a0/usr/workdir/intake"
+  - "AgentZero scheduler task created: FLOW Intake Processor (uuid=Gadv2wGc)"
+  - "Task runs every 15 minutes via cron: */15 * * * *"
+  - "intake_processor.py script present in AgentZero workdir"
+  - "Test run triggered and confirmed state=running"
+
+completed_outputs:
+  - "intake-webhook: ghcr.io/erikhinla/intake-webhook:latest, port 8088, HTTPS via Traefik"
+  - "Webhook URL: https://intake.srv1413136.hstgr.cloud/intake"
+  - "AgentZero scheduler task uuid: Gadv2wGc"
+  - "Shared volume: intake_submissions mounted in both containers"
+  - "Processor script: /a0/usr/workdir/intake_processor.py"
