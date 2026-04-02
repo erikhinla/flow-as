@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Context Architecture Assessment",
+  "description": "Intake schema for BizBuilders Context Architecture Assessment. Authority: CANONICAL_SOURCE_OF_TRUTH.md Section 10.",
+  "type": "object",
+  "required": ["submitted_at", "contact", "section_1", "section_2", "section_3", "section_4", "section_5"],
+  "properties": {
+    "submitted_at": { "type": "string", "format": "date-time" },
+    "contact": {
+      "type": "object",
+      "required": ["name", "email"],
+      "properties": {
+        "name":    { "type": "string" },
+        "email":   { "type": "string", "format": "email" },
+        "company": { "type": "string" }
+      }
+    },
+    "section_1": {
+      "title": "Context Layer",
+      "type": "object",
+      "properties": {
+        "source_of_truth":        { "type": "string", "enum": ["documented_current", "exists_outdated", "in_my_head", "not_built"] },
+        "terminology_consistency": { "type": "string", "enum": ["consistent", "mostly", "inconsistent"] },
+        "decision_framework":     { "type": "string", "enum": ["documented", "informal", "none"] }
+      }
+    },
+    "section_2": {
+      "title": "System Architecture Layer",
+      "type": "object",
+      "properties": {
+        "workflow_documentation": { "type": "string", "enum": ["documented_followed", "partially", "not_written", "inconsistent"] },
+        "execution_paths":        { "type": "string", "enum": ["fully_defined", "gaps_exist", "unclear"] },
+        "tooling_configuration":  { "type": "string", "enum": ["configured", "partially", "default", "inconsistent"] },
+        "automation_coverage":    { "type": "string", "enum": ["above_60", "30_to_60", "below_30", "none"] }
+      }
+    },
+    "section_3": {
+      "title": "Activation Layer",
+      "type": "object",
+      "properties": {
+        "lead_capture": { "type": "string", "enum": ["functional", "partial", "none"] },
+        "follow_up":    { "type": "string", "enum": ["consistent", "partial", "reactive"] },
+        "content_system": { "type": "string", "enum": ["defined_system", "partial", "none"] }
+      }
+    },
+    "section_4": {
+      "title": "Interface Layer",
+      "type": "object",
+      "properties": {
+        "client_facing_accuracy": { "type": "string", "enum": ["aligned", "mostly", "significant_gaps"] },
+        "intake_experience":      { "type": "string", "enum": ["consistent", "partial", "ad_hoc"] }
+      }
+    },
+    "section_5": {
+      "title": "Operational Context",
+      "type": "object",
+      "required": ["current_friction", "what_is_stalling"],
+      "properties": {
+        "current_friction":   { "type": "string", "maxLength": 1000 },
+        "what_is_stalling":   { "type": "string", "maxLength": 500 },
+        "previous_attempts":  { "type": "string", "maxLength": 500 }
+      }
+    }
+  }
+}
