@@ -3,7 +3,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import agents, artifacts, handoffs, health, tasks, threads, flow_health, hermes_skills, openclaw_intake
+from app.api import agents, artifacts, handoffs, health, tasks, threads, flow_health, hermes_skills, openclaw_intake, agent_zero_reviews
 from app.config.settings import get_settings
 from app.services.skill_extraction_job import SkillExtractionJob
 from app.services.redis_queue_service import get_redis_client, RedisQueueService
@@ -33,6 +33,7 @@ app.include_router(agents.router, prefix="/v1")
 app.include_router(flow_health.router, prefix="/v1")  # FLOW health checks
 app.include_router(hermes_skills.router, prefix="/v1")  # Hermes skill loop
 app.include_router(openclaw_intake.router, prefix="/v1")  # OpenClaw intake and routing
+app.include_router(agent_zero_reviews.router, prefix="/v1")  # Agent Zero review enforcement
 
 # Skill extraction background job
 skill_extraction_job = None
