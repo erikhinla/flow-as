@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Job Record",
+  "description": "Durable job state stored in Postgres. Tracks execution and results.",
+  "type": "object",
+  "required": [
+    "job_id",
+    "task_id",
+    "owner",
+    "status",
+    "task_type",
+    "risk_tier",
+    "created_at"
+  ],
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "description": "UUID identifying this job execution"
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Reference to the source task_envelope"
+    },
+    "owner": {
+      "type": "string",
+      "enum": ["openclaw", "hermes", "agent_zero"],
+      "description": "Agent responsible for this job"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "validated",
+        "queued",
+        "active",
+        "review_required",
+        "completed",
+        "failed",
+        "dead_letter",
+        "blocked",
+        "escalated",
+        "archived"
+      ],
+      "description": "Current execution status"
+    },
+    "task_type": {
+      "type": "string",
+      "enum": [
+        "classification",
+        "rewrite",
+        "content_prep",
+        "implementation",
+        "skill_extraction",
+        "healthcheck"
+      ]
+    },
+    "risk_tier": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When job was created"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last status update"
+    },
+    "started_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When execution began"
+    },
+    "completed_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When execution finished"
+    },
+    "result_pointer": {
+      "type": "string",
+      "description": "Path to output artifact or state change (e.g., runtime/completed/job_id/output.md)"
+    },
+    "review_pointer": {
+      "type": ["string", "null"],
+      "description": "Path to review artifact if review_required=true (runtime/reviews/job_id/review.md)"
+    },
+    "rollback_pointer": {
+      "type": ["string", "null"],
+      "description": "Path to rollback plan if rollback_required=true"
+    },
+    "retry_count": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Number of times this job has been retried"
+    },
+    "max_retries": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 3,
+      "description": "Maximum retry attempts before dead-letter"
+    },
+    "error_message": {
+      "type": ["string", "null"],
+      "description": "Error details if status=failed or dead_letter"
+    },
+    "escalation_triggered_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When job was escalated to dead_letter"
+    },
+    "escalation_notified_to": {
+      "type": ["string", "null"],
+      "description": "Email or contact info for escalation notification"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Skill Record",
+  "description": "Reusable execution pattern extracted from reflections. Lives in Postgres skill index.",
+  "type": "object",
+  "required": [
+    "skill_id",
+    "name",
+    "task_type",
+    "pattern",
+    "confidence",
+    "created_at"
+  ],
+  "properties": {
+    "skill_id": {
+      "type": "string",
+      "description": "UUID identifying this skill"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 100,
+      "description": "Human-readable skill name (e.g., 'markdown_classification_with_regex')"
+    },
+    "task_type": {
+      "type": "string",
+      "enum": [
+        "classification",
+        "rewrite",
+        "content_prep",
+        "implementation",
+        "skill_extraction",
+        "healthcheck"
+      ],
+      "description": "Task type this skill applies to"
+    },
+    "context_type": {
+      "type": ["string", "null"],
+      "description": "Specific context where this skill is most effective (e.g., 'intake_form')"
+    },
+    "pattern": {
+      "type": "string",
+      "minLength": 20,
+      "description": "Detailed description of the reusable pattern or approach"
+    },
+    "tool_sequence": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string"
+      },
+      "description": "Ordered sequence of tools or techniques to apply"
+    },
+    "success_signal": {
+      "type": ["string", "null"],
+      "description": "Observable indicator that skill succeeded"
+    },
+    "failure_signal": {
+      "type": ["string", "null"],
+      "description": "Observable indicator that skill failed"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "default": 0.5,
+      "description": "Confidence score. Increases with successful reuse, decreases with failures."
+    },
+    "times_used": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Number of times this skill has been applied"
+    },
+    "times_succeeded": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "times_failed": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "last_used_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "last_succeeded_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "source_reflection_id": {
+      "type": "string",
+      "description": "ID of reflection where this skill was first extracted"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "low_confidence", "archived", "retired"],
+      "default": "active",
+      "description": "Skill lifecycle status"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1,
+      "description": "Immutable skill versions. New pattern = new skill."
+    }
+  },
+  "additionalProperties": false
+}

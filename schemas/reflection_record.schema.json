@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Reflection Record",
+  "description": "Post-execution reflection written to Postgres. Used for skill extraction and learning.",
+  "type": "object",
+  "required": [
+    "reflection_id",
+    "task_id",
+    "job_id",
+    "owner",
+    "what_worked",
+    "what_failed",
+    "created_at"
+  ],
+  "properties": {
+    "reflection_id": {
+      "type": "string",
+      "description": "UUID identifying this reflection"
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Reference to source task"
+    },
+    "job_id": {
+      "type": "string",
+      "description": "Reference to job that generated this reflection"
+    },
+    "owner": {
+      "type": "string",
+      "enum": ["openclaw", "hermes", "agent_zero"],
+      "description": "Agent that wrote this reflection"
+    },
+    "what_worked": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Specific outcomes, approaches, or tools that succeeded"
+    },
+    "what_failed": {
+      "type": "string",
+      "minLength": 10,
+      "description": "What did not work, blockers encountered, or failed attempts"
+    },
+    "pattern_observed": {
+      "type": ["string", "null"],
+      "description": "If a reusable pattern emerged, describe it here"
+    },
+    "context_type": {
+      "type": ["string", "null"],
+      "description": "Type of context in which task was executed (e.g., 'intake_form', 'blog_post', 'schema_migration')"
+    },
+    "tool_sequence": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string"
+      },
+      "description": "Ordered list of tools or techniques used (e.g., ['regex_classify', 'markdown_format', 'schema_validate'])"
+    },
+    "success_signal": {
+      "type": ["string", "null"],
+      "description": "Measurable signal that task succeeded (e.g., 'all files validated against schema', 'test suite passed')"
+    },
+    "failure_signal": {
+      "type": ["string", "null"],
+      "description": "Measurable signal indicating failure (e.g., 'validation errors > 5')"
+    },
+    "sensitivity_level": {
+      "type": "string",
+      "enum": ["public", "internal", "redacted"],
+      "default": "internal",
+      "description": "Access level for this reflection (controls skill extraction and sharing)"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "skill_extraction_attempted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether skill extraction pass has run on this reflection"
+    },
+    "skills_extracted": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of skills created or updated from this reflection"
+    }
+  },
+  "additionalProperties": false
+}

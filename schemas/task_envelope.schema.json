@@ -1,0 +1,125 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Task Envelope",
+  "description": "Standard task envelope for FLOW Agent OS. Every task must conform to this schema.",
+  "type": "object",
+  "required": [
+    "task_id",
+    "created_at",
+    "source",
+    "title",
+    "goal",
+    "task_type",
+    "risk_tier",
+    "preferred_owner",
+    "output_required",
+    "review_required",
+    "status"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "UUID identifying this task uniquely",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO8601 timestamp when task was created"
+    },
+    "source": {
+      "type": "string",
+      "enum": ["manual", "webhook", "github_action", "scheduled"],
+      "description": "Origin of the task"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 200,
+      "description": "Short, imperative task title"
+    },
+    "goal": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 1000,
+      "description": "Single finishable outcome. Must be observable and bounded."
+    },
+    "task_type": {
+      "type": "string",
+      "enum": [
+        "classification",
+        "rewrite",
+        "content_prep",
+        "implementation",
+        "skill_extraction",
+        "healthcheck"
+      ],
+      "description": "Category of work"
+    },
+    "risk_tier": {
+      "type": "string",
+      "enum": ["low", "medium", "high"],
+      "description": "Risk assessment. High requires review_required=true."
+    },
+    "preferred_owner": {
+      "type": "string",
+      "enum": ["openclaw", "hermes", "agent_zero"],
+      "description": "Recommended agent to execute this task"
+    },
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Relative file paths to operate on"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional context or instructions"
+        },
+        "context_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "References to canon docs, prior tasks, or relevant context"
+        }
+      }
+    },
+    "output_required": {
+      "type": "string",
+      "description": "Description of the observable artifact or state change required"
+    },
+    "review_required": {
+      "type": "boolean",
+      "description": "If true, task must pass review before completion is final. Always true for high-risk tasks."
+    },
+    "rollback_required": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true, a rollback plan (task.rollback.md) must exist before execution"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "validated",
+        "queued",
+        "active",
+        "review_required",
+        "completed",
+        "failed",
+        "dead_letter",
+        "blocked",
+        "escalated",
+        "archived"
+      ],
+      "default": "pending",
+      "description": "Current task status"
+    }
+  },
+  "additionalProperties": false
+}
