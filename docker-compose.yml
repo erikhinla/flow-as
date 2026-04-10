@@ -31,7 +31,25 @@ services:
       - portainer_data:/data
     networks:
       - main_net
-
+ # --------------------------------------------------------------------------- 
+  # PORTAINER AGENT — Required to manage this host from Portainer
+  # --------------------------------------------------------------------------- 
+  portainer-agent:
+    image: portainer/agent:latest
+    container_name: portainer-agent
+    hostname: portainer-agent
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "9001:9001"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+    networks:
+      - main_net
+    labels:
+      flow.service: "portainer-agent"
   # ---------------------------------------------------------------------------
   # OPENCLAW — Front-door router / orchestrator (clawdbot)
   # Access: http://<VPS_IP>:18789
