@@ -1,3 +1,5 @@
+version: "3.8"
+
 # =============================================================================
 # FLOW Agent OS — Hostinger VPS
 # Services:
@@ -13,25 +15,6 @@
 services:
 
   # ---------------------------------------------------------------------------
-  # PORTAINER — Container Dashboard
-  # Access: https://<VPS_IP>:9443
-  # ---------------------------------------------------------------------------
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    ports:
-      - "9000:9000"       # HTTP (redirect to HTTPS)
-      - "9443:9443"       # HTTPS Web UI
-      - "8000:8000"       # Edge agent tunnel (optional)
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - portainer_data:/data
-    networks:
-      - main_net
-   # ---------------------------------------------------------------------------
   # PORTAINER — Container Dashboard
   # Access: https://<VPS_IP>:9443
   # ---------------------------------------------------------------------------
@@ -70,7 +53,8 @@ services:
     networks:
       - main_net
     labels:
-      flow.service: "portainer-agent"  
+      flow.service: "portainer-agent"
+
   # ---------------------------------------------------------------------------
   # OPENCLAW — Front-door router / orchestrator (clawdbot)
   # Access: http://<VPS_IP>:18789
@@ -263,7 +247,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  networks:
+
+networks:
   main_net:
     driver: bridge
 
@@ -288,4 +273,3 @@ volumes:
     name: postiz_postgres_data
   postiz_redis_data:
     name: postiz_redis_data
-
