@@ -1,5 +1,3 @@
-version: "3.8"
-
 # =============================================================================
 # FLOW Agent OS — Hostinger VPS
 # Services:
@@ -14,10 +12,6 @@ version: "3.8"
 
 services:
 
-  # ---------------------------------------------------------------------------
-  # PORTAINER — Container Dashboard
-  # Access: https://<VPS_IP>:9443
-  # ---------------------------------------------------------------------------
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
@@ -25,19 +19,15 @@ services:
     security_opt:
       - no-new-privileges:true
     ports:
-      - "9000:9000"   # HTTP
-      - "9443:9443"   # HTTPS Web UI
-      - "8000:8000"   # Edge agent tunnel (optional)
+      - "9000:9000"
+      - "9443:9443"
+      - "8000:8000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - portainer_data:/data
     networks:
       - main_net
 
-  # ---------------------------------------------------------------------------
-  # PORTAINER AGENT — Required to manage this host from Portainer
-  # Access: Internal on port 9001
-  # ---------------------------------------------------------------------------
   portainer-agent:
     image: portainer/agent:latest
     container_name: portainer-agent
@@ -55,11 +45,6 @@ services:
     labels:
       flow.service: "portainer-agent"
 
-  # ---------------------------------------------------------------------------
-  # OPENCLAW — Front-door router / orchestrator (clawdbot)
-  # Access: http://<VPS_IP>:18789
-  # Repo: github.com/erikhinla/clawdbot
-  # ---------------------------------------------------------------------------
   openclaw:
     image: ghcr.io/erikhinla/clawdbot:latest
     container_name: openclaw
@@ -71,21 +56,25 @@ services:
       CLAUDE_AI_SESSION_KEY: ${CLAUDE_AI_SESSION_KEY}
       CLAUDE_WEB_SESSION_KEY: ${CLAUDE_WEB_SESSION_KEY:-}
       CLAUDE_WEB_COOKIE: ${CLAUDE_WEB_COOKIE:-}
+      CLAWDBOT_GATEWAY_MODE: local
     volumes:
       - openclaw_config:/home/node/.clawdbot
       - openclaw_workspace:/home/node/clawd
     ports:
-      - "18789:18789"     # Gateway HTTP API
-      - "18790:18790"     # Bridge port
+      - "18789:18789"
+      - "18790:18790"
     init: true
     command:
-      [
-        "node",
-        "dist/index.js",
-        "gateway",
-        "--bind", "lan",
-        "--port", "18789"
-      ]
+      - "node"
+      - "dist/index.js"
+      - "gateway"
+      - "--bind"
+      - "lan"
+      - "--port"
+      - "18789"
+      - "--allow-unconfigured"
+      - "--mode"
+      - "local"
     networks:
       - main_net
     labels:
@@ -93,30 +82,23 @@ services:
       flow.role: "orchestrator"
       flow.tier: "1"
 
-  # ---------------------------------------------------------------------------
-  # AGENT ZERO — Deep execution engine
-  # Access: http://<VPS_IP>:50080
-  # Image: agent0ai/agent-zero (official)
-  # ---------------------------------------------------------------------------
   agent-zero:
     image: agent0ai/agent-zero:latest
     container_name: agent-zero
     restart: unless-stopped
     environment:
-      # LLM Provider keys — set at least one
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
       GROQ_API_KEY: ${GROQ_API_KEY:-}
-      # Auth for the web UI (set these!)
       A0_AUTH_LOGIN: ${A0_AUTH_LOGIN:-admin}
       A0_AUTH_PASSWORD: ${A0_AUTH_PASSWORD}
     volumes:
-      - agent_zero_data:/a0/usr       # Persistent memory, files, settings
-      - /var/run/docker.sock:/var/run/docker.sock  # For spawning sub-agents
+      - agent_zero_data:/a0/usr
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - "50080:80"        # Web UI
-      - "50022:22"        # SSH into container (optional)
+      - "50080:80"
+      - "50022:22"
     networks:
       - main_net
     labels:
@@ -124,35 +106,27 @@ services:
       flow.role: "executor"
       flow.tier: "2"
 
-  # ---------------------------------------------------------------------------
-  # HERMES — Self-improving CLI agent (NousResearch fork)
-  # Access: http://<VPS_IP>:50090 (gateway mode)
-  # Repo: github.com/erikhinla/hermes-agent
-  # ---------------------------------------------------------------------------
   hermes:
     image: ghcr.io/erikhinla/hermes-agent:latest
     container_name: hermes
     restart: unless-stopped
     environment:
-      # LLM Providers
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
-      # Hermes-specific
       HERMES_DEFAULT_MODEL: ${HERMES_DEFAULT_MODEL:-claude-sonnet-4-5}
       HERMES_GATEWAY_ENABLED: "true"
       HERMES_GATEWAY_PORT: "50090"
       HERMES_GATEWAY_HOST: "0.0.0.0"
-      # Optional integrations
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       DISCORD_TOKEN: ${DISCORD_TOKEN:-}
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY:-}
     volumes:
-      - hermes_data:/root/.hermes    # Config, skills, memory
-      - hermes_workspace:/workspace  # Agent working directory
+      - hermes_data:/root/.hermes
+      - hermes_workspace:/workspace
     ports:
-      - "50090:50090"     # Gateway HTTP API
+      - "50090:50090"
     networks:
       - main_net
     labels:
@@ -160,11 +134,6 @@ services:
       flow.role: "specialist"
       flow.tier: "2"
 
-  # ---------------------------------------------------------------------------
-  # POSTIZ — Social Media Management Platform
-  # Access: http://<VPS_IP>:5000
-  # Repo: github.com/gitroomhq/postiz-app
-  # ---------------------------------------------------------------------------
   postiz:
     image: ghcr.io/gitroomhq/postiz-app:latest
     container_name: postiz
@@ -172,29 +141,18 @@ services:
     ports:
       - "5000:5000"
     environment:
-      # === General Settings ===
       MAIN_URL: "http://${POSTIZ_DOMAIN:-localhost:5000}"
       FRONTEND_URL: "http://${POSTIZ_DOMAIN:-localhost:5000}"
       NEXT_PUBLIC_BACKEND_URL: "http://${POSTIZ_DOMAIN:-localhost:5000}/api"
       BACKEND_INTERNAL_URL: "http://postiz:3000"
-
-      # === Security ===
       JWT_SECRET: ${POSTIZ_JWT_SECRET}
-
-      # === Database & Redis ===
       DATABASE_URL: "postgresql://postiz-user:${POSTIZ_DB_PASSWORD}@postiz-postgres:5432/postiz-db"
       REDIS_URL: "redis://postiz-redis:6379"
-
-      # === App Configuration ===
       IS_GENERAL: "true"
       DISABLE_REGISTRATION: ${POSTIZ_DISABLE_REGISTRATION:-false}
-
-      # === Storage ===
       STORAGE_PROVIDER: "local"
       UPLOAD_DIRECTORY: "/uploads"
       NEXT_PUBLIC_UPLOAD_DIRECTORY: "/uploads"
-
-      # === Social Media & Integrations ===
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     volumes:
       - postiz_config:/config/
@@ -210,9 +168,6 @@ services:
       flow.service: "postiz"
       flow.tier: "1"
 
-  # ---------------------------------------------------------------------------
-  # POSTIZ — PostgreSQL Database
-  # ---------------------------------------------------------------------------
   postiz_postgres:
     image: postgres:17-alpine
     container_name: postiz-postgres
@@ -231,9 +186,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # ---------------------------------------------------------------------------
-  # POSTIZ — Redis Cache
-  # ---------------------------------------------------------------------------
   postiz_redis:
     image: redis:7.2-alpine
     container_name: postiz-redis
