@@ -1,13 +1,9 @@
 # =============================================================================
 # FLOW Agent OS — Hostinger VPS
 # Services:
-#   Agents: OpenClaw (clawdbot) | AgentZero | Hermes
+#   Agents: OpenClaw | AgentZero | Hermes
 #   Dashboard: Portainer CE
-#   Social Media: Postiz (+ PostgreSQL, Redis)
-# =============================================================================
-# Usage:
-#   cp .env.example .env    # fill in your secrets
-#   docker compose up -d
+#   Social Media: Postiz
 # =============================================================================
 
 services:
@@ -42,9 +38,10 @@ services:
       - /var/lib/docker/volumes:/var/lib/docker/volumes
     networks:
       - main_net
-    labels:
-      flow.service: "portainer-agent"
 
+  # ---------------------------------------------------------------------------
+  # OPENCLAW - Fixed
+  # ---------------------------------------------------------------------------
   openclaw:
     image: ghcr.io/erikhinla/clawdbot:latest
     container_name: openclaw
@@ -77,11 +74,10 @@ services:
       - "local"
     networks:
       - main_net
-    labels:
-      flow.agent: "openclaw"
-      flow.role: "orchestrator"
-      flow.tier: "1"
 
+  # ---------------------------------------------------------------------------
+  # AGENT ZERO
+  # ---------------------------------------------------------------------------
   agent-zero:
     image: agent0ai/agent-zero:latest
     container_name: agent-zero
@@ -101,11 +97,10 @@ services:
       - "50022:22"
     networks:
       - main_net
-    labels:
-      flow.agent: "agent-zero"
-      flow.role: "executor"
-      flow.tier: "2"
 
+  # ---------------------------------------------------------------------------
+  # HERMES - Fixed (keep alive)
+  # ---------------------------------------------------------------------------
   hermes:
     image: ghcr.io/erikhinla/hermes-agent:latest
     container_name: hermes
@@ -129,11 +124,11 @@ services:
       - "50090:50090"
     networks:
       - main_net
-    labels:
-      flow.agent: "hermes"
-      flow.role: "specialist"
-      flow.tier: "2"
+    command: ["tail", "-f", "/dev/null"]   # Keep container running
 
+  # ---------------------------------------------------------------------------
+  # POSTIZ + DATABASES
+  # ---------------------------------------------------------------------------
   postiz:
     image: ghcr.io/gitroomhq/postiz-app:latest
     container_name: postiz
@@ -164,9 +159,6 @@ services:
         condition: service_healthy
       postiz_redis:
         condition: service_healthy
-    labels:
-      flow.service: "postiz"
-      flow.tier: "1"
 
   postiz_postgres:
     image: postgres:17-alpine
