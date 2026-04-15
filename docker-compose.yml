@@ -1,9 +1,13 @@
 # =============================================================================
-# FLOW Agent OS — Hostinger VPS
+# FLOW Agent AS — Hostinger VPS
 # Services:
 #   Agents: OpenClaw | AgentZero | Hermes
 #   Dashboard: Portainer CE
 #   Social Media: Postiz
+# =============================================================================
+
+# =============================================================================
+# FLOW Agent AS — Hostinger VPS
 # =============================================================================
 
 services:
@@ -39,9 +43,6 @@ services:
     networks:
       - main_net
 
-  # ---------------------------------------------------------------------------
-  # OPENCLAW - Fixed
-  # ---------------------------------------------------------------------------
   openclaw:
     image: ghcr.io/erikhinla/clawdbot:latest
     container_name: openclaw
@@ -75,9 +76,6 @@ services:
     networks:
       - main_net
 
-  # ---------------------------------------------------------------------------
-  # AGENT ZERO
-  # ---------------------------------------------------------------------------
   agent-zero:
     image: agent0ai/agent-zero:latest
     container_name: agent-zero
@@ -98,9 +96,6 @@ services:
     networks:
       - main_net
 
-  # ---------------------------------------------------------------------------
-  # HERMES - Fixed (keep alive)
-  # ---------------------------------------------------------------------------
   hermes:
     image: ghcr.io/erikhinla/hermes-agent:latest
     container_name: hermes
@@ -124,11 +119,7 @@ services:
       - "50090:50090"
     networks:
       - main_net
-    command: ["tail", "-f", "/dev/null"]   # Keep container running
 
-  # ---------------------------------------------------------------------------
-  # POSTIZ + DATABASES
-  # ---------------------------------------------------------------------------
   postiz:
     image: ghcr.io/gitroomhq/postiz-app:latest
     container_name: postiz
@@ -197,23 +188,13 @@ networks:
     driver: bridge
 
 volumes:
-  portainer_data:
-    name: portainer_data
-  openclaw_config:
-    name: openclaw_config
-  openclaw_workspace:
-    name: openclaw_workspace
-  agent_zero_data:
-    name: agent_zero_data
-  hermes_data:
-    name: hermes_data
-  hermes_workspace:
-    name: hermes_workspace
-  postiz_config:
-    name: postiz_config
-  postiz_uploads:
-    name: postiz_uploads
-  postiz_postgres_data:
-    name: postiz_postgres_data
-  postiz_redis_data:
-    name: postiz_redis_data
+  portainer_data: {}
+  openclaw_config: {}
+  openclaw_workspace: {}
+  agent_zero_data: {}
+  hermes_data: {}
+  hermes_workspace: {}
+  postiz_config: {}
+  postiz_uploads: {}
+  postiz_postgres_data: {}
+  postiz_redis_data: {}
