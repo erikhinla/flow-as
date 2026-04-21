@@ -5,7 +5,7 @@ BizBrain Lite is a lightweight FastAPI control plane for coordinating OpenClaw, 
 ## Scope
 
 - Runtime state: Redis
-- Durable operational memory: Notion databases
+- Durable FLOW state: PostgreSQL
 - Registries: tasks, artifacts, thread handoffs, threads, agent status
 - Non-invasive: does not replace public site or Social Asset Hub rendering/export
 
@@ -26,7 +26,6 @@ BizBrain Lite is a lightweight FastAPI control plane for coordinating OpenClaw, 
 
 - `docs/api_endpoint_list.md`
 - `docs/redis_usage.md`
-- `docs/notion_database_mapping.md`
 - `docs/alpha_beta_gamma_interaction.md`
 - `docs/recommended_build_order.md`
 - `docs/deployment.md`

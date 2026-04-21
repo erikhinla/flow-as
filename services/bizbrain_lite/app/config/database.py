@@ -8,8 +8,8 @@ Uses SQLAlchemy AsyncIO for async/await support.
 import os
 from typing import AsyncGenerator
 
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.pool import NullPool, QueuePool
 
 # Get Postgres URI from environment
 DATABASE_URL = os.getenv(
@@ -27,7 +27,6 @@ POOL_PRE_PING = os.getenv("DB_POOL_PRE_PING", "true").lower() == "true"
 engine = create_async_engine(
     DATABASE_URL,
     echo=os.getenv("DB_ECHO", "false").lower() == "true",
-    poolclass=QueuePool,
     pool_size=POOL_SIZE,
     max_overflow=MAX_OVERFLOW,
     pool_recycle=POOL_RECYCLE,
@@ -94,7 +93,7 @@ async def health_check() -> bool:
     """
     try:
         async with async_session() as session:
-            await session.execute("SELECT 1")
+            await session.execute(text("SELECT 1"))
             return True
     except Exception:
         return False

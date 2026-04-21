@@ -1,9 +1,10 @@
 from typing import Any
 from uuid import uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from .common import BaseRecord, ThreadStateEnum
+from app.services.input_normalization import normalize_text, normalize_value
 
 
 class ThreadRecord(BaseRecord):
@@ -23,6 +24,21 @@ class ThreadCreate(BaseModel):
     tags: list[str] = Field(default_factory=list)
     metadata: dict[str, Any] = Field(default_factory=dict)
 
+    @field_validator("title", "origin", mode="before")
+    @classmethod
+    def normalize_text_fields(cls, value: str) -> str:
+        return normalize_text(value)
+
+    @field_validator("tags", mode="before")
+    @classmethod
+    def normalize_tags(cls, value: list[str]) -> list[str]:
+        return [normalize_text(item) for item in value]
+
+    @field_validator("metadata", mode="before")
+    @classmethod
+    def normalize_metadata(cls, value: dict[str, Any]) -> dict[str, Any]:
+        return normalize_value(value)
+
 
 class ThreadUpdate(BaseModel):
     title: str | None = None
@@ -31,4 +47,25 @@ class ThreadUpdate(BaseModel):
     tags: list[str] | None = None
     closed_at: str | None = None
     metadata: dict[str, Any] | None = None
+
+    @field_validator("title", mode="before")
+    @classmethod
+    def normalize_title(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        return normalize_text(value)
+
+    @field_validator("tags", mode="before")
+    @classmethod
+    def normalize_tags(cls, value: list[str] | None) -> list[str] | None:
+        if value is None:
+            return None
+        return [normalize_text(item) for item in value]
+
+    @field_validator("metadata", mode="before")
+    @classmethod
+    def normalize_metadata(cls, value: dict[str, Any] | None) -> dict[str, Any] | None:
+        if value is None:
+            return None
+        return normalize_value(value)
 

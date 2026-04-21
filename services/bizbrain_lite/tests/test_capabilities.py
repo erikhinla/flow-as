@@ -16,5 +16,6 @@ def test_capabilities_endpoint_shape():
     assert "agents" in payload["registries"]
     assert "runtime_state" in payload
     assert "redis" in payload["runtime_state"]
+    assert "postgres" in payload["runtime_state"]
     assert "durable_memory" in payload
-    assert "notion" in payload["durable_memory"]
+    assert "postgres" in payload["durable_memory"]

@@ -1,10 +1,11 @@
 import asyncio
-import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import agents, artifacts, handoffs, health, tasks, threads, flow_health, hermes_skills, openclaw_intake, agent_zero_reviews
 from app.config.settings import get_settings
+from app.config.database import close_db, init_db
+from app.services.redis_store import redis_store
 from app.services.skill_extraction_job import SkillExtractionJob
 from app.services.redis_queue_service import get_redis_client, RedisQueueService
 
@@ -46,10 +47,17 @@ redis_queue_service = None
 async def startup_services():
     """Initialize all FLOW services on app startup"""
     global skill_extraction_job, redis_queue_service
+
+    try:
+        await init_db()
+        print("✓ FLOW Postgres tables initialized")
+    except Exception as e:
+        print(f"✗ Failed to initialize FLOW Postgres tables: {e}")
+        raise
     
     # Initialize Redis queue service
     try:
-        redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
+        redis_url = settings.bizbrain_redis_url
         redis_client = await get_redis_client(redis_url)
         redis_queue_service = RedisQueueService(redis_client)
         openclaw_intake.redis_queue_service = redis_queue_service
@@ -84,4 +92,16 @@ async def shutdown_services():
             print("✓ Redis connection closed")
         except Exception as e:
             print(f"✗ Error closing Redis: {e}")
+
+    try:
+        await redis_store.close()
+        print("✓ Redis store closed")
+    except Exception as e:
+        print(f"✗ Error closing Redis store: {e}")
+
+    try:
+        await close_db()
+        print("✓ FLOW Postgres connection pool closed")
+    except Exception as e:
+        print(f"✗ Error closing FLOW Postgres pool: {e}")
 

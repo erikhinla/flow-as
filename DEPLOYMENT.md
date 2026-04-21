@@ -33,8 +33,9 @@ Copy from `.env.example` and fill in:
 **Required for all services:**
 ```
 OPENAI_API_KEY=sk-xxx
-ANTHROPIC_API_KEY=sk-ant-xxx
 A0_AUTH_PASSWORD=your_password
+FLOW_DB_PASSWORD=your_flow_db_password
+BIZBRAIN_API_TOKEN=your_bizbrain_api_token
 ```
 
 **For Postiz specifically:**
@@ -48,7 +49,7 @@ POSTIZ_DOMAIN=your-vps-ip.com:5000
 
 ```bash
 cd /opt/flow-agents
-docker compose up -d
+docker compose up -d --build
 ```
 
 Wait ~2 minutes for all services to start.
@@ -66,6 +67,7 @@ All containers should be in `Up` state.
 | Service | URL | Login |
 |---------|-----|-------|
 | **Portainer** (Dashboard) | https://<VPS_IP>:9443 | admin / password |
+| **BizBrain Lite** (FLOW Control Plane) | http://<VPS_IP>:18000/docs | x-api-token for protected endpoints |
 | **Postiz** (Social Media) | http://<VPS_IP>:5000 | Create first account |
 | **OpenClaw** (Orchestrator) | http://<VPS_IP>:18789 | (API only) |
 | **AgentZero** (Executor) | http://<VPS_IP>:50080 | Admin / A0_AUTH_PASSWORD |
@@ -75,6 +77,7 @@ All containers should be in `Up` state.
 
 UFW is automatically configured to allow:
 - **Port 9443** — Portainer HTTPS
+- **Port 18000** — BizBrain Lite control plane
 - **Port 9000** — Portainer HTTP redirect
 - **Port 18789** — OpenClaw API
 - **Port 50080** — AgentZero Web UI

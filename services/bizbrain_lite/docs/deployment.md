@@ -4,7 +4,7 @@
 
 - Python 3.11+
 - Redis (local or remote)
-- Notion workspace (optional; service runs without it)
+- PostgreSQL
 
 ## Environment
 
@@ -15,12 +15,7 @@ Copy `.env.example` to `.env` and set:
 | `BIZBRAIN_ENV` | No | `dev` or `prod` (default: `dev`) |
 | `BIZBRAIN_API_TOKEN` | No | API token for v1 endpoints. If unset, auth is disabled. |
 | `BIZBRAIN_REDIS_URL` | Yes | Redis connection URL (e.g. `redis://localhost:6379/0`) |
-| `NOTION_API_KEY` | No | Notion integration token for durable mirror |
-| `NOTION_TASKS_DB_ID` | No | Notion database ID for tasks |
-| `NOTION_ARTIFACTS_DB_ID` | No | Notion database ID for artifacts |
-| `NOTION_HANDOFFS_DB_ID` | No | Notion database ID for handoffs |
-| `NOTION_AGENT_STATUS_DB_ID` | No | Notion database ID for agent status |
-| `NOTION_MEMORY_DB_ID` | No | Notion database ID for operational memory |
+| `DATABASE_URL` | Yes | Async SQLAlchemy database URL for FLOW durable state |
 | `SOCIAL_HUB_API_ORIGIN` | No | Allowed CORS origin for Social Asset Hub |
 
 ## Run locally
@@ -37,8 +32,8 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 - Use a process manager (systemd, supervisord, or Docker) to run uvicorn.
 - Set `BIZBRAIN_API_TOKEN` in production.
-- Use a managed Redis instance.
-- Health check: `GET /v1/health` (no auth required).
+- Use managed Redis and PostgreSQL instances.
+- Health checks: `GET /v1/health` and `GET /v1/flow/health`.
 
 ## Docker (example)
 

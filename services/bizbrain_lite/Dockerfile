@@ -1,32 +1,22 @@
-# =============================================================================
-# bizbrain_lite — FLOW Agent OS API service
-# Build context: repo root (so schemas/ is available)
-# docker-compose: build: context: . dockerfile: services/bizbrain_lite/Dockerfile
-# =============================================================================
-
 FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-        libpq-dev \
-            && rm -rf /var/lib/apt/lists/*
+COPY services/bizbrain_lite/pyproject.toml /app/pyproject.toml
+COPY services/bizbrain_lite/README.md /app/README.md
+COPY services/bizbrain_lite/.env.example /app/.env.example
+COPY services/bizbrain_lite/app /app/app
+COPY services/bizbrain_lite/docs /app/docs
+COPY schemas /app/schemas
 
-            # Copy schemas from repo root so the service can validate task envelopes
-            COPY schemas/ /app/schemas/
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir .
 
-            # Copy the service source
-            COPY services/bizbrain_lite/ /app/
+RUN mkdir -p /app/runtime/reviews
 
-            # Install Python dependencies
-            RUN pip install --no-cache-dir -e .
+EXPOSE 8000
 
-            # Create runtime dirs
-            RUN mkdir -p /app/runtime/reviews
-
-            EXPOSE 8000
-
-            CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-            
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -112,7 +112,7 @@ But if you treat FLOW like "just another tool," you'll miss the point.
 
 > AI agents are not the innovation. **Orchestrated intelligence is.**
 
-Tools like ChatGPT, Claude, and GPT-4 are commodity infrastructure now. The leverage isn't in the models. It's in **how you coordinate them**.
+Tools like commercial LLMs are commodity infrastructure now. The leverage isn't in the models. It's in **how you coordinate them**.
 
 FLOW gives you that coordination layer.
 W.I.N. gives you the philosophy to use it correctly.

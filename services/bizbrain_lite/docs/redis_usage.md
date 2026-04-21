@@ -21,7 +21,6 @@ Redis is the runtime state layer for low-latency control-plane reads/writes.
 ## Rehydration behavior
 
 - Redis is runtime-first and ephemeral.
-- Notion is durable mirror.
-- If Notion write fails, runtime state still commits to Redis.
-- Records can be reconstructed from Notion exports if required.
+- PostgreSQL is the durable FLOW state layer.
+- Redis holds the fast operational view and queue-adjacent state.
 

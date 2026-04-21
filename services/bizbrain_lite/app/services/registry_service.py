@@ -1,4 +1,3 @@
-import asyncio
 from typing import Any
 
 from app.schemas.agent_status import AgentHeartbeat, AgentStatusRecord, AgentStatusUpdate
@@ -7,7 +6,6 @@ from app.schemas.common import AgentStateEnum, now_utc
 from app.schemas.handoff import HandoffAck, HandoffCreate, ThreadHandoffRecord
 from app.schemas.task import TaskCreate, TaskEvent, TaskRecord, TaskUpdate
 from app.schemas.thread import ThreadCreate, ThreadRecord, ThreadUpdate
-from app.services.notion_store import notion_store
 from app.services.redis_store import redis_store
 
 
@@ -42,7 +40,6 @@ class RegistryService:
         await redis_store.set_json(self._task_key(record.task_id), payload, self.ACTIVE_CACHE_TTL_SECONDS)
         if record.thread_id:
             await redis_store.add_to_set(self._thread_task_index_key(record.thread_id), [record.task_id])
-        await self._mirror_safely("task", payload)
         return record
 
     async def update_task(self, task_id: str, req: TaskUpdate) -> TaskRecord | None:
@@ -55,7 +52,6 @@ class RegistryService:
         await redis_store.set_json(self._task_key(task_id), payload, self.ACTIVE_CACHE_TTL_SECONDS)
         if updated.thread_id:
             await redis_store.add_to_set(self._thread_task_index_key(updated.thread_id), [task_id])
-        await self._mirror_safely("task", payload)
         return updated
 
     async def get_task(self, task_id: str) -> TaskRecord | None:
@@ -84,7 +80,6 @@ class RegistryService:
         record = ArtifactRecord(**req.model_dump())
         payload = record.model_dump(mode="json")
         await redis_store.set_json(self._artifact_key(record.artifact_id), payload, self.ACTIVE_CACHE_TTL_SECONDS)
-        await self._mirror_safely("artifact", payload)
         return record
 
     async def get_artifact(self, artifact_id: str) -> ArtifactRecord | None:
@@ -109,7 +104,6 @@ class RegistryService:
         record = ThreadHandoffRecord(**req.model_dump())
         payload = record.model_dump(mode="json")
         await redis_store.set_json(self._handoff_key(record.handoff_id), payload, self.ACTIVE_CACHE_TTL_SECONDS)
-        await self._mirror_safely("handoff", payload)
         return record
 
     async def ack_handoff(self, handoff_id: str, req: HandoffAck) -> ThreadHandoffRecord | None:
@@ -121,7 +115,6 @@ class RegistryService:
         record.updated_at = now_utc()
         updated = record.model_dump(mode="json")
         await redis_store.set_json(self._handoff_key(handoff_id), updated, self.ACTIVE_CACHE_TTL_SECONDS)
-        await self._mirror_safely("handoff", updated)
         return record
 
     async def list_handoffs(self) -> list[ThreadHandoffRecord]:
@@ -136,16 +129,6 @@ class RegistryService:
         record = ThreadRecord(**req.model_dump())
         payload = record.model_dump(mode="json")
         await redis_store.set_json(self._thread_key(record.thread_id), payload, self.ACTIVE_CACHE_TTL_SECONDS)
-        await self._mirror_safely(
-            "memory",
-            {
-                "thread_id": record.thread_id,
-                "category": "decision",
-                "content": f"Thread opened: {record.title}",
-                "source": record.origin,
-                "status": record.state,
-            },
-        )
         return record
 
     async def get_thread(self, thread_id: str) -> ThreadRecord | None:
@@ -190,7 +173,6 @@ class RegistryService:
         record = AgentStatusRecord.model_validate(merged)
         payload = record.model_dump(mode="json")
         await redis_store.set_json(self._agent_status_key(agent_id), payload, self.HEARTBEAT_TTL_SECONDS)
-        await self._mirror_safely("agent_status", payload)
         return record
 
     async def heartbeat_agent(self, agent_id: str, req: AgentHeartbeat) -> AgentStatusRecord:
@@ -204,32 +186,6 @@ class RegistryService:
             metadata=req.metadata,
         )
         return await self.update_agent_status(agent_id, update)
-
-    async def _mirror_safely(self, entity: str, payload: dict[str, Any]) -> None:
-        """Mirror to Notion with retry. Never blocks; failures are swallowed."""
-        max_attempts = 3
-        delay_seconds = 0.5
-
-        async def _write() -> None:
-            if entity == "task":
-                await notion_store.write_tasks(payload)
-            elif entity == "artifact":
-                await notion_store.write_artifacts(payload)
-            elif entity == "handoff":
-                await notion_store.write_handoffs(payload)
-            elif entity == "agent_status":
-                await notion_store.write_agent_status(payload)
-            elif entity == "memory":
-                await notion_store.write_memory(payload)
-
-        for attempt in range(max_attempts):
-            try:
-                await _write()
-                return
-            except Exception:
-                if attempt < max_attempts - 1:
-                    await asyncio.sleep(delay_seconds * (attempt + 1))
-            # Lite behavior: never block runtime when durable sink is unavailable.
 
 registry_service = RegistryService()
 

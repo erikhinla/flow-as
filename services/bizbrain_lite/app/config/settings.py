@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -8,14 +9,10 @@ class Settings(BaseSettings):
 
     bizbrain_env: str = "dev"
     bizbrain_api_token: str = "change-me"
-    bizbrain_redis_url: str = "redis://localhost:6379/0"
-
-    notion_api_key: str = ""
-    notion_tasks_db_id: str = ""
-    notion_artifacts_db_id: str = ""
-    notion_handoffs_db_id: str = ""
-    notion_agent_status_db_id: str = ""
-    notion_memory_db_id: str = ""
+    bizbrain_redis_url: str = Field(
+        default="redis://localhost:6379/0",
+        validation_alias=AliasChoices("BIZBRAIN_REDIS_URL", "REDIS_URL"),
+    )
 
     social_hub_api_origin: str = "http://localhost:8000"
 

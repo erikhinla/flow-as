@@ -12,11 +12,12 @@ from typing import Dict, Any, Optional
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Body, BackgroundTasks
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.database import get_db_session
 from app.services.envelope_validation_service import EnvelopeValidationService, RoutingService
+from app.services.input_normalization import normalize_text, normalize_value
 from app.services.redis_queue_service import RedisQueueService
 
 router = APIRouter(tags=["openclaw-intake"], prefix="/intake")
@@ -50,6 +51,16 @@ class TaskEnvelopeInput(BaseModel):
     output_required: str
     review_required: Optional[bool] = False
     rollback_required: Optional[bool] = False
+
+    @field_validator("title", "goal", "output_required", mode="before")
+    @classmethod
+    def normalize_text_fields(cls, value: str) -> str:
+        return normalize_text(value)
+
+    @field_validator("inputs", mode="before")
+    @classmethod
+    def normalize_inputs(cls, value: Dict[str, Any]) -> Dict[str, Any]:
+        return normalize_value(value)
 
 
 class TaskIntakeResponse(BaseModel):
