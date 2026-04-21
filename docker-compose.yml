@@ -1,13 +1,9 @@
 # =============================================================================
 # FLOW Agent AS — Hostinger VPS
 # Services:
-#   Agents: OpenClaw | AgentZero | Hermes
+#   Agents: Mercury 2 | AgentZero | Hermes
 #   Dashboard: Portainer CE
 #   Social Media: Postiz
-# =============================================================================
-
-# =============================================================================
-# FLOW Agent AS — Hostinger VPS
 # =============================================================================
 
 services:
