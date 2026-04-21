@@ -43,18 +43,18 @@ services:
     networks:
       - main_net
 
-  openclaw:
-    image: ghcr.io/erikhinla/clawdbot:latest
-    container_name: openclaw
+  mercury-2:
+    image: ${MERCURY2_IMAGE:-ghcr.io/erikhinla/mercury-2:latest}
+    container_name: mercury-2
     restart: unless-stopped
     environment:
       HOME: /home/node
       TERM: xterm-256color
-      CLAWDBOT_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN}
-      CLAWDBOT_GATEWAY_MODE: local
+      MERCURY2_GATEWAY_TOKEN: ${MERCURY2_GATEWAY_TOKEN:-}
+      MERCURY2_GATEWAY_MODE: local
     volumes:
-      - openclaw_config:/home/node/.clawdbot
-      - openclaw_workspace:/home/node/clawd
+      - mercury2_config:/home/node/.mercury2
+      - mercury2_workspace:/home/node/workspace
     ports:
       - "18789:18789"
       - "18790:18790"
@@ -245,8 +245,8 @@ networks:
 
 volumes:
   portainer_data: {}
-  openclaw_config: {}
-  openclaw_workspace: {}
+  mercury2_config: {}
+  mercury2_workspace: {}
   agent_zero_data: {}
   hermes_data: {}
   hermes_workspace: {}

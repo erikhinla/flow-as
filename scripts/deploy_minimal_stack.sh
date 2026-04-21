@@ -1,12 +1,28 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Deploy only the minimal FLOW Agent AS launch surface.
+# Deploy FLOW stack.
 # Usage:
-#   ./scripts/deploy_minimal_stack.sh
+#   ./scripts/deploy_minimal_stack.sh [--agents-only|--full-stack]
+# Default:
+#   --agents-only
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
+
+MODE="--agents-only"
+if [[ $# -gt 0 ]]; then
+  case "$1" in
+    --agents-only|--full-stack)
+      MODE="$1"
+      ;;
+    *)
+      echo "Unknown option: $1"
+      echo "Usage: $0 [--agents-only|--full-stack]"
+      exit 1
+      ;;
+  esac
+fi
 
 if ! command -v docker >/dev/null 2>&1; then
   echo "Error: docker is not installed or not in PATH."
@@ -20,14 +36,18 @@ if [[ ! -f .env ]]; then
 fi
 
 required_vars=(
-  OPENCLAW_GATEWAY_TOKEN
   A0_AUTH_PASSWORD
-  BIZBRAIN_API_TOKEN
-  FLOW_DB_PASSWORD
   OPENAI_API_KEY
-  POSTIZ_JWT_SECRET
-  POSTIZ_DB_PASSWORD
 )
+
+if [[ "$MODE" == "--full-stack" ]]; then
+  required_vars+=(
+    BIZBRAIN_API_TOKEN
+    FLOW_DB_PASSWORD
+    POSTIZ_JWT_SECRET
+    POSTIZ_DB_PASSWORD
+  )
+fi
 
 missing=0
 for key in "${required_vars[@]}"; do
@@ -43,26 +63,36 @@ if [[ "$missing" -ne 0 ]]; then
   exit 1
 fi
 
-echo "Building and starting minimal FLOW stack..."
-docker compose up -d --build \
-  flow-postgres \
-  flow-redis \
-  bizbrain-lite \
-  openclaw \
-  hermes \
-  agent-zero \
-  postiz \
-  postiz_postgres \
-  postiz_redis \
-  portainer
+if [[ "$MODE" == "--agents-only" ]]; then
+  echo "Building and starting agents-only stack..."
+  docker compose up -d --build \
+    mercury-2 \
+    hermes \
+    agent-zero
+else
+  echo "Building and starting full launch stack..."
+  docker compose up -d --build \
+    flow-postgres \
+    flow-redis \
+    bizbrain-lite \
+    mercury-2 \
+    hermes \
+    agent-zero \
+    postiz \
+    postiz_postgres \
+    postiz_redis \
+    portainer
+fi
 
 echo
 echo "Container status:"
 docker compose ps
 
-echo
-echo "Recent BizBrain logs:"
-docker compose logs --tail=80 bizbrain-lite
+if [[ "$MODE" == "--full-stack" ]]; then
+  echo
+  echo "Recent BizBrain logs:"
+  docker compose logs --tail=80 bizbrain-lite
+fi
 
 echo
-echo "Done. Next: run ./scripts/smoke_test_flow.sh <HOST_OR_IP>"
+echo "Done."
