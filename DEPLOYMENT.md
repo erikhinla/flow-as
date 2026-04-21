@@ -151,7 +151,63 @@ lsof -i :5000  # Check what's using port 5000
 # Kill if needed: kill -9 <PID>
 ```
 
-## Updates
+## Ollama + Hermes (Local LLM, No OpenAI Key Required)
+
+The stack ships with an `ollama` service that runs `qwen2.5:3b` (fits in ≤8 GB RAM).
+Hermes is pre-configured to use it — no setup wizard needed.
+
+### Quick start (Docker Compose)
+
+```bash
+# Pull and start Ollama + Hermes (agents-only mode)
+./scripts/deploy_minimal_stack.sh --agents-only
+
+# Pull the model into the running Ollama container (first run only)
+docker exec ollama ollama pull qwen2.5:3b
+
+# Verify Hermes is using the model
+curl http://localhost:50090/v1/health
+```
+
+### Local (non-Docker) setup
+
+```bash
+# One command — handles venv, install, 64K context patch, config, and smoke test
+./scripts/setup_hermes_ollama.sh
+
+# Point at a VPS Ollama instead of localhost
+./scripts/setup_hermes_ollama.sh --vps <VPS_IP>
+
+# Use a different model (must be already pulled in Ollama)
+./scripts/setup_hermes_ollama.sh --model qwen2.5:7b
+```
+
+### Hermes config (`config/hermes/config.yaml`)
+
+```yaml
+provider: custom
+base_url: http://ollama:11434/v1   # swap for VPS IP if remote
+model: qwen2.5:3b
+context_length: 32768              # overrides Hermes 64K minimum
+api_key: "ollama"
+```
+
+Edit `config/hermes/config.yaml` before deploying to change model or endpoint.
+The file is bind-mounted directly into the Hermes container; no rebuild needed.
+
+### Switching back to OpenAI
+
+Set in `.env`:
+
+```
+HERMES_DEFAULT_MODEL=gpt-4.1-mini
+OPENAI_API_KEY=sk-...
+OPENAI_BASE_URL=   # leave blank to use OpenAI default
+```
+
+Then restart: `docker compose restart hermes`
+
+
 
 Pull latest images:
 

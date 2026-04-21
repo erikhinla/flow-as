@@ -66,6 +66,7 @@ fi
 if [[ "$MODE" == "--agents-only" ]]; then
   echo "Building and starting agents-only stack..."
   docker compose up -d --build \
+    ollama \
     mercury-2 \
     hermes \
     agent-zero

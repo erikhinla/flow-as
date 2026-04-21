@@ -1,0 +1,14 @@
+version: "1.0"
+
+provider: custom
+base_url: http://ollama:11434/v1
+model: qwen2.5:3b
+context_length: 32768
+
+# API key is not required by Ollama but the field must be present
+api_key: "ollama"
+
+gateway:
+  enabled: true
+  host: "0.0.0.0"
+  port: 50090
