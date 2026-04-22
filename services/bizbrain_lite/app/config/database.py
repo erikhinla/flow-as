@@ -77,12 +77,18 @@ async def init_db():
     from app.models.flow_job_record import Base as JobBase
     from app.models.flow_reflection_record import Base as ReflectionBase
     from app.models.flow_skill_record import Base as SkillBase
+    from app.models.user import Base as UserBase
+    from app.models.ai_readiness_report import Base as AIReadinessBase
+    from app.models.concierge_booking import Base as ConciergeBase
     
     async with engine.begin() as conn:
         # Create all tables
         await conn.run_sync(JobBase.metadata.create_all)
         await conn.run_sync(ReflectionBase.metadata.create_all)
         await conn.run_sync(SkillBase.metadata.create_all)
+        await conn.run_sync(UserBase.metadata.create_all)
+        await conn.run_sync(AIReadinessBase.metadata.create_all)
+        await conn.run_sync(ConciergeBase.metadata.create_all)
 
 
 async def health_check() -> bool:

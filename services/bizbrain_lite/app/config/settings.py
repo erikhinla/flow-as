@@ -16,6 +16,12 @@ class Settings(BaseSettings):
 
     social_hub_api_origin: str = "http://localhost:8000"
 
+    # JWT / Auth settings
+    jwt_secret_key: str = "change-me-to-a-long-random-secret"
+    jwt_algorithm: str = "HS256"
+    jwt_access_token_expire_minutes: int = 60 * 24  # 24 hours
+    magic_link_expire_minutes: int = 15
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
