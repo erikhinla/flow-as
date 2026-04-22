@@ -6,8 +6,6 @@ GET  /v1/concierge/bookings        - list my bookings
 GET  /v1/concierge/bookings/{id}   - get single booking
 """
 
-from datetime import timezone
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
