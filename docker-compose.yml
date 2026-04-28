@@ -201,6 +201,25 @@ services:
     networks:
       - main_net
 
+  intake-webhook:
+    build:
+      context: ./intake-webhook
+    container_name: intake-webhook
+    restart: unless-stopped
+    environment:
+      WEBHOOK_API_KEY: ${WEBHOOK_API_KEY:-change-me}
+    volumes:
+      - intake_data:/data/intake
+    ports:
+      - "18080:8080"
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=5)" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - main_net
+
   postiz:
     image: ghcr.io/gitroomhq/postiz-app:latest
     container_name: postiz
@@ -277,6 +296,7 @@ volumes:
   hermes_workspace: {}
   flow_postgres_data: {}
   flow_redis_data: {}
+  intake_data: {}
   postiz_config: {}
   postiz_uploads: {}
   postiz_postgres_data: {}
