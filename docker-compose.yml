@@ -110,6 +110,7 @@ services:
 
   hermes:
     image: ghcr.io/erikhinla/hermes-agent:latest
+    platform: linux/amd64
     container_name: hermes
     restart: unless-stopped
     environment:
@@ -129,14 +130,9 @@ services:
       FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY:-}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
     volumes:
-      # Bind-mount the pre-built config so Hermes starts without the setup wizard
-      - ./config/hermes/config.yaml:/root/.hermes/config.yaml:ro
       - hermes_workspace:/workspace
     ports:
       - "50090:50090"
-    depends_on:
-      ollama:
-        condition: service_healthy
     networks:
       - main_net
 
@@ -198,6 +194,106 @@ services:
       interval: 15s
       timeout: 5s
       retries: 5
+    networks:
+      - main_net
+
+  flow-openclaw-worker:
+    build:
+      context: .
+      dockerfile: services/bizbrain_lite/Dockerfile
+    container_name: flow-openclaw-worker
+    restart: unless-stopped
+    command: ["python", "-m", "app.workers.queue_worker"]
+    environment:
+      BIZBRAIN_ENV: ${BIZBRAIN_ENV:-prod}
+      BIZBRAIN_REDIS_URL: redis://flow-redis:6379/0
+      DATABASE_URL: postgresql+asyncpg://flow_user:${FLOW_DB_PASSWORD}@flow-postgres:5432/flow_agent_os
+      FLOW_QUEUE_OWNER: openclaw
+      FLOW_QUEUE_TIMEOUT_SECONDS: "5"
+      FLOW_WORKER_LOG_LEVEL: INFO
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+    volumes:
+      - ./runtime/reviews:/app/runtime/reviews
+    depends_on:
+      flow-postgres:
+        condition: service_healthy
+      flow-redis:
+        condition: service_healthy
+      bizbrain-lite:
+        condition: service_healthy
+    networks:
+      - main_net
+
+  flow-hermes-worker:
+    build:
+      context: .
+      dockerfile: services/bizbrain_lite/Dockerfile
+    container_name: flow-hermes-worker
+    restart: unless-stopped
+    command: ["python", "-m", "app.workers.queue_worker"]
+    environment:
+      BIZBRAIN_ENV: ${BIZBRAIN_ENV:-prod}
+      BIZBRAIN_REDIS_URL: redis://flow-redis:6379/0
+      DATABASE_URL: postgresql+asyncpg://flow_user:${FLOW_DB_PASSWORD}@flow-postgres:5432/flow_agent_os
+      FLOW_QUEUE_OWNER: hermes
+      FLOW_QUEUE_TIMEOUT_SECONDS: "5"
+      FLOW_WORKER_LOG_LEVEL: INFO
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+    volumes:
+      - ./runtime/reviews:/app/runtime/reviews
+    depends_on:
+      flow-postgres:
+        condition: service_healthy
+      flow-redis:
+        condition: service_healthy
+      bizbrain-lite:
+        condition: service_healthy
+    networks:
+      - main_net
+
+  flow-agent-zero-worker:
+    build:
+      context: .
+      dockerfile: services/bizbrain_lite/Dockerfile
+    container_name: flow-agent-zero-worker
+    restart: unless-stopped
+    command: ["python", "-m", "app.workers.queue_worker"]
+    environment:
+      BIZBRAIN_ENV: ${BIZBRAIN_ENV:-prod}
+      BIZBRAIN_REDIS_URL: redis://flow-redis:6379/0
+      DATABASE_URL: postgresql+asyncpg://flow_user:${FLOW_DB_PASSWORD}@flow-postgres:5432/flow_agent_os
+      FLOW_QUEUE_OWNER: agent_zero
+      FLOW_QUEUE_TIMEOUT_SECONDS: "5"
+      FLOW_WORKER_LOG_LEVEL: INFO
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+    volumes:
+      - ./runtime/reviews:/app/runtime/reviews
+    depends_on:
+      flow-postgres:
+        condition: service_healthy
+      flow-redis:
+        condition: service_healthy
+      bizbrain-lite:
+        condition: service_healthy
+    networks:
+      - main_net
+
+  flow-discord-bot:
+    build:
+      context: .
+      dockerfile: services/discord_bot/Dockerfile
+    container_name: flow-discord-bot
+    restart: unless-stopped
+    environment:
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
+      BIZBRAIN_URL: http://bizbrain-lite:8000
+      BIZBRAIN_API_TOKEN: ${BIZBRAIN_API_TOKEN:-change-me}
+    depends_on:
+      bizbrain-lite:
+        condition: service_healthy
     networks:
       - main_net
 

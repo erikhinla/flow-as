@@ -1,4 +1,4 @@
-# Flow Agent OS + Postiz Deployment Guide
+# FLOW Agent AS + Postiz Deployment Guide
 
 ## Hostinger VPS Setup
 
@@ -28,11 +28,15 @@ This will:
 nano /opt/flow-agents/.env
 ```
 
-Copy from `.env.example` and fill in:
+Copy from `.env.example`.
 
-**Required for all services:**
+**Hermes-solo (default `./scripts/deploy_minimal_stack.sh --agents-only`)**
+- No additional secret is required when Hermes uses the bundled Ollama service.
+- Keep `OPENAI_BASE_URL=http://ollama:11434/v1`.
+- Leave `OPENAI_API_KEY` blank or set it to an OpenAI-compatible key only if you are switching Hermes away from Ollama.
+
+**Required for full-stack deploys:**
 ```
-OPENAI_API_KEY=sk-xxx
 A0_AUTH_PASSWORD=your_password
 FLOW_DB_PASSWORD=your_flow_db_password
 BIZBRAIN_API_TOKEN=your_bizbrain_api_token
@@ -45,11 +49,16 @@ POSTIZ_DB_PASSWORD=<generate: openssl rand -base64 16>
 POSTIZ_DOMAIN=your-vps-ip.com:5000
 ```
 
-### Step 3: Deploy Everything
+### Step 3: Deploy Hermes-solo or the full stack
 
 ```bash
 cd /opt/flow-agents
-docker compose up -d --build
+
+# Hermes-solo (default launch path)
+./scripts/deploy_minimal_stack.sh --agents-only
+
+# Full stack
+./scripts/deploy_minimal_stack.sh --full-stack
 ```
 
 Wait ~2 minutes for all services to start.
@@ -60,17 +69,18 @@ Wait ~2 minutes for all services to start.
 docker compose ps
 ```
 
-All containers should be in `Up` state.
+For Hermes-solo, `ollama` and `hermes` should be `Up`.
+For the full stack, all containers should be in `Up` state.
 
 ## Service URLs
 
 | Service | URL | Login |
 |---------|-----|-------|
-| **Portainer** (Dashboard) | https://<VPS_IP>:9443 | admin / password |
-| **BizBrain Lite** (FLOW Control Plane) | http://<VPS_IP>:18000/docs | x-api-token for protected endpoints |
-| **Postiz** (Social Media) | http://<VPS_IP>:5000 | Create first account |
-| **OpenClaw** (Orchestrator) | http://<VPS_IP>:18789 | (API only) |
-| **AgentZero** (Executor) | http://<VPS_IP>:50080 | Admin / A0_AUTH_PASSWORD |
+| **Portainer** (Dashboard, full stack) | https://<VPS_IP>:9443 | admin / password |
+| **BizBrain Lite** (full stack) | http://<VPS_IP>:18000/docs | x-api-token for protected endpoints |
+| **Postiz** (full stack) | http://<VPS_IP>:5000 | Create first account |
+| **Mercury 2** (full stack) | http://<VPS_IP>:18789 | (API only) |
+| **AgentZero** (full stack) | http://<VPS_IP>:50080 | Admin / A0_AUTH_PASSWORD |
 | **Hermes** (Specialist) | http://<VPS_IP>:50090 | (API only) |
 
 ## Firewall Configuration
@@ -132,7 +142,7 @@ Check `.env` — ensure `POSTIZ_JWT_SECRET` and `POSTIZ_DB_PASSWORD` are set.
 
 ### Agents not connecting
 ```bash
-docker logs openclaw
+docker logs mercury-2
 docker logs agent-zero
 docker logs hermes
 ```
@@ -159,14 +169,14 @@ Hermes is pre-configured to use it — no setup wizard needed.
 ### Quick start (Docker Compose)
 
 ```bash
-# Pull and start Ollama + Hermes (agents-only mode)
+# Pull and start Ollama + Hermes (Hermes-solo mode)
 ./scripts/deploy_minimal_stack.sh --agents-only
 
 # Pull the model into the running Ollama container (first run only)
 docker exec ollama ollama pull qwen2.5:3b
 
 # Verify Hermes is using the model
-curl http://localhost:50090/v1/health
+./scripts/smoke_test_hermes.sh localhost
 ```
 
 ### Local (non-Docker) setup

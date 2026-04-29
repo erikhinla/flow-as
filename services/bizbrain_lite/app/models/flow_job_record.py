@@ -1,5 +1,5 @@
 """
-FLOW Agent OS Job Record Model
+FLOW Agent AS Job Record Model
 
 Durable state for every job execution.
 Stored in Postgres, indexed by status/owner/task_type.
@@ -89,6 +89,11 @@ class JobRecord(Base):
     review_pointer = Column(Text, nullable=True)  # Path to review artifacts
     rollback_pointer = Column(Text, nullable=True)  # Path to rollback plan
     
+    # Task context (populated from envelope at intake)
+    title = Column(String(500), nullable=True)
+    goal = Column(Text, nullable=True)
+    source = Column(String(50), nullable=True)
+
     # Retry management
     retry_count = Column(Integer, default=0)
     max_retries = Column(Integer, default=3)
@@ -100,12 +105,12 @@ class JobRecord(Base):
     
     # Indexes for common queries
     __table_args__ = (
-        Index('idx_status', 'status'),
-        Index('idx_owner', 'owner'),
-        Index('idx_task_type', 'task_type'),
-        Index('idx_created_at', 'created_at'),
-        Index('idx_owner_status', 'owner', 'status'),
-        Index('idx_task_type_status', 'task_type', 'status'),
+        Index('idx_job_records_status', 'status'),
+        Index('idx_job_records_owner', 'owner'),
+        Index('idx_job_records_task_type', 'task_type'),
+        Index('idx_job_records_created_at', 'created_at'),
+        Index('idx_job_records_owner_status', 'owner', 'status'),
+        Index('idx_job_records_task_type_status', 'task_type', 'status'),
     )
     
     def __repr__(self):

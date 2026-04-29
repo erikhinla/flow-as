@@ -1,5 +1,5 @@
 """
-FLOW Agent OS Health Check Endpoint
+FLOW Agent AS Health Check Endpoint
 
 Extended health checks for FLOW's durable state (Postgres job_records, reflections, skills).
 Monitors queue depth, worker status, and extraction lag.
@@ -23,7 +23,7 @@ router = APIRouter(tags=["flow-health"], prefix="/flow")
 @router.get("/health")
 async def flow_health(db: AsyncSession = Depends(get_db_session)) -> Dict[str, Any]:
     """
-    FLOW Agent OS health check.
+    FLOW Agent AS health check.
     
     Returns:
     - status: "healthy", "degraded", or "unhealthy"

@@ -9,7 +9,7 @@
 
 ## What Happened
 
-Hermes executed its first governed task through the FLOW Agent OS pipeline.
+Hermes executed its first governed task through the FLOW Agent AS pipeline.
 
 ### Loop Validated
 

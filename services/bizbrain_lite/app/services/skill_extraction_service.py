@@ -1,7 +1,7 @@
 """
 Hermes Skill Extraction Service
 
-Core learning loop for FLOW Agent OS.
+Core learning loop for FLOW Agent AS.
 
 Flow:
 1. Job completes → reflection written to reflection_records

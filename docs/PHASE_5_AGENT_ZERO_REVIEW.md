@@ -2,7 +2,7 @@
 
 ## Overview
 
-Agent Zero is the **trusted execution engine** for FLOW Agent OS.
+Agent Zero is the **trusted execution engine** for FLOW Agent AS.
 
 **Core Rule:** High-risk tasks cannot execute without three review artifacts:
 1. **task.diff** — Unified diff showing proposed changes
@@ -318,7 +318,7 @@ This is the core principle enforced by Agent Zero:
 
 Phase 5 completes the **trusted execution** layer.
 
-Your FLOW Agent OS now has:
+Your FLOW Agent AS now has:
 - ✓ Phase 1: Durable state (Postgres)
 - ✓ Phase 2: Health monitoring
 - ✓ Phase 3: Skill loop (recursive learning)

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document defines health checks, failure modes, and recovery procedures for FLOW Agent OS.
+This document defines health checks, failure modes, and recovery procedures for FLOW Agent AS.
 
 ---
 

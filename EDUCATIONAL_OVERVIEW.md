@@ -1,11 +1,11 @@
-# FLOW Agent OS
+# FLOW Agent AS
 ## The Enterprise-Grade Orchestration System for the AI Era
 
 ---
 
 ## EXECUTIVE SUMMARY
 
-FLOW Agent OS is a **production-ready orchestration platform** designed for teams deploying autonomous AI agents at scale. It solves the critical infrastructure gap between LLM capability and reliable, governed execution.
+FLOW Agent AS is a **production-ready orchestration platform** designed for teams deploying autonomous AI agents at scale. It solves the critical infrastructure gap between LLM capability and reliable, governed execution.
 
 ### The Problem
 - LLMs are powerful but unpredictable
@@ -15,7 +15,7 @@ FLOW Agent OS is a **production-ready orchestration platform** designed for team
 - Task failures silently cascade
 
 ### The Solution
-FLOW Agent OS provides:
+FLOW Agent AS provides:
 - **Durable execution tracking** (every task recorded, traceable)
 - **Recursive learning** (agents improve from experience)
 - **Governance enforcement** (high-risk work requires approval)
@@ -64,9 +64,9 @@ This is the **execution layer problem.**
 
 ---
 
-## FLOW Agent OS: The Right Architecture
+## FLOW Agent AS: The Right Architecture
 
-FLOW Agent OS is built on five core principles that get the execution layer right:
+FLOW Agent AS is built on five core principles that get the execution layer right:
 
 ### 1. DURABLE STATE (Everything is Recorded)
 
@@ -349,7 +349,7 @@ This is what the **AI-ready enterprise** looks like: not more agents, better orc
 
 ## FOR YOUR CONSIDERATION
 
-FLOW Agent OS demonstrates:
+FLOW Agent AS demonstrates:
 - ✓ Enterprise thinking (governance, audit, scale)
 - ✓ Production focus (durable state, observability)
 - ✓ Learning mindset (recursive improvement)
@@ -365,14 +365,14 @@ These principles apply across industries:
 
 **The future isn't more capable LLMs. It's smarter orchestration of the LLMs we have.**
 
-FLOW Agent OS is that orchestration.
+FLOW Agent AS is that orchestration.
 
 ---
 
 ## MEDIA KIT
 
 ### One-Liner
-"FLOW Agent OS: Enterprise-grade orchestration for autonomous AI agents—durable state, recursive learning, governance enforcement, and transparent operations."
+"FLOW Agent AS: Enterprise-grade orchestration for autonomous AI agents—durable state, recursive learning, governance enforcement, and transparent operations."
 
 ### Tagline Options
 - "Orchestration for the AI Era"

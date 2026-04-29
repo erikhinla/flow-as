@@ -1,8 +1,8 @@
-# FLOW Agent OS - Complete Knowledge Base for NotebookLM
+# FLOW Agent AS - Complete Knowledge Base for NotebookLM
 
 **Created:** 2026-02-28  
 **Purpose:** Leverage library for TransformBy10x AI agent training  
-**Source:** Complete FLOW Agent OS build session
+**Source:** Complete FLOW Agent AS build session
 
 ---
 
@@ -25,13 +25,13 @@
 
 ## SYSTEM OVERVIEW
 
-**Product:** FLOW Agent OS  
+**Product:** FLOW Agent AS  
 **Created by:** TransformBy10x.ai  
 **Purpose:** Multi-agent artifact execution with cost optimization and safety gates
 
 ### What It Is
 
-FLOW Agent OS is build-mode infrastructure. Task envelopes go in, deployed artifacts come out. Zero iteration, zero babysitting, zero assistant mode.
+FLOW Agent AS is build-mode infrastructure. Task envelopes go in, deployed artifacts come out. Zero iteration, zero babysitting, zero assistant mode.
 
 ### Core Features
 
@@ -441,7 +441,7 @@ Review for correctness, safety, rollback.
 
 ### The Problem
 
-**Before FLOW Agent OS:**
+**Before FLOW Agent AS:**
 - All tasks routed to Claude Opus
 - Cost: $105/day for 1000 tasks
 - Monthly: $3,150
@@ -772,7 +772,7 @@ Task envelope goes in. Deployed artifact comes out. Zero iteration, zero babysit
 
 ### Proof in Production
 
-FLOW Agent OS was built using FLOW Agent OS.
+FLOW Agent AS was built using FLOW Agent AS.
 
 The executors were generated as artifacts. The documentation was generated as artifacts. The landing page was generated as an artifact.
 
@@ -782,7 +782,7 @@ Self-hosting. Self-improving. Live on real infrastructure.
 
 Most people operate at 10% capacity. AI is the lever. But only with the right context architecture.
 
-FLOW Agent OS is that architecture.
+FLOW Agent AS is that architecture.
 
 ---
 
@@ -797,7 +797,7 @@ FLOW Agent OS is that architecture.
 
 ### Installation
 
-**1. Clone FLOW Agent OS:**
+**1. Clone FLOW Agent AS:**
 ```bash
 # Repository structure already exists
 cd ~/.openclaw/state/_os
@@ -941,19 +941,19 @@ cat events.jsonl | jq 'select(.event | contains("fail") or contains("block"))'
 ### TB10X Modules
 
 **BizBot (Infrastructure):**
-- Use FLOW Agent OS to standardize service delivery
+- Use FLOW Agent AS to standardize service delivery
 - Generate client assessment reports
 - Automate Digital Systems deliverables
 - One-shot intake form processing
 
 **BizBuilders (Leverage):**
-- Use FLOW Agent OS to scale product delivery
+- Use FLOW Agent AS to scale product delivery
 - Generate infrastructure assessments
 - Build reusable templates (no custom work per client)
 - Ship scalable, sellable assets
 
 **Eva Paradis (Conversion):**
-- Use FLOW Agent OS for marketing automation
+- Use FLOW Agent AS for marketing automation
 - Generate social posts, blog content
 - Process analytics reports
 - Build conversion funnel assets
@@ -995,7 +995,7 @@ cat events.jsonl | jq 'select(.event | contains("fail") or contains("block"))'
 4. **Gamma Orchestrator** (v1.0.0) - Two-pass safety review
 5. **Management Scripts** - start-all.sh, stop-all.sh, test-e2e.sh
 6. **Documentation** - 4 canonical reference files
-7. **Deliverable Artifacts** - FLOW Agent OS landing page, BizBot intake form
+7. **Deliverable Artifacts** - FLOW Agent AS landing page, BizBot intake form
 
 ### What Was Learned
 
@@ -1003,7 +1003,7 @@ cat events.jsonl | jq 'select(.event | contains("fail") or contains("block"))'
 
 **The correction:** Artifacts must have independent value. Documentation about the system isn't an artifact. Deployable HTML pages are artifacts.
 
-**Build-mode positioning:** FLOW Agent OS isn't a "multi-agent execution pipeline" (technical). It's "build-mode execution, one-shot delivery, proof of philosophy in production" (philosophy-driven).
+**Build-mode positioning:** FLOW Agent AS isn't a "multi-agent execution pipeline" (technical). It's "build-mode execution, one-shot delivery, proof of philosophy in production" (philosophy-driven).
 
 ### Cost Impact
 
@@ -1013,11 +1013,11 @@ cat events.jsonl | jq 'select(.event | contains("fail") or contains("block"))'
 
 ### The Philosophy
 
-Technology serves philosophy. FLOW Agent OS is the TB10X thesis made infrastructure:
+Technology serves philosophy. FLOW Agent AS is the TB10X thesis made infrastructure:
 
 **Thesis:** Most people operate at 10% capacity. AI is the lever. But only with the right context architecture.
 
-**Proof:** FLOW Agent OS. Build-mode execution. One-shot delivery. Self-hosted, self-improving, live on real infrastructure.
+**Proof:** FLOW Agent AS. Build-mode execution. One-shot delivery. Self-hosted, self-improving, live on real infrastructure.
 
 ---
 

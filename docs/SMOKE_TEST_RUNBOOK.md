@@ -4,6 +4,12 @@
 
 Verify that the minimal FLOW Agent AS deployment is live and can accept, route, and track work.
 
+For Hermes-solo checks, run:
+
+```bash
+./scripts/smoke_test_hermes.sh YOUR_HOST_OR_IP
+```
+
 ## Assumptions
 
 - the stack is running through `docker compose`
@@ -161,7 +167,7 @@ Expected:
 From the repo root on the target host:
 
 ```bash
-docker compose up -d --build flow-postgres flow-redis bizbrain-lite openclaw hermes agent-zero postiz postiz_postgres postiz_redis portainer
+./scripts/deploy_minimal_stack.sh --full-stack
 ```
 
 Then inspect:

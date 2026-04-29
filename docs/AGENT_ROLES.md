@@ -1,6 +1,6 @@
 # Agent Roles
 
-This document defines the three execution agents in the FLOW Agent OS risk-routing model.
+This document defines the three execution agents in the FLOW Agent AS risk-routing model.
 
 Authority: _OS/02-Canon
 

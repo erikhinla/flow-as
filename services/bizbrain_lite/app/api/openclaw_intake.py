@@ -51,6 +51,7 @@ class TaskEnvelopeInput(BaseModel):
     output_required: str
     review_required: Optional[bool] = False
     rollback_required: Optional[bool] = False
+    status: str = "pending"
 
     @field_validator("title", "goal", "output_required", mode="before")
     @classmethod

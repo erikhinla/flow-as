@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document specifies the durable state tables required for FLOW Agent OS.
+This document specifies the durable state tables required for FLOW Agent AS.
 
 All runtime state lives in Postgres, indexed by UUID keys, and queryable by status, owner, and task type.
 

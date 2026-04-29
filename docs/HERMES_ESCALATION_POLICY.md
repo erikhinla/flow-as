@@ -16,7 +16,7 @@
 - redefine canon
 - alter brand roles
 - introduce new naming
-- reposition FLOW Agent OS above doctrine
+- reposition FLOW Agent AS above doctrine
 - mix activation before readiness
 - create a second source of truth
 

@@ -1,5 +1,5 @@
 """
-FLOW Agent OS Skill Record Model
+FLOW Agent AS Skill Record Model
 
 Reusable execution patterns extracted from reflections.
 Indexed by task_type/context, queryable by confidence.
@@ -71,11 +71,11 @@ class SkillRecord(Base):
     
     # Indexes for fast retrieval
     __table_args__ = (
-        Index('idx_task_type', 'task_type'),
-        Index('idx_context_type', 'context_type'),
-        Index('idx_status', 'status'),
-        Index('idx_confidence_desc', 'confidence'),  # For ordering by confidence
-        Index('idx_task_context_confidence', 'task_type', 'context_type', 'confidence'),  # Composite
+        Index('idx_skill_records_task_type', 'task_type'),
+        Index('idx_skill_records_context_type', 'context_type'),
+        Index('idx_skill_records_status', 'status'),
+        Index('idx_skill_records_confidence_desc', 'confidence'),  # For ordering by confidence
+        Index('idx_skill_records_task_context_confidence', 'task_type', 'context_type', 'confidence'),  # Composite
     )
     
     def __repr__(self):

@@ -32,9 +32,10 @@ def _load_task_envelope_schema() -> Dict[str, Any]:
         candidate_paths.append(Path(env_path))
 
     current_file = Path(__file__).resolve()
+    parents = current_file.parents
     candidate_paths.extend([
-        current_file.parents[2] / "schemas" / "task_envelope.schema.json",
-        current_file.parents[4] / "schemas" / "task_envelope.schema.json",
+        parents[2] / "schemas" / "task_envelope.schema.json",
+        *([ parents[4] / "schemas" / "task_envelope.schema.json" ] if len(parents) > 4 else []),
         Path.cwd() / "schemas" / "task_envelope.schema.json",
     ])
 
@@ -222,6 +223,9 @@ class EnvelopeValidationService:
                 status=JobStatus.VALIDATED.value,  # Starts as VALIDATED (not PENDING)
                 task_type=envelope.get('task_type'),
                 risk_tier=envelope.get('risk_tier'),
+                title=envelope.get('title'),
+                goal=envelope.get('goal'),
+                source=envelope.get('source'),
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow(),
             )

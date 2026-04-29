@@ -4,7 +4,7 @@
 Draft for implementation
 
 ## Position
-Hermes operates inside FLOW Agent OS.
+Hermes operates inside FLOW Agent AS.
 
 Hermes is a governed execution agent.
 Hermes is not doctrine, not activation, and not interface.

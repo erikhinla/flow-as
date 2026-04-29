@@ -1,12 +1,12 @@
-# FLOW Agent OS - PRESS KIT
+# FLOW Agent AS - PRESS KIT
 
 ---
 
 ## FOR IMMEDIATE RELEASE
 
-### FLOW Agent OS: Enterprise-Grade Orchestration Platform for Autonomous AI Agents
+### FLOW Agent AS: Enterprise-Grade Orchestration Platform for Autonomous AI Agents
 
-**Full Title:** FLOW Agent OS: The Orchestration System for the AI Era
+**Full Title:** FLOW Agent AS: The Orchestration System for the AI Era
 
 **Tagline:** Where LLM Capability Meets Production Reality
 
@@ -18,9 +18,9 @@
 
 #### New Open-Source Platform Bridges the Gap Between AI Capability and Enterprise Reliability
 
-**SAN FRANCISCO, CA** — Today marks the release of **FLOW Agent OS**, a production-ready orchestration platform designed to bring enterprise-grade governance, learning, and observability to autonomous AI agent deployments.
+**SAN FRANCISCO, CA** — Today marks the release of **FLOW Agent AS**, a production-ready orchestration platform designed to bring enterprise-grade governance, learning, and observability to autonomous AI agent deployments.
 
-FLOW Agent OS addresses a critical infrastructure gap: LLMs are powerful but stateless. Enterprise deployments require durability, auditability, and built-in improvement mechanisms that existing frameworks don't provide.
+FLOW Agent AS addresses a critical infrastructure gap: LLMs are powerful but stateless. Enterprise deployments require durability, auditability, and built-in improvement mechanisms that existing frameworks don't provide.
 
 "The industry is focused on making agents more capable," says the development team. "FLOW focuses on making them production-ready. Every enterprise deploying agents will eventually need orchestration like this. We're providing it open-source."
 
@@ -77,7 +77,7 @@ Built on proven patterns:
 
 ### Availability
 
-FLOW Agent OS is available now on GitHub at `erikhinla/flow-agent-os`
+FLOW Agent AS is available now on GitHub at `erikhinla/flow-agent-os`
 
 - Complete implementation (5 production-ready phases)
 - Comprehensive documentation and examples
@@ -96,7 +96,7 @@ Contact: See repository for contributor information
 
 | Category | Details |
 |----------|---------|
-| **Product** | FLOW Agent OS — AI Agent Orchestration Platform |
+| **Product** | FLOW Agent AS — AI Agent Orchestration Platform |
 | **Status** | Production-Ready (v1.0) |
 | **License** | Open Source |
 | **Architecture** | 5-phase orchestration system |
@@ -203,7 +203,7 @@ This loop is the difference between static automation and learning systems.
 ### Quotes Available
 
 **From the Development Team:**
-"FLOW Agent OS is what happens when you take 'production-ready' seriously. Not 'almost production-ready.' Not 'works in our tests.' Fully durable, auditable, observable, and improving automatically."
+"FLOW Agent AS is what happens when you take 'production-ready' seriously. Not 'almost production-ready.' Not 'works in our tests.' Fully durable, auditable, observable, and improving automatically."
 
 "Every team building agents hits the same problems: no state, no learning, no governance. We solved those once, as open-source, so nobody has to solve them again."
 
@@ -212,13 +212,13 @@ This loop is the difference between static automation and learning systems.
 ### Social Media Templates
 
 **LinkedIn:**
-"Excited to share FLOW Agent OS—enterprise-grade orchestration for autonomous AI agents. Built to solve the problems teams encounter when LLMs hit production. Durable state ✓ Recursive learning ✓ Governance ✓ Observable. Open source, production-ready. Link: [GitHub]"
+"Excited to share FLOW Agent AS—enterprise-grade orchestration for autonomous AI agents. Built to solve the problems teams encounter when LLMs hit production. Durable state ✓ Recursive learning ✓ Governance ✓ Observable. Open source, production-ready. Link: [GitHub]"
 
 **Twitter:**
-"FLOW Agent OS is live: orchestration for the AI era. Where LLM capability meets production reality. Governance + learning + observability baked in. Build agents that improve from experience. Open-source. [GitHub link]"
+"FLOW Agent AS is live: orchestration for the AI era. Where LLM capability meets production reality. Governance + learning + observability baked in. Build agents that improve from experience. Open-source. [GitHub link]"
 
 **HackerNews:**
-"Show HN: FLOW Agent OS — Production-ready orchestration for AI agents. We solved the state/learning/governance problems that every team rebuilds. Open-source, fully documented, deploy today. [GitHub]"
+"Show HN: FLOW Agent AS — Production-ready orchestration for AI agents. We solved the state/learning/governance problems that every team rebuilds. Open-source, fully documented, deploy today. [GitHub]"
 
 ### Publication Angles
 
@@ -234,7 +234,7 @@ This loop is the difference between static automation and learning systems.
 
 **For Developer Communities:**
 - "Five Patterns for Agent Orchestration"
-- "Open-Source Deep Dive: FLOW Agent OS"
+- "Open-Source Deep Dive: FLOW Agent AS"
 - "Confidence Tracking for AI Systems"
 
 ---
@@ -306,7 +306,7 @@ Missing: **Production-ready agent orchestration infrastructure**
 
 ## FORWARD-LOOKING STATEMENTS
 
-**FLOW Agent OS enables:**
+**FLOW Agent AS enables:**
 - AI-ready enterprises (safe, scalable, improving)
 - Cost optimization (learned patterns > fresh reasoning)
 - Compliance at scale (audit-trail-first design)
@@ -329,7 +329,7 @@ For questions, issues, or contributions, see repository.
 
 ## ABOUT THE PROJECT
 
-FLOW Agent OS represents over a month of focused development implementing:
+FLOW Agent AS represents over a month of focused development implementing:
 - Phase 1: Durable state persistence (Postgres models)
 - Phase 2: Health monitoring infrastructure
 - Phase 3: Recursive learning system (skill extraction + retrieval)

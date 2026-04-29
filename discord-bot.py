@@ -1,19 +1,79 @@
 """
-FLOW Agent OS — Discord Bot
-Bridges Discord messages → AgentZero (Hetzner VPS)
-Mounts at: /opt/discord-bot.py
+FLOW Agent AS — Discord Bot
+Bridges Discord messages → BizBrain Lite intake pipeline
 """
 
 import os
 import asyncio
+import uuid
 import aiohttp
 import discord
+from datetime import datetime, timezone
 from discord.ext import commands
 
 # ── Config from environment ───────────────────────────────────────────────────
-DISCORD_TOKEN     = os.environ["DISCORD_TOKEN"]
-AGENT_ZERO_URL    = os.environ.get("AGENT_ZERO_URL", "http://5.78.190.199:50001")
-AGENT_ZERO_API_KEY = os.environ.get("AGENT_ZERO_API_KEY", "")
+DISCORD_TOKEN      = os.environ["DISCORD_TOKEN"]
+BIZBRAIN_URL       = os.environ.get("BIZBRAIN_URL", "http://bizbrain-lite:8000")
+BIZBRAIN_API_TOKEN = os.environ.get("BIZBRAIN_API_TOKEN", "")
+
+# ── Task type detection ───────────────────────────────────────────────────────
+
+def detect_task(content: str) -> tuple[str, str]:
+    """Return (task_type, preferred_owner) based on message keywords."""
+    c = content.lower()
+    if any(w in c for w in ["build", "create landing", "implement", "develop", "code", "html", "landing page", "website"]):
+        return "implementation", "agent_zero"
+    if any(w in c for w in ["classify", "categorize", "sort", "route", "analyse", "analyze"]):
+        return "classification", "openclaw"
+    # Default: content writing → Hermes
+    return "content_prep", "hermes"
+
+
+# ── BizBrain intake ───────────────────────────────────────────────────────────
+
+async def submit_to_bizbrain(message: str, context_id: str) -> dict:
+    """Submit a task envelope to BizBrain intake. Returns the response dict."""
+    task_type, owner = detect_task(message)
+    task_id = str(uuid.uuid4())
+
+    envelope = {
+        "task_id": task_id,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "source": "discord",
+        "title": message[:120].strip(),
+        "goal": message.strip(),
+        "task_type": task_type,
+        "risk_tier": "low",
+        "preferred_owner": owner,
+        "inputs": {"discord_user_id": context_id},
+        "output_required": "Completed deliverable written to runtime/reviews/",
+        "review_required": False,
+        "rollback_required": False,
+        "status": "pending",
+    }
+
+    headers = {
+        "Content-Type": "application/json",
+        "X-Api-Token": BIZBRAIN_API_TOKEN,
+    }
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                f"{BIZBRAIN_URL}/v1/intake/task",
+                json=envelope,
+                headers=headers,
+                timeout=aiohttp.ClientTimeout(total=30),
+            ) as resp:
+                data = await resp.json()
+                return {"ok": resp.status == 200, "data": data, "task_type": task_type, "owner": owner}
+    except aiohttp.ClientConnectorError:
+        return {"ok": False, "error": f"Cannot reach BizBrain at {BIZBRAIN_URL}"}
+    except asyncio.TimeoutError:
+        return {"ok": False, "error": "BizBrain timed out"}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
 
 # ── Bot setup ─────────────────────────────────────────────────────────────────
 intents = discord.Intents.default()
@@ -21,53 +81,11 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
-async def send_to_agent_zero(message: str, context_id: str = "discord") -> str:
-    """Forward a message to AgentZero and return the response."""
-    headers = {
-        "Content-Type": "application/json",
-    }
-    if AGENT_ZERO_API_KEY:
-        headers["X-API-Key"] = AGENT_ZERO_API_KEY
-
-    payload = {
-        "message": message,
-        "context": context_id,
-    }
-
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                f"{AGENT_ZERO_URL}/api/message",
-                json=payload,
-                headers=headers,
-                timeout=aiohttp.ClientTimeout(total=120),
-            ) as resp:
-                if resp.status == 200:
-                    data = await resp.json()
-                    # AgentZero returns response in different fields depending on version
-                    return (
-                        data.get("response")
-                        or data.get("message")
-                        or data.get("content")
-                        or str(data)
-                    )
-                else:
-                    text = await resp.text()
-                    return f"AgentZero error {resp.status}: {text[:200]}"
-    except aiohttp.ClientConnectorError:
-        return f"Cannot reach AgentZero at {AGENT_ZERO_URL} — is it running?"
-    except asyncio.TimeoutError:
-        return "AgentZero timed out (>120s). Task may still be running."
-    except Exception as e:
-        return f"Error: {e}"
-
-
 # ── Events ────────────────────────────────────────────────────────────────────
 @bot.event
 async def on_ready():
     print(f"[FLOW Bot] Logged in as {bot.user} (ID: {bot.user.id})")
-    print(f"[FLOW Bot] AgentZero endpoint: {AGENT_ZERO_URL}")
+    print(f"[FLOW Bot] BizBrain endpoint: {BIZBRAIN_URL}")
 
 
 @bot.event
@@ -91,24 +109,28 @@ async def on_message(message: discord.Message):
         content = content.replace(f"<@!{bot.user.id}>", "").strip()
 
     if not content:
-        await message.reply("Send me a task and I'll route it to AgentZero.")
+        await message.reply("Send me a task and I'll route it through FLOW.")
         return
 
-    # Show typing indicator while waiting
+    # Submit to BizBrain and reply immediately with job ID
     async with message.channel.typing():
         context_id = str(message.author.id)
-        response = await send_to_agent_zero(content, context_id)
+        result = await submit_to_bizbrain(content, context_id)
 
-    # Discord has a 2000 char message limit — split if needed
-    if len(response) <= 2000:
-        await message.reply(response)
-    else:
-        chunks = [response[i:i+1990] for i in range(0, len(response), 1990)]
-        for i, chunk in enumerate(chunks):
-            if i == 0:
-                await message.reply(chunk)
-            else:
-                await message.channel.send(chunk)
+    if not result.get("ok"):
+        await message.reply(f"FLOW intake error: {result.get('error', 'unknown')}")
+        return
+
+    data = result["data"]
+    job_id = data.get("job_id", "unknown")
+    owner = data.get("owner", result.get("owner", "?"))
+    task_type = result.get("task_type", "?")
+
+    await message.reply(
+        f"**Job accepted** — routed to **{owner.upper()}**\n"
+        f"Type: `{task_type}` · ID: `{job_id}`\n"
+        f"Results will post to the output channel when ready."
+    )
 
     await bot.process_commands(message)
 
@@ -116,23 +138,53 @@ async def on_message(message: discord.Message):
 # ── Commands ──────────────────────────────────────────────────────────────────
 @bot.command(name="ping")
 async def ping(ctx):
-    """Check if the bot and AgentZero are reachable."""
-    await ctx.send("Bot is up. Checking AgentZero...")
-    result = await send_to_agent_zero("ping", "health-check")
-    await ctx.send(f"AgentZero response: {result[:500]}")
+    """Check if the bot and BizBrain are reachable."""
+    await ctx.send("Bot is up. Checking BizBrain...")
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"{BIZBRAIN_URL}/v1/health", timeout=aiohttp.ClientTimeout(total=5)) as resp:
+                await ctx.send(f"BizBrain status: HTTP {resp.status}")
+    except Exception as e:
+        await ctx.send(f"BizBrain unreachable: {e}")
 
 
 @bot.command(name="task")
 async def task(ctx, *, message: str):
-    """Send a task directly to AgentZero. Usage: !task <your task>"""
+    """Submit a task directly to FLOW. Usage: !task <your task>"""
     async with ctx.typing():
-        response = await send_to_agent_zero(message, str(ctx.author.id))
-    if len(response) <= 2000:
-        await ctx.reply(response)
-    else:
-        chunks = [response[i:i+1990] for i in range(0, len(response), 1990)]
-        for i, chunk in enumerate(chunks):
-            await ctx.send(chunk)
+        result = await submit_to_bizbrain(message, str(ctx.author.id))
+
+    if not result.get("ok"):
+        await ctx.reply(f"FLOW error: {result.get('error', 'unknown')}")
+        return
+
+    data = result["data"]
+    await ctx.reply(
+        f"**Job accepted** — `{data.get('owner', '?').upper()}`\n"
+        f"ID: `{data.get('job_id', '?')}`\n"
+        f"Results will post when ready."
+    )
+
+
+@bot.command(name="status")
+async def status(ctx):
+    """Check FLOW queue depths."""
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                f"{BIZBRAIN_URL}/v1/intake/queues/status",
+                headers={"X-Api-Token": BIZBRAIN_API_TOKEN},
+                timeout=aiohttp.ClientTimeout(total=5),
+            ) as resp:
+                data = await resp.json()
+                queues = data.get("queues", {})
+                lines = [f"**FLOW Queue Status**"]
+                for owner, depth in queues.items():
+                    lines.append(f"• {owner}: {depth} jobs")
+                lines.append(f"Total: {data.get('total', 0)}")
+                await ctx.send("\n".join(lines))
+    except Exception as e:
+        await ctx.send(f"Could not fetch queue status: {e}")
 
 
 # ── Run ───────────────────────────────────────────────────────────────────────

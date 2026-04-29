@@ -3,7 +3,7 @@
 ## Validate the setup against these checks
 
 ### Positioning
-- Hermes is described as runtime support inside FLOW Agent OS
+- Hermes is described as runtime support inside FLOW Agent AS
 - Hermes is not described as doctrine
 - Hermes is not described as the business
 - Hermes is not described as activation

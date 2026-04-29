@@ -1,10 +1,10 @@
 # FLOW_AGENT_OS_SPEC_PATCH_v1
 
 ## Status
-Locked patch layer for FLOW Agent OS implementation spec.
+Locked patch layer for FLOW Agent AS implementation spec.
 
 ## Purpose
-This patch closes the implementation gaps identified during architecture and repo review so FLOW Agent OS can move from sound theory to governed execution.
+This patch closes the implementation gaps identified during architecture and repo review so FLOW Agent AS can move from sound theory to governed execution.
 
 This patch is subordinate to the locked implementation spec.
 It tightens the implementation path.
@@ -281,6 +281,6 @@ The next implementation order is tightened as follows:
 
 ## Settled patch truth
 
-FLOW Agent OS is close, but these controls are required to make the implementation durable, governable, and actually recursive instead of merely reflective.
+FLOW Agent AS is close, but these controls are required to make the implementation durable, governable, and actually recursive instead of merely reflective.
 
 This patch is now part of the locked implementation path.

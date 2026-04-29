@@ -4,7 +4,7 @@
 Locked operating spec for the current constrained infrastructure phase.
 
 ## Purpose
-This document defines the corrected orchestration model for FLOW Agent OS under current budget and infrastructure constraints.
+This document defines the corrected orchestration model for FLOW Agent AS under current budget and infrastructure constraints.
 
 Its purpose is to:
 - reduce burden

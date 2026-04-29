@@ -1,5 +1,5 @@
 """
-Alembic migration: Create FLOW Agent OS durable state tables
+Alembic migration: Create FLOW Agent AS durable state tables
 
 This creates:
 - job_records: durable job execution state
@@ -46,12 +46,12 @@ def upgrade():
     )
     
     # Indexes for job_records
-    op.create_index('idx_status', 'job_records', ['status'])
-    op.create_index('idx_owner', 'job_records', ['owner'])
-    op.create_index('idx_task_type', 'job_records', ['task_type'])
-    op.create_index('idx_created_at', 'job_records', ['created_at'])
-    op.create_index('idx_owner_status', 'job_records', ['owner', 'status'])
-    op.create_index('idx_task_type_status', 'job_records', ['task_type', 'status'])
+    op.create_index('idx_job_records_status', 'job_records', ['status'])
+    op.create_index('idx_job_records_owner', 'job_records', ['owner'])
+    op.create_index('idx_job_records_task_type', 'job_records', ['task_type'])
+    op.create_index('idx_job_records_created_at', 'job_records', ['created_at'])
+    op.create_index('idx_job_records_owner_status', 'job_records', ['owner', 'status'])
+    op.create_index('idx_job_records_task_type_status', 'job_records', ['task_type', 'status'])
     
     # reflection_records table
     op.create_table(
@@ -76,12 +76,12 @@ def upgrade():
     )
     
     # Indexes for reflection_records
-    op.create_index('idx_owner', 'reflection_records', ['owner'])
-    op.create_index('idx_task_id', 'reflection_records', ['task_id'])
-    op.create_index('idx_job_id', 'reflection_records', ['job_id'])
-    op.create_index('idx_created_at', 'reflection_records', ['created_at'])
-    op.create_index('idx_context_type', 'reflection_records', ['context_type'])
-    op.create_index('idx_skill_extraction_pending', 'reflection_records', ['skill_extraction_attempted'])
+    op.create_index('idx_reflection_records_owner', 'reflection_records', ['owner'])
+    op.create_index('idx_reflection_records_task_id', 'reflection_records', ['task_id'])
+    op.create_index('idx_reflection_records_job_id', 'reflection_records', ['job_id'])
+    op.create_index('idx_reflection_records_created_at', 'reflection_records', ['created_at'])
+    op.create_index('idx_reflection_records_context_type', 'reflection_records', ['context_type'])
+    op.create_index('idx_reflection_records_skill_extraction_pending', 'reflection_records', ['skill_extraction_attempted'])
     
     # skill_records table
     op.create_table(
@@ -110,11 +110,11 @@ def upgrade():
     )
     
     # Indexes for skill_records
-    op.create_index('idx_task_type', 'skill_records', ['task_type'])
-    op.create_index('idx_context_type', 'skill_records', ['context_type'])
-    op.create_index('idx_status', 'skill_records', ['status'])
-    op.create_index('idx_confidence_desc', 'skill_records', ['confidence'])
-    op.create_index('idx_task_context_confidence', 'skill_records', ['task_type', 'context_type', 'confidence'])
+    op.create_index('idx_skill_records_task_type', 'skill_records', ['task_type'])
+    op.create_index('idx_skill_records_context_type', 'skill_records', ['context_type'])
+    op.create_index('idx_skill_records_status', 'skill_records', ['status'])
+    op.create_index('idx_skill_records_confidence_desc', 'skill_records', ['confidence'])
+    op.create_index('idx_skill_records_task_context_confidence', 'skill_records', ['task_type', 'context_type', 'confidence'])
 
 
 def downgrade():

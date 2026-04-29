@@ -241,7 +241,7 @@ docs/
 
 ## System Complete
 
-FLOW Agent OS is now **fully operational:**
+FLOW Agent AS is now **fully operational:**
 
 **Phase 1:** Durable State (Postgres job/reflection/skill records)  
 **Phase 2:** Health Monitoring (queue depths, worker status)  
@@ -289,7 +289,7 @@ FLOW Agent OS is now **fully operational:**
 
 ## Summary
 
-FLOW Agent OS is a **complete, production-ready orchestration system** with:
+FLOW Agent AS is a **complete, production-ready orchestration system** with:
 
 - Durable state persistence (Postgres)
 - Recursive learning (skills improve with use)
