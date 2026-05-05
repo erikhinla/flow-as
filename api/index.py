@@ -60,7 +60,7 @@ def index():
     <p>Your Vercel deployment is live.</p>
     <p>
       Check <a href="/healthz">/healthz</a> for configuration status, or visit the
-      <a href="https://github.com/erikhinla/flow-as" target="_blank" rel="noopener">
+      <a href="https://github.com/erikhinla/flow-as" target="_blank" rel="noopener noreferrer">
         GitHub repository
       </a> for full documentation.
     </p>

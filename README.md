@@ -42,7 +42,7 @@ The `api/index.py` file is a minimal FastAPI application that acts as the Vercel
 
 2. **Import to Vercel**
    1. Go to <https://vercel.com/new>
-   2. Click **Import** next to `erikhinla/flow-as` (or your fork).
+   2. Click **Import** next to your forked repository (e.g., `yourusername/flow-as`).
    3. **Framework preset:** select *Other*.
    4. **Root directory:** leave blank (repo root).
    5. **Build command:** leave blank.
