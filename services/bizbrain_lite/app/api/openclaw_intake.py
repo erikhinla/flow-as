@@ -17,7 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import require_api_token
 from app.config.database import get_db_session
-from app.services.envelope_validation_service import EnvelopeValidationService, RoutingService
+from app.services.envelope_validation_service import EnvelopeValidationService, RoutingService, TASK_ENVELOPE_SCHEMA
 from app.services.input_normalization import normalize_text, normalize_value
 from app.services.redis_queue_service import RedisQueueService
 from app.services.audit_service import record_audit_event
@@ -270,7 +270,7 @@ async def intake_status(
     checks['redis'] = 'ok' if redis_ok else 'error'
 
     # Check schema
-    schema_loaded = bool(EnvelopeValidationService.TASK_ENVELOPE_SCHEMA)
+    schema_loaded = bool(TASK_ENVELOPE_SCHEMA)
     checks['schema'] = 'ok' if schema_loaded else 'warning'
 
     # Determine overall status
