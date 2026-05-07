@@ -8,7 +8,10 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     bizbrain_env: str = "dev"
-    bizbrain_api_token: str = "change-me"
+    bizbrain_api_token: str = Field(
+        default="change-me",
+        validation_alias=AliasChoices("OPENCLAW_API_TOKEN", "BIZBRAIN_API_TOKEN"),
+    )
     bizbrain_redis_url: str = Field(
         default="redis://localhost:6379/0",
         validation_alias=AliasChoices("BIZBRAIN_REDIS_URL", "REDIS_URL"),
@@ -20,9 +23,9 @@ class Settings(BaseSettings):
     openrouter_model: str = "openai/gpt-4o-mini"
     discord_webhook_url: str = ""
     output_dir: str = "/app/runtime/reviews"
+    flow_state_dir: str = "~/.openclaw/state"
 
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
     return Settings()
-

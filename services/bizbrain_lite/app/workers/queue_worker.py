@@ -25,6 +25,10 @@ from app.config.database import async_session
 from app.config.settings import get_settings
 from app.models.flow_job_record import JobRecord, JobStatus
 from app.services.redis_queue_service import RedisQueueService, get_redis_client
+from app.services.audit_service import record_audit_event
+from app.services.automated_learning_service import AutomatedLearningService
+from app.services.skill_loader import SkillLoader, PerformanceContextLoader
+from app.models.audit_log import AuditEventType
 
 
 logging.basicConfig(
@@ -58,8 +62,14 @@ SYSTEM_PROMPTS: dict[str, str] = {
 
 # ── OpenRouter call ───────────────────────────────────────────────────────────
 
-async def call_openrouter(goal: str, title: str, task_type: str, owner: str) -> str:
-    """Call OpenRouter LLM and return response text."""
+async def call_openrouter(
+    goal: str,
+    title: str,
+    task_type: str,
+    owner: str,
+    session: AsyncSession = None
+) -> str:
+    """Call OpenRouter LLM with skill-enhanced context and return response text."""
     settings = get_settings()
     api_key = settings.openrouter_api_key
     if not api_key:
@@ -67,7 +77,39 @@ async def call_openrouter(goal: str, title: str, task_type: str, owner: str) -> 
         return f"# {title}\n\n**[OpenRouter API key not configured]**\n\nGoal: {goal}\n"
 
     system_prompt = SYSTEM_PROMPTS.get(owner, SYSTEM_PROMPTS["hermes"])
-    user_message = f"**Task:** {title}\n\n**Goal:** {goal}\n\n**Task type:** {task_type}\n\nPlease complete this task now."
+
+    # Load relevant skills and performance context if session available
+    skills_context = ""
+    performance_context = ""
+
+    if session:
+        try:
+            # Load relevant skills
+            relevant_skills = await SkillLoader.load_relevant_skills(
+                session, task_type, owner, limit=3
+            )
+            if relevant_skills:
+                skills_context = SkillLoader.format_skills_for_prompt(relevant_skills)
+                logger.debug("Loaded %d skills for enhanced context", len(relevant_skills))
+
+            # Load performance context
+            performance_context = await PerformanceContextLoader.load_performance_hints(
+                session, task_type, owner
+            )
+
+        except Exception as e:
+            logger.warning("Skill loading failed, proceeding without enhancement: %s", e)
+
+    # Build enhanced user message
+    user_message = f"**Task:** {title}\n\n**Goal:** {goal}\n\n**Task type:** {task_type}\n\n"
+
+    if performance_context:
+        user_message += performance_context
+
+    if skills_context:
+        user_message += skills_context
+
+    user_message += "Please complete this task now."
 
     payload = {
         "model": settings.openrouter_model,
@@ -183,6 +225,19 @@ async def activate_job(job_id: str, owner: str) -> tuple[str | None, str | None,
         if job.started_at is None:
             job.started_at = now
 
+        # Record job activation in audit log
+        await record_audit_event(
+            session,
+            event_type=AuditEventType.JOB_STARTED,
+            title=f"Execution started: {job.title or job_id}",
+            job_id=job_id,
+            task_id=job.task_id,
+            agent=owner,
+            action_by=owner,
+            description=f"{owner} agent started executing job",
+            event_data={"task_type": job.task_type},
+        )
+
         await session.commit()
         logger.info("Activated job_id=%s owner=%s", job_id, owner)
         return job.goal, job.title, job.task_type
@@ -200,6 +255,31 @@ async def complete_job(job_id: str, result_pointer: str) -> None:
         job.updated_at = now
         job.completed_at = now
         job.result_pointer = result_pointer
+
+        # Record job completion in audit log
+        await record_audit_event(
+            session,
+            event_type=AuditEventType.JOB_COMPLETED,
+            title=f"Execution completed: {job.title or job_id}",
+            job_id=job_id,
+            task_id=job.task_id,
+            agent=job.owner,
+            action_by=job.owner,
+            description=f"Job completed successfully, artifact written to {result_pointer}",
+            event_data={"artifact_path": result_pointer},
+        )
+
+        # Trigger automated learning cycle
+        try:
+            reflection_id = await AutomatedLearningService.trigger_learning_cycle(
+                session, job_id, result_pointer
+            )
+            if reflection_id:
+                logger.info("Automated learning triggered for job_id=%s reflection_id=%s",
+                          job_id, reflection_id)
+        except Exception as e:
+            logger.warning("Automated learning failed for job_id=%s: %s", job_id, e)
+
         await session.commit()
         logger.info("Completed job_id=%s artifact=%s", job_id, result_pointer)
 
@@ -214,6 +294,20 @@ async def fail_job(job_id: str, error: str) -> None:
         job.status = JobStatus.FAILED.value
         job.updated_at = datetime.utcnow()
         job.error_message = error[:500]
+
+        # Record job failure in audit log
+        await record_audit_event(
+            session,
+            event_type=AuditEventType.JOB_FAILED,
+            title=f"Execution failed: {job.title or job_id}",
+            job_id=job_id,
+            task_id=job.task_id,
+            agent=job.owner,
+            action_by=job.owner,
+            description=f"Job failed with error: {error[:200]}",
+            event_data={"error": error[:500]},
+        )
+
         await session.commit()
         logger.error("Failed job_id=%s error=%s", job_id, error[:200])
 
@@ -242,14 +336,16 @@ async def worker_loop(owner: str, timeout: int) -> None:
             effective_title = title or f"Job {job_id}"
             effective_task_type = task_type or "content_prep"
 
-            # Step 2: Generate
+            # Step 2: Generate with skill enhancement
             try:
-                output = await call_openrouter(
-                    goal=effective_goal,
-                    title=effective_title,
-                    task_type=effective_task_type,
-                    owner=owner,
-                )
+                async with async_session() as llm_session:
+                    output = await call_openrouter(
+                        goal=effective_goal,
+                        title=effective_title,
+                        task_type=effective_task_type,
+                        owner=owner,
+                        session=llm_session,
+                    )
             except Exception as e:
                 await fail_job(job_id, str(e))
                 continue

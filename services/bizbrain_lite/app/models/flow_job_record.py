@@ -56,6 +56,14 @@ class RiskTier(str, Enum):
     HIGH = "high"
 
 
+class Priority(str, Enum):
+    """Task priority levels"""
+    LOW = "low"
+    NORMAL = "normal"
+    HIGH = "high"
+    URGENT = "urgent"
+
+
 class JobRecord(Base):
     """
     Durable job execution record.
@@ -77,6 +85,7 @@ class JobRecord(Base):
     status = Column(String(20), nullable=False, default=JobStatus.PENDING.value, index=True)
     task_type = Column(String(20), nullable=False, index=True)
     risk_tier = Column(String(10), nullable=False)
+    priority = Column(String(20), nullable=False, default=Priority.NORMAL.value, index=True)
     
     # Timing
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow, index=True)

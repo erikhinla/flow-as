@@ -35,8 +35,9 @@ def _load_task_envelope_schema() -> Dict[str, Any]:
     parents = current_file.parents
     candidate_paths.extend([
         parents[2] / "schemas" / "task_envelope.schema.json",
-        *([ parents[4] / "schemas" / "task_envelope.schema.json" ] if len(parents) > 4 else []),
+        *([parents[i] / "schemas" / "task_envelope.schema.json" for i in range(3, min(len(parents), 6))]),
         Path.cwd() / "schemas" / "task_envelope.schema.json",
+        Path("/app/schemas/task_envelope.schema.json"),  # Container mounted path
     ])
 
     for path in candidate_paths:
@@ -67,20 +68,16 @@ class EnvelopeValidationService:
     """
     
     # Valid values
-    VALID_SOURCES = ['manual', 'webhook', 'github_action', 'scheduled']
+    VALID_SOURCES = ['manual', 'webhook', 'github_action', 'scheduled', 'discord', 'landing_page', 'proof']
     VALID_TASK_TYPES = ['classification', 'rewrite', 'content_prep', 'implementation', 'skill_extraction', 'healthcheck']
-    VALID_RISK_TIERS = ['low', 'medium', 'high']
-    VALID_OWNERS = ['openclaw', 'hermes', 'agent_zero']
+    VALID_RISK_TIERS = ['reputation', 'time_loss', 'downtime_security_money']
+    VALID_OWNERS = ['alpha', 'beta', 'gamma']
     
     # Routing rules: task_type → preferred owner
     ROUTING_RULES = {
-        'classification': 'openclaw',
-        'rewrite': 'openclaw',
-        'content_prep': 'openclaw',
-        'markdown_generation': 'openclaw',
-        'implementation': 'agent_zero',
-        'skill_extraction': 'hermes',
-        'healthcheck': 'hermes',
+        'reputation': 'alpha',
+        'time_loss': 'beta',
+        'downtime_security_money': 'gamma',
     }
     
     @staticmethod
@@ -126,9 +123,17 @@ class EnvelopeValidationService:
         
         rules_checks = {}
         
-        # Rule 1: High-risk requires review
-        if envelope.get('risk_tier') == 'high' and not envelope.get('review_required'):
-            return False, "High-risk task missing review_required=true (GOVERNANCE VIOLATION)"
+        risk_tier = envelope.get('risk_tier')
+        owner_role = envelope.get('owner_role') or envelope.get('preferred_owner')
+        expected_owner = EnvelopeValidationService.ROUTING_RULES.get(risk_tier)
+        if expected_owner is None:
+            return False, f"Invalid risk_tier '{risk_tier}'. Must be one of {list(EnvelopeValidationService.ROUTING_RULES.keys())}"
+        if owner_role and owner_role != expected_owner:
+            return False, f"Invalid routing combination: risk_tier={risk_tier} requires owner_role={expected_owner}"
+
+        # Rule 1: Gamma requires review
+        if risk_tier == 'downtime_security_money' and not envelope.get('review_required'):
+            return False, "Gamma task missing review_required=true (GOVERNANCE VIOLATION)"
         rules_checks['high_risk_review'] = True
         
         # Rule 2: Implementation tasks need rollback plan
@@ -144,7 +149,7 @@ class EnvelopeValidationService:
         rules_checks['goal_specific'] = True
         
         # Rule 4: Preferred owner valid
-        preferred_owner = envelope.get('preferred_owner')
+        preferred_owner = envelope.get('preferred_owner') or envelope.get('owner_role')
         if preferred_owner and preferred_owner not in EnvelopeValidationService.VALID_OWNERS:
             return False, f"Invalid preferred_owner '{preferred_owner}'. Must be one of {EnvelopeValidationService.VALID_OWNERS}"
         rules_checks['owner_valid'] = True
@@ -173,15 +178,15 @@ class EnvelopeValidationService:
         """
         
         # Check explicit preference
-        preferred = envelope.get('preferred_owner')
+        preferred = envelope.get('owner_role') or envelope.get('preferred_owner')
         if preferred and preferred in EnvelopeValidationService.VALID_OWNERS:
             logger.info(f"Using preferred_owner: {preferred}")
             return preferred
         
         # Use routing rules
-        task_type = envelope.get('task_type')
-        owner = EnvelopeValidationService.ROUTING_RULES.get(task_type, 'hermes')
-        logger.info(f"Routed by task_type '{task_type}' → owner: {owner}")
+        risk_tier = envelope.get('risk_tier')
+        owner = EnvelopeValidationService.ROUTING_RULES.get(risk_tier, 'beta')
+        logger.info(f"Routed by risk_tier '{risk_tier}' → owner: {owner}")
         return owner
     
     @staticmethod

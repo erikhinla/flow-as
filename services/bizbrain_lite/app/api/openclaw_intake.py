@@ -15,12 +15,16 @@ from fastapi import APIRouter, Depends, HTTPException, Body, BackgroundTasks
 from pydantic import BaseModel, Field, field_validator
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.deps import require_api_token
 from app.config.database import get_db_session
 from app.services.envelope_validation_service import EnvelopeValidationService, RoutingService
 from app.services.input_normalization import normalize_text, normalize_value
 from app.services.redis_queue_service import RedisQueueService
+from app.services.audit_service import record_audit_event
+from app.models.flow_job_record import JobStatus
+from app.models.audit_log import AuditEventType
 
-router = APIRouter(tags=["openclaw-intake"], prefix="/intake")
+router = APIRouter(tags=["openclaw-intake"], prefix="/intake", dependencies=[Depends(require_api_token)])
 
 # Will be set by dependency injection
 redis_queue_service: Optional[RedisQueueService] = None
@@ -47,6 +51,7 @@ class TaskEnvelopeInput(BaseModel):
     task_type: str  # classification, rewrite, implementation, etc.
     risk_tier: str  # low, medium, high
     preferred_owner: Optional[str] = None
+    owner_role: str
     inputs: Dict[str, Any] = Field(default_factory=dict)
     output_required: str
     review_required: Optional[bool] = False
@@ -101,9 +106,9 @@ async def intake_task(
 ) -> TaskIntakeResponse:
     """
     Intake a task envelope.
-    
+
     Validates schema and business rules, creates job record, routes to queue.
-    
+
     Input:
     {
         "task_id": "task-123",
@@ -119,7 +124,7 @@ async def intake_task(
             "context_refs": ["docs/INTAKE_RULES.md"]
         }
     }
-    
+
     Response (if accepted):
     {
         "status": "accepted",
@@ -128,39 +133,108 @@ async def intake_task(
         "queue": "flow:openclaw:jobs",
         "message": "Task routed to openclaw queue"
     }
-    
+
     Response (if rejected):
     {
         "status": "rejected",
         "error": "High-risk task missing review_required=true"
     }
     """
-    
+
     # Convert input to dict for validation
     envelope_dict = envelope.dict()
-    
+
     # Validate and create job
     success, error_msg, job = await EnvelopeValidationService.validate_and_create_job(
         db,
         envelope_dict,
         source=envelope.source
     )
-    
+
     if not success:
+        # Record rejection in audit log
+        await record_audit_event(
+            db,
+            event_type=AuditEventType.JOB_SUBMITTED,
+            title=f"Task intake rejected: {envelope.title}",
+            task_id=envelope.task_id,
+            agent="openclaw",
+            action_by="system",
+            description=f"Schema validation failed: {error_msg}",
+            event_data={"error": error_msg, "task_type": envelope.task_type},
+        )
+        await db.commit()
         return TaskIntakeResponse(
             status="rejected",
             error=error_msg
         )
-    
+
+    # Record task submission
+    await record_audit_event(
+        db,
+        event_type=AuditEventType.JOB_SUBMITTED,
+        title=f"Task intake: {envelope.title}",
+        job_id=job.job_id,
+        task_id=envelope.task_id,
+        agent="openclaw",
+        action_by=envelope.source,
+        description=f"Task submitted for {job.owner} agent",
+        event_data={"task_type": envelope.task_type, "risk_tier": job.risk_tier},
+    )
+    await db.commit()
+
+    # High-risk Agent Zero work must wait for review artifacts before entering the queue.
+    if job.owner == 'agent_zero' and job.risk_tier == 'high' and envelope.review_required:
+        job.status = JobStatus.REVIEW_REQUIRED.value
+        db.add(job)
+        await db.commit()
+
+        # Record review hold in audit log
+        await record_audit_event(
+            db,
+            event_type=AuditEventType.REVIEW_REQUESTED,
+            title=f"High-risk task held for review: {envelope.title}",
+            job_id=job.job_id,
+            task_id=envelope.task_id,
+            agent="openclaw",
+            action_by="system",
+            description="High-risk Agent Zero task waiting for review artifacts and approval",
+            event_data={"risk_tier": job.risk_tier},
+            is_production=True,
+            requires_human_approval=True,
+        )
+        await db.commit()
+
+        return TaskIntakeResponse(
+            status="accepted",
+            job_id=job.job_id,
+            owner=job.owner,
+            queue=None,
+            message="High-risk Agent Zero task accepted and held for review approval"
+        )
+
     # Route to queue (background task to avoid blocking)
     queue_name = queue_service.get_queue_name(job.owner)
     await queue_service.enqueue_job(job.owner, job.job_id)
-    
+
+    # Record queue entry in audit log
+    await record_audit_event(
+        db,
+        event_type=AuditEventType.JOB_QUEUED,
+        title=f"Task queued for {job.owner}: {envelope.title}",
+        job_id=job.job_id,
+        task_id=envelope.task_id,
+        agent="openclaw",
+        action_by="system",
+        description=f"Task moved to {job.owner} queue for execution",
+        event_data={"queue": queue_name, "priority": job.priority},
+    )
+
     # Update job status to QUEUED
     job.status = 'queued'
     db.add(job)
     await db.commit()
-    
+
     return TaskIntakeResponse(
         status="accepted",
         job_id=job.job_id,
@@ -176,7 +250,7 @@ async def intake_status(
 ) -> IntakeStatusResponse:
     """
     Check OpenClaw intake service health.
-    
+
     Returns:
     {
         "status": "healthy",
@@ -188,17 +262,17 @@ async def intake_status(
         }
     }
     """
-    
+
     checks = {}
-    
+
     # Check Redis
     redis_ok = await queue_service.healthcheck()
     checks['redis'] = 'ok' if redis_ok else 'error'
-    
+
     # Check schema
     schema_loaded = bool(EnvelopeValidationService.TASK_ENVELOPE_SCHEMA)
     checks['schema'] = 'ok' if schema_loaded else 'warning'
-    
+
     # Determine overall status
     if all(v == 'ok' for v in checks.values()):
         status = 'healthy'
@@ -206,7 +280,7 @@ async def intake_status(
         status = 'unhealthy'
     else:
         status = 'degraded'
-    
+
     return IntakeStatusResponse(
         status=status,
         timestamp=datetime.utcnow().isoformat(),
@@ -220,7 +294,7 @@ async def queue_status(
 ) -> QueueStatusResponse:
     """
     Get status of all job queues.
-    
+
     Returns:
     {
         "timestamp": "2026-04-03T...",
@@ -232,9 +306,9 @@ async def queue_status(
         "total": 7
     }
     """
-    
+
     depths = await queue_service.get_all_queue_depths()
-    
+
     return QueueStatusResponse(
         timestamp=datetime.utcnow().isoformat(),
         queues=depths,
@@ -250,11 +324,11 @@ async def clear_queue(
 ) -> Dict[str, Any]:
     """
     Clear all jobs from a queue (ADMIN ONLY - DESTRUCTIVE).
-    
+
     Query params:
     - owner: openclaw, hermes, or agent_zero
     - confirm: must be true to actually clear
-    
+
     Returns:
     {
         "status": "cleared",
@@ -262,18 +336,18 @@ async def clear_queue(
         "message": "All pending jobs removed"
     }
     """
-    
+
     if not confirm:
         return {
             "status": "not_confirmed",
             "message": "Pass confirm=true to actually clear the queue"
         }
-    
+
     if owner not in ['openclaw', 'hermes', 'agent_zero']:
         raise HTTPException(status_code=400, detail=f"Invalid owner: {owner}")
-    
+
     success = await queue_service.clear_queue(owner)
-    
+
     if success:
         return {
             "status": "cleared",
@@ -291,10 +365,10 @@ async def get_dead_letter_queue(
 ) -> Dict[str, Any]:
     """
     Get jobs from dead-letter queue (failed/abandoned tasks).
-    
+
     Query params:
     - count: how many to retrieve (default: 10)
-    
+
     Returns:
     {
         "status": "ok",
@@ -308,9 +382,9 @@ async def get_dead_letter_queue(
         ]
     }
     """
-    
+
     items = await queue_service.get_dlq(count=count)
-    
+
     return {
         "status": "ok",
         "count": len(items),

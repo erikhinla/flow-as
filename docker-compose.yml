@@ -1,285 +1,85 @@
-# =============================================================================
-# FLOW Agent AS — Hostinger VPS
-# Services:
-#   Agents: Mercury 2 | AgentZero | Hermes
-#   Dashboard: Portainer CE
-#   Social Media: Postiz
-# =============================================================================
-
 services:
-
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    ports:
-      - "9000:9000"
-      - "9443:9443"
-      - "8000:8000"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - portainer_data:/data
-    networks:
-      - main_net
-
-  portainer-agent:
-    image: portainer/agent:latest
-    container_name: portainer-agent
-    hostname: portainer-agent
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    ports:
-      - "9001:9001"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /var/lib/docker/volumes:/var/lib/docker/volumes
-    networks:
-      - main_net
-
-  mercury-2:
-    image: ${MERCURY2_IMAGE:-ghcr.io/erikhinla/mercury-2:latest}
-    container_name: mercury-2
+  flow-gateway:
+    build:
+      context: ./intake-webhook
+    container_name: flow-gateway
     restart: unless-stopped
     environment:
-      HOME: /home/node
-      TERM: xterm-256color
-      MERCURY2_GATEWAY_TOKEN: ${MERCURY2_GATEWAY_TOKEN:-}
-      MERCURY2_GATEWAY_MODE: local
+      WEBHOOK_API_KEY: ${WEBHOOK_API_KEY:-change-me}
     volumes:
-      - mercury2_config:/home/node/.mercury2
-      - mercury2_workspace:/home/node/workspace
+      - intake_data:/data/intake
     ports:
-      - "18789:18789"
-      - "18790:18790"
-    init: true
-    command:
-      - "node"
-      - "dist/index.js"
-      - "gateway"
-      - "--bind"
-      - "lan"
-      - "--port"
-      - "18789"
-      - "--allow-unconfigured"
-      - "--mode"
-      - "local"
+      - "8080:8080"
     networks:
-      - main_net
-
-  agent-zero:
-    image: agent0ai/agent-zero:latest
-    container_name: agent-zero
-    restart: unless-stopped
-    environment:
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
-      GROQ_API_KEY: ${GROQ_API_KEY:-}
-      A0_AUTH_LOGIN: ${A0_AUTH_LOGIN:-admin}
-      A0_AUTH_PASSWORD: ${A0_AUTH_PASSWORD}
-    volumes:
-      - agent_zero_data:/a0/usr
-      - /var/run/docker.sock:/var/run/docker.sock
-    ports:
-      - "50080:80"
-      - "50022:22"
-    networks:
-      - main_net
-
-  ollama:
-    image: ollama/ollama:latest
-    container_name: ollama
-    restart: unless-stopped
-    environment:
-      OLLAMA_KEEP_ALIVE: "24h"
-      OLLAMA_NUM_PARALLEL: "1"
-    volumes:
-      - ollama_data:/root/.ollama
-    ports:
-      - "11434:11434"
-    networks:
-      - main_net
-    healthcheck:
-      test: ["CMD", "ollama", "list"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 20s
-
-  hermes:
-    image: ghcr.io/erikhinla/hermes-agent:latest
-    platform: linux/amd64
-    container_name: hermes
-    restart: unless-stopped
-    environment:
-      # LLM backend — uses Ollama by default; override in .env to switch to OpenAI
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-ollama}
-      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-http://ollama:11434/v1}
-      HERMES_DEFAULT_MODEL: ${HERMES_DEFAULT_MODEL:-qwen2.5:3b}
-      HERMES_GATEWAY_ENABLED: "true"
-      HERMES_GATEWAY_PORT: "50090"
-      HERMES_GATEWAY_HOST: "0.0.0.0"
-      # Bypass 64K context minimum enforced by Hermes for sub-64K models
-      HERMES_MIN_CONTEXT_WINDOW: "32768"
-      HERMES_CONTEXT_LENGTH: "32768"
-      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
-      DISCORD_TOKEN: ${DISCORD_TOKEN:-}
-      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
-      FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY:-}
-      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
-    volumes:
-      - hermes_workspace:/workspace
-    ports:
-      - "50090:50090"
-    networks:
-      - main_net
-
-  flow-postgres:
-    image: postgres:17-alpine
-    container_name: flow-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: flow_user
-      POSTGRES_PASSWORD: ${FLOW_DB_PASSWORD}
-      POSTGRES_DB: flow_agent_os
-    volumes:
-      - flow_postgres_data:/var/lib/postgresql/data
-    networks:
-      - main_net
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U flow_user -d flow_agent_os" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  flow-redis:
-    image: redis:7.2-alpine
-    container_name: flow-redis
-    restart: unless-stopped
-    volumes:
-      - flow_redis_data:/data
-    networks:
-      - main_net
-    healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - flow-internal
 
   bizbrain-lite:
     build:
       context: .
       dockerfile: services/bizbrain_lite/Dockerfile
-    container_name: bizbrain-lite
+    container_name: flow-orchestrator
     restart: unless-stopped
     environment:
       BIZBRAIN_ENV: ${BIZBRAIN_ENV:-prod}
       BIZBRAIN_API_TOKEN: ${BIZBRAIN_API_TOKEN:-change-me}
-      BIZBRAIN_REDIS_URL: redis://flow-redis:6379/0
-      DATABASE_URL: postgresql+asyncpg://flow_user:${FLOW_DB_PASSWORD}@flow-postgres:5432/flow_agent_os
-      SOCIAL_HUB_API_ORIGIN: ${SOCIAL_HUB_API_ORIGIN:-http://localhost:18000}
+      BIZBRAIN_REDIS_URL: redis://redis:6379/0
+      DATABASE_URL: postgresql+asyncpg://flow_user:${FLOW_DB_PASSWORD:-change-me}@postgres:5432/flow_agent_os
+      FLOW_STATE_DIR: /root/.openclaw/state
+      SOCIAL_HUB_API_ORIGIN: ${SOCIAL_HUB_API_ORIGIN:-http://localhost:5173}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
     volumes:
+      - ${HOME}/.openclaw/state:/root/.openclaw/state
       - ./runtime/reviews:/app/runtime/reviews
+      - ./runtime/queues:/app/runtime/queues
     ports:
       - "18000:8000"
     depends_on:
-      flow-postgres:
+      postgres:
         condition: service_healthy
-      flow-redis:
+      redis:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/v1/health', timeout=5)" ]
-      interval: 15s
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/v1/health', timeout=5)"]
+      interval: 20s
       timeout: 5s
       retries: 5
     networks:
-      - main_net
+      - flow-internal
 
-  flow-openclaw-worker:
+  agent-zero-gamma:
     build:
       context: .
       dockerfile: services/bizbrain_lite/Dockerfile
-    container_name: flow-openclaw-worker
+    container_name: agent-zero-gamma
     restart: unless-stopped
-    command: ["python", "-m", "app.workers.queue_worker"]
+    command: ["python", "/app/scripts/gamma_runtime.py", "--port", "18800"]
     environment:
-      BIZBRAIN_ENV: ${BIZBRAIN_ENV:-prod}
-      BIZBRAIN_REDIS_URL: redis://flow-redis:6379/0
-      DATABASE_URL: postgresql+asyncpg://flow_user:${FLOW_DB_PASSWORD}@flow-postgres:5432/flow_agent_os
-      FLOW_QUEUE_OWNER: openclaw
-      FLOW_QUEUE_TIMEOUT_SECONDS: "5"
-      FLOW_WORKER_LOG_LEVEL: INFO
-      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
-      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+      FLOW_STATE_DIR: /root/.openclaw/state
     volumes:
-      - ./runtime/reviews:/app/runtime/reviews
-    depends_on:
-      flow-postgres:
-        condition: service_healthy
-      flow-redis:
-        condition: service_healthy
-      bizbrain-lite:
-        condition: service_healthy
+      - ${HOME}/.openclaw/state:/root/.openclaw/state
+      - ${HOME}/.openclaw/state/tasks/escalated:/root/.openclaw/state/tasks/pending
+    ports:
+      - "18800:18800"
     networks:
-      - main_net
+      - flow-internal
 
-  flow-hermes-worker:
+  flow-dashboard:
     build:
       context: .
-      dockerfile: services/bizbrain_lite/Dockerfile
-    container_name: flow-hermes-worker
+      dockerfile: services/dashboard/Dockerfile
+    container_name: flow-dashboard
     restart: unless-stopped
-    command: ["python", "-m", "app.workers.queue_worker"]
     environment:
-      BIZBRAIN_ENV: ${BIZBRAIN_ENV:-prod}
-      BIZBRAIN_REDIS_URL: redis://flow-redis:6379/0
-      DATABASE_URL: postgresql+asyncpg://flow_user:${FLOW_DB_PASSWORD}@flow-postgres:5432/flow_agent_os
-      FLOW_QUEUE_OWNER: hermes
-      FLOW_QUEUE_TIMEOUT_SECONDS: "5"
-      FLOW_WORKER_LOG_LEVEL: INFO
-      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
-      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
-    volumes:
-      - ./runtime/reviews:/app/runtime/reviews
+      DASHBOARD_BASIC_AUTH_USER: ${DASHBOARD_BASIC_AUTH_USER:-admin}
+      DASHBOARD_BASIC_AUTH_PASSWORD: ${DASHBOARD_BASIC_AUTH_PASSWORD:-}
+    ports:
+      - "5173:80"
     depends_on:
-      flow-postgres:
-        condition: service_healthy
-      flow-redis:
-        condition: service_healthy
       bizbrain-lite:
         condition: service_healthy
     networks:
-      - main_net
-
-  flow-agent-zero-worker:
-    build:
-      context: .
-      dockerfile: services/bizbrain_lite/Dockerfile
-    container_name: flow-agent-zero-worker
-    restart: unless-stopped
-    command: ["python", "-m", "app.workers.queue_worker"]
-    environment:
-      BIZBRAIN_ENV: ${BIZBRAIN_ENV:-prod}
-      BIZBRAIN_REDIS_URL: redis://flow-redis:6379/0
-      DATABASE_URL: postgresql+asyncpg://flow_user:${FLOW_DB_PASSWORD}@flow-postgres:5432/flow_agent_os
-      FLOW_QUEUE_OWNER: agent_zero
-      FLOW_QUEUE_TIMEOUT_SECONDS: "5"
-      FLOW_WORKER_LOG_LEVEL: INFO
-      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
-      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
-    volumes:
-      - ./runtime/reviews:/app/runtime/reviews
-    depends_on:
-      flow-postgres:
-        condition: service_healthy
-      flow-redis:
-        condition: service_healthy
-      bizbrain-lite:
-        condition: service_healthy
-    networks:
-      - main_net
+      - flow-internal
 
   flow-discord-bot:
     build:
@@ -287,6 +87,7 @@ services:
       dockerfile: services/discord_bot/Dockerfile
     container_name: flow-discord-bot
     restart: unless-stopped
+    profiles: ["discord"]
     environment:
       DISCORD_TOKEN: ${DISCORD_TOKEN}
       BIZBRAIN_URL: http://bizbrain-lite:8000
@@ -295,85 +96,47 @@ services:
       bizbrain-lite:
         condition: service_healthy
     networks:
-      - main_net
+      - flow-internal
 
-  postiz:
-    image: ghcr.io/gitroomhq/postiz-app:latest
-    container_name: postiz
-    restart: unless-stopped
-    ports:
-      - "5000:5000"
-    environment:
-      MAIN_URL: "http://${POSTIZ_DOMAIN:-localhost:5000}"
-      FRONTEND_URL: "http://${POSTIZ_DOMAIN:-localhost:5000}"
-      NEXT_PUBLIC_BACKEND_URL: "http://${POSTIZ_DOMAIN:-localhost:5000}/api"
-      BACKEND_INTERNAL_URL: "http://postiz:3000"
-      JWT_SECRET: ${POSTIZ_JWT_SECRET}
-      DATABASE_URL: "postgresql://postiz-user:${POSTIZ_DB_PASSWORD}@postiz-postgres:5432/postiz-db"
-      REDIS_URL: "redis://postiz-redis:6379"
-      IS_GENERAL: "true"
-      DISABLE_REGISTRATION: ${POSTIZ_DISABLE_REGISTRATION:-false}
-      STORAGE_PROVIDER: "local"
-      UPLOAD_DIRECTORY: "/uploads"
-      NEXT_PUBLIC_UPLOAD_DIRECTORY: "/uploads"
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-    volumes:
-      - postiz_config:/config/
-      - postiz_uploads:/uploads/
-    networks:
-      - main_net
-    depends_on:
-      postiz_postgres:
-        condition: service_healthy
-      postiz_redis:
-        condition: service_healthy
-
-  postiz_postgres:
-    image: postgres:17-alpine
-    container_name: postiz-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: postiz-user
-      POSTGRES_PASSWORD: ${POSTIZ_DB_PASSWORD}
-      POSTGRES_DB: postiz-db
-    volumes:
-      - postiz_postgres_data:/var/lib/postgresql/data
-    networks:
-      - main_net
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postiz-user -d postiz-db" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  postiz_redis:
+  redis:
     image: redis:7.2-alpine
-    container_name: postiz-redis
+    container_name: redis
     restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
     volumes:
-      - postiz_redis_data:/data
-    networks:
-      - main_net
+      - redis_data:/data
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - flow-internal
+
+  postgres:
+    image: pgvector/pgvector:pg17
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: flow_user
+      POSTGRES_PASSWORD: ${FLOW_DB_PASSWORD:-change-me}
+      POSTGRES_DB: flow_agent_os
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flow_user -d flow_agent_os"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - flow-internal
 
 networks:
-  main_net:
+  flow-internal:
+    name: flow-internal
     driver: bridge
 
 volumes:
-  portainer_data: {}
-  mercury2_config: {}
-  mercury2_workspace: {}
-  agent_zero_data: {}
-  ollama_data: {}
-  hermes_workspace: {}
-  flow_postgres_data: {}
-  flow_redis_data: {}
-  postiz_config: {}
-  postiz_uploads: {}
-  postiz_postgres_data: {}
-  postiz_redis_data: {}
+  intake_data:
+  redis_data:
+  postgres_data:
