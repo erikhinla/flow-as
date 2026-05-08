@@ -47,23 +47,6 @@ services:
     networks:
       - flow-internal
 
-  agent-zero-gamma:
-    build:
-      context: .
-      dockerfile: services/bizbrain_lite/Dockerfile
-    container_name: agent-zero-gamma
-    restart: unless-stopped
-    command: ["python", "/app/scripts/gamma_runtime.py", "--port", "18800"]
-    environment:
-      FLOW_STATE_DIR: /root/.openclaw/state
-    volumes:
-      - ${HOME}/.openclaw/state:/root/.openclaw/state
-      - ${HOME}/.openclaw/state/tasks/escalated:/root/.openclaw/state/tasks/pending
-    ports:
-      - "18800:18800"
-    networks:
-      - flow-internal
-
   flow-dashboard:
     build:
       context: .

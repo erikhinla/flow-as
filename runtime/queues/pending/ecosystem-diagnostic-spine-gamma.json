@@ -1,0 +1,33 @@
+{
+  "task_id": "6a4dd3d8-4901-4b2d-8c2b-1ac725d9c84b",
+  "created_at": "2026-04-27T00:00:00-07:00",
+  "source": "manual",
+  "title": "Build ecosystem diagnostic spine",
+  "goal": "Stand up the shared diagnostic architecture for TransformBy10X, BizBuilders AI, and BizBot Mktng so lead capture, scoring, roadmap preview, and cross-site CTA routing have one reusable implementation plan.",
+  "task_type": "implementation",
+  "risk_tier": "high",
+  "preferred_owner": "agent_zero",
+  "inputs": {
+    "files": [
+      "docs/EXECUTABLE_DIAGNOSTIC_SYSTEM_LAYOUT.md",
+      "docs/HERMES_SUPER_PROMPT_EXECUTION_AUDIT.md",
+      "docs/LAUNCH_AUTHORITY.md"
+    ],
+    "context_refs": [
+      "https://github.com/erikhinla/tb10x-hub/blob/a6a2fa0153aef6b7df31e954036ede255c3a5195/launch/ecosystem_atomic_v1_2_0/WIDGET_ENDPOINT_CONFIGURATION.md",
+      "https://github.com/erikhinla/blueprint-clarity/blob/504930f27b24c3b6486bc0668d6cf46ca7f4393d/src/pages/Diagnostic.tsx",
+      "https://github.com/erikhinla/landing-page-guide/blob/a7f1c312a4c4b003f2e6ed50519c3f88c17059e5/client/src/pages/Assessment.tsx",
+      "https://github.com/erikhinla/prompt-payday-builder/blob/aa181e8634c5b58fcb9052d3aba01003259abcf3/src/components/Assessment.tsx",
+      "https://github.com/erikhinla/ana-health-aura/blob/e31164cfeeab87a7e7b970e54c46f404012186d1/src/components/assessment/AssessmentFlow.tsx",
+      "https://github.com/erikhinla/anaconda-aesthetics-v1/blob/c7f802dece533033b7a3a576dfd9829bddc7e97a/src/app/assessment/page.tsx",
+      "https://github.com/erikhinla/bizbuilders-automation/blob/a04be146e047368ee094f074b5598d8e290cc36c/brows-quiz.html",
+      "https://github.com/erikhinla/ai-native-blueprint",
+      "https://github.com/erikhinla/ai_business_blueprint"
+    ],
+    "notes": "Use the tb10x-hub widget endpoint configuration as the routing/source map if verified. Prefer blueprint-clarity Diagnostic.tsx for diagnostic question/scoring patterns and ana-health-aura AssessmentFlow.tsx for lead-capture -> assessment -> results progression. Treat the remaining assessment examples as secondary pattern references. Canonical brand names are TransformBy10X, BizBuilders AI, and BizBot Mktng. Build toward one DiagnosticEngine with multiple configurations: TBTX Digital Fog Diagnostic -> BizBuilders AI Custom Roadmap -> BizBot Mktng Activate Growth System. Acceptance criteria: no scattered quiz logic, no dead-end CTAs, captured lead/session/answers/events, score/category generated, roadmap seed produced, mobile responsive flow, and routing events attributable by UTM source/campaign. Implementation must not rewrite brand voice, change offer names, deploy to production, modify DNS, add secrets, or alter payment configuration without explicit operator approval."
+  },
+  "output_required": "Executable implementation plan or code change set for a shared DiagnosticEngine plus per-site configuration map, data model, CTA routing, verification notes, and rollback notes.",
+  "review_required": true,
+  "rollback_required": true,
+  "status": "pending"
+}
