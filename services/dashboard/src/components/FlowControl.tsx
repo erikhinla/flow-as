@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { CheckCircle2, FileText, PauseCircle, RefreshCw, Send, ShieldCheck } from 'lucide-react'
+import { apiFetch } from '../lib/api'
 
 type QueueName = 'pending' | 'active' | 'completed' | 'escalated' | 'blocked'
 
@@ -24,14 +25,11 @@ type FlowStatus = {
   healthy: boolean
 }
 
-const apiToken = localStorage.getItem('flow_api_token') || ''
-
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`/api/flow${path}`, {
+  const response = await apiFetch(`/api/flow${path}`, {
     ...init,
     headers: {
       'Content-Type': 'application/json',
-      ...(apiToken ? { 'X-Api-Token': apiToken } : {}),
       ...(init?.headers || {}),
     },
   })

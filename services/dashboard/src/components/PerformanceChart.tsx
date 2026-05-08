@@ -1,3 +1,4 @@
+import { apiFetch } from '../lib/api'
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
@@ -25,7 +26,7 @@ export function PerformanceChart({ expanded = false }: PerformanceChartProps) {
   const { data: performance, isLoading } = useQuery<PerformanceData>({
     queryKey: ['performance-analysis'],
     queryFn: async () => {
-      const response = await fetch('/api/performance/analysis?hours=24')
+      const response = await apiFetch('/api/performance/analysis?hours=24')
       if (!response.ok) throw new Error('Failed to fetch performance data')
       return response.json()
     },
@@ -43,7 +44,7 @@ export function PerformanceChart({ expanded = false }: PerformanceChartProps) {
   }
 
   // Transform data for charts
-  const ownerData = performance?.performance_metrics.reduce((acc, metric) => {
+  const ownerData = performance?.performance_metrics?.reduce((acc, metric) => {
     const existing = acc.find(item => item.owner === metric.owner)
     if (existing) {
       existing.total += metric.count
@@ -70,9 +71,9 @@ export function PerformanceChart({ expanded = false }: PerformanceChartProps) {
   })) || []
 
   const statusData = [
-    { name: 'Completed', value: performance?.performance_metrics.filter(m => m.status === 'completed').reduce((sum, m) => sum + m.count, 0) || 0, color: '#10B981' },
-    { name: 'Failed', value: performance?.performance_metrics.filter(m => m.status === 'failed').reduce((sum, m) => sum + m.count, 0) || 0, color: '#EF4444' },
-    { name: 'Other', value: performance?.performance_metrics.filter(m => !['completed', 'failed'].includes(m.status)).reduce((sum, m) => sum + m.count, 0) || 0, color: '#6B7280' }
+    { name: 'Completed', value: (performance?.performance_metrics || []).filter(m => m.status === 'completed').reduce((sum, m) => sum + m.count, 0) || 0, color: '#10B981' },
+    { name: 'Failed', value: (performance?.performance_metrics || []).filter(m => m.status === 'failed').reduce((sum, m) => sum + m.count, 0) || 0, color: '#EF4444' },
+    { name: 'Other', value: (performance?.performance_metrics || []).filter(m => !['completed', 'failed'].includes(m.status)).reduce((sum, m) => sum + m.count, 0) || 0, color: '#6B7280' }
   ].filter(item => item.value > 0)
 
   return (
@@ -87,7 +88,7 @@ export function PerformanceChart({ expanded = false }: PerformanceChartProps) {
               <CheckCircle className="w-4 h-4 text-green-600" />
             </div>
             <div className="text-2xl font-bold text-gray-900">
-              {performance?.success_rate.toFixed(1) || '0'}%
+              {Number(performance?.success_rate || 0).toFixed(1)}%
             </div>
             <div className="text-xs text-gray-500">Success Rate</div>
           </div>
@@ -96,7 +97,7 @@ export function PerformanceChart({ expanded = false }: PerformanceChartProps) {
               <Clock className="w-4 h-4 text-blue-600" />
             </div>
             <div className="text-2xl font-bold text-gray-900">
-              {performance?.avg_execution_time.toFixed(1) || '0'}s
+              {Number(performance?.avg_execution_time || 0).toFixed(1)}s
             </div>
             <div className="text-xs text-gray-500">Avg Time</div>
           </div>

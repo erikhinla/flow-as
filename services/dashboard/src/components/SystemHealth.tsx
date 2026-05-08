@@ -1,3 +1,4 @@
+import { apiFetch } from '../lib/api'
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Activity, AlertCircle, CheckCircle } from 'lucide-react'
@@ -12,7 +13,7 @@ export function SystemHealth() {
   const { data: health, isLoading } = useQuery<HealthStatus>({
     queryKey: ['health'],
     queryFn: async () => {
-      const response = await fetch('/api/health')
+      const response = await apiFetch('/api/health')
       if (!response.ok) throw new Error('Health check failed')
       return response.json()
     },
@@ -22,7 +23,7 @@ export function SystemHealth() {
   const { data: flowHealth } = useQuery({
     queryKey: ['flow-health'],
     queryFn: async () => {
-      const response = await fetch('/api/flow/health')
+      const response = await apiFetch('/api/flow/health')
       if (!response.ok) throw new Error('Flow health check failed')
       return response.json()
     },

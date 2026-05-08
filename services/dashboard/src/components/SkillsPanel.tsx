@@ -1,3 +1,4 @@
+import { apiFetch } from '../lib/api'
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Brain, TrendingUp, Target, Zap } from 'lucide-react'
@@ -33,7 +34,7 @@ export function SkillsPanel({ expanded = false }: SkillsPanelProps) {
   const { data: skills, isLoading } = useQuery<SkillEffectiveness>({
     queryKey: ['skill-effectiveness'],
     queryFn: async () => {
-      const response = await fetch('/api/performance/skills/effectiveness')
+      const response = await apiFetch('/api/performance/skills/effectiveness')
       if (!response.ok) throw new Error('Failed to fetch skills data')
       return response.json()
     },
@@ -145,7 +146,7 @@ export function SkillsPanel({ expanded = false }: SkillsPanelProps) {
                       </span>
                     </div>
                     <span className={`text-xs px-2 py-1 rounded-full ${getConfidenceColor(skill.confidence)}`}>
-                      {(skill.confidence * 100).toFixed(0)}%
+                      {Number((skill.confidence || 0) * 100).toFixed(0)}%
                     </span>
                   </div>
                   
@@ -155,7 +156,7 @@ export function SkillsPanel({ expanded = false }: SkillsPanelProps) {
                   
                   <div className="flex items-center justify-between text-xs text-gray-500">
                     <span>{skill.times_used} uses</span>
-                    <span>{skill.success_rate.toFixed(0)}% success</span>
+                    <span>{Number(skill.success_rate || 0).toFixed(0)}% success</span>
                     {skill.context_type && (
                       <span className="bg-gray-100 px-2 py-1 rounded">
                         {skill.context_type}

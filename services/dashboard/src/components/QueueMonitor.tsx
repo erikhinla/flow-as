@@ -1,3 +1,4 @@
+import { apiFetch } from '../lib/api'
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Clock, Users, Zap } from 'lucide-react'
@@ -16,7 +17,7 @@ export function QueueMonitor() {
   const { data: queueStatus, isLoading } = useQuery<QueueStatus>({
     queryKey: ['queue-status'],
     queryFn: async () => {
-      const response = await fetch('/api/intake/queues/status')
+      const response = await apiFetch('/api/intake/queues/status')
       if (!response.ok) throw new Error('Failed to fetch queue status')
       return response.json()
     },
@@ -27,21 +28,21 @@ export function QueueMonitor() {
     {
       name: 'OpenClaw',
       description: 'Classification & Routing',
-      count: queueStatus?.queues.openclaw || 0,
+      count: queueStatus?.queues?.openclaw || 0,
       color: 'bg-yellow-500',
       icon: Clock,
     },
     {
       name: 'Hermes',
       description: 'Content Generation',
-      count: queueStatus?.queues.hermes || 0,
+      count: queueStatus?.queues?.hermes || 0,
       color: 'bg-green-500',
       icon: Zap,
     },
     {
       name: 'Agent Zero',
       description: 'High-Risk Implementation',
-      count: queueStatus?.queues.agent_zero || 0,
+      count: queueStatus?.queues?.agent_zero || 0,
       color: 'bg-red-500',
       icon: Users,
     },

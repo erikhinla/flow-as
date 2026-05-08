@@ -1,18 +1,20 @@
+import { apiFetch } from '../lib/api'
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Clock, CheckCircle, XCircle, AlertCircle, ExternalLink } from 'lucide-react'
 
 interface Job {
-  job_id: string
-  task_id?: string
+  task_id: string
   title?: string
-  owner: string
-  status: string
-  task_type: string
-  created_at: string
-  started_at?: string
-  completed_at?: string
-  result_pointer?: string
+  source?: string
+  status?: string
+  priority?: number
+  owner_agent?: string | null
+  thread_id?: string | null
+  repo_path?: string | null
+  metadata?: Record<string, unknown>
+  created_at?: string
+  updated_at?: string
 }
 
 interface JobsTableProps {
@@ -24,10 +26,10 @@ export function JobsTable({ limit }: JobsTableProps) {
     queryKey: ['recent-jobs', limit],
     queryFn: async () => {
       const url = `/api/tasks${limit ? `?limit=${limit}` : ''}`
-      const response = await fetch(url)
+      const response = await apiFetch(url)
       if (!response.ok) throw new Error('Failed to fetch jobs')
       const result = await response.json()
-      return result.tasks || []
+      return Array.isArray(result) ? result : (result.tasks || [])
     },
     refetchInterval: 15000, // Update every 15 seconds
   })
@@ -138,49 +140,55 @@ export function JobsTable({ limit }: JobsTableProps) {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {jobs.map((job) => (
-                  <tr key={job.job_id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {job.title || 'Untitled Job'}
+                {jobs.map((job, index) => {
+                  if (!job) return null
+                  const jobId = job.task_id || `missing-${index}`
+                  const status = job.status || 'unknown'
+                  const owner = job.owner_agent || 'unassigned'
+                  const taskType = job.source || (job.metadata?.type as string) || 'unknown'
+
+                  return (
+                    <tr key={jobId} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {job.title || 'Untitled Task'}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {taskType}
+                          </div>
+                          <div className="text-xs text-gray-400 font-mono">
+                            {job.task_id ? `${job.task_id.slice(0, 8)}...` : jobId}
+                          </div>
                         </div>
-                        <div className="text-sm text-gray-500">
-                          {job.task_type}
-                        </div>
-                        <div className="text-xs text-gray-400 font-mono">
-                          {job.job_id.slice(0, 8)}...
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getOwnerColor(job.owner)}`}>
-                        {job.owner}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center space-x-2">
-                        {getStatusIcon(job.status)}
-                        <span className={getStatusBadge(job.status)}>
-                          {job.status.replace('_', ' ')}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getOwnerColor(owner)}`}>
+                          {owner}
                         </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {job.started_at ? formatDuration(job.started_at, job.completed_at) : '--'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(job.created_at).toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {job.result_pointer && (
-                        <button className="text-blue-600 hover:text-blue-500">
-                          <ExternalLink className="w-4 h-4" />
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center space-x-2">
+                          {getStatusIcon(status)}
+                          <span className={getStatusBadge(status)}>
+                            {status.replace('_', ' ')}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {/* Task records do not currently include duration fields */}
+                        --
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {job.created_at ? new Date(job.created_at).toLocaleString() : '--'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {/* No result_pointer currently available on TaskRecord */}
+                        --
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
