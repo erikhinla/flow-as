@@ -2,7 +2,7 @@
 
 ## Overview
 
-Hermes implements the **recursive learning loop** for FLOW Agent OS.
+Hermes implements the **recursive learning loop** for FLOW Agent AS.
 
 **Flow:**
 ```

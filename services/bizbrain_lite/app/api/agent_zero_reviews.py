@@ -16,7 +16,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.database import get_db_session
 from app.models.flow_job_record import JobRecord, JobStatus
+from app.api.openclaw_intake import get_redis_queue_service
 from app.services.review_enforcement_service import ReviewEnforcementService
+from app.services.redis_queue_service import RedisQueueService
 from sqlalchemy import select
 
 router = APIRouter(tags=["agent-zero"], prefix="/agent-zero")
@@ -194,7 +196,8 @@ async def submit_review_artifacts(
 @router.post("/execute", response_model=ExecutionResponse)
 async def execute_task(
     request: ExecutionRequest,
-    db: AsyncSession = Depends(get_db_session)
+    db: AsyncSession = Depends(get_db_session),
+    queue_service: RedisQueueService = Depends(get_redis_queue_service)
 ) -> ExecutionResponse:
     """
     Execute a high-risk task (after review approval).
@@ -248,16 +251,16 @@ async def execute_task(
             error=error_msg
         )
     
-    # All checks passed: update job status to ACTIVE (execution allowed)
-    job.status = JobStatus.ACTIVE.value
-    job.started_at = datetime.utcnow()
+    # Approved high-risk work re-enters the normal Agent Zero queue.
+    await queue_service.enqueue_job(job.owner, job.job_id)
+    job.status = JobStatus.QUEUED.value
     db.add(job)
     await db.commit()
     
     return ExecutionResponse(
         status="allowed",
         job_id=request.job_id,
-        message="All review artifacts valid. Execution approved and job set to ACTIVE."
+        message="All review artifacts valid. Execution approved and job enqueued for Agent Zero."
     )
 
 

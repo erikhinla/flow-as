@@ -2,7 +2,7 @@
 
 ## Overview
 
-OpenClaw is the **intake router** for FLOW Agent OS.
+OpenClaw is the **intake router** for FLOW Agent AS.
 
 **Responsibilities:**
 1. Validate task envelopes (schema + business rules)

@@ -1,5 +1,5 @@
 """
-Redis Queue Integration for FLOW Agent OS
+Redis Queue Integration for FLOW Agent AS
 
 Manages hot-state queues for job distribution.
 
@@ -15,8 +15,8 @@ import logging
 from typing import Optional, List, Dict, Any
 import json
 
-import aioredis
-from aioredis import Redis
+import redis.asyncio as aioredis
+from redis.asyncio import Redis
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 """
 Hermes Skill Extraction Service
 
-Core learning loop for FLOW Agent OS.
+Core learning loop for FLOW Agent AS.
 
 Flow:
 1. Job completes → reflection written to reflection_records
@@ -208,10 +208,15 @@ class SkillExtractionService:
             {
                 'skill_id': s.skill_id,
                 'name': s.name,
+                'task_type': s.task_type,
+                'context_type': s.context_type,
                 'pattern': s.pattern,
                 'tool_sequence': s.tool_sequence,
                 'confidence': s.confidence,
-                'status': 'experimental' if s.confidence < 0.4 else 'trusted',
+                'times_used': s.times_used,
+                'times_succeeded': s.times_succeeded,
+                'times_failed': s.times_failed,
+                'status': s.status,
             }
             for s in skills
         ]

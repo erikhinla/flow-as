@@ -1,6 +1,6 @@
-# FLOW Agent OS — One-Pager
+# FLOW Agent AS — One-Pager
 
-**FLOW Agent OS is the execution runtime of the W.I.N. System.**
+**FLOW Agent AS is the execution runtime of the W.I.N. System.**
 
 ---
 

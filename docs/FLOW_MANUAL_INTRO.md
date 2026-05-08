@@ -1,11 +1,11 @@
-# FLOW Agent OS — Manual
+# FLOW Agent AS — Manual
 **Governance-First Orchestration for Multi-Agent AI Systems**
 
 ---
 
 ## Before You Begin: Philosophy
 
-This manual will teach you **how** to use FLOW Agent OS.
+This manual will teach you **how** to use FLOW Agent AS.
 
 But first, you need to understand **why** FLOW exists.
 
@@ -37,7 +37,7 @@ You don't need smarter agents. You need a **system that coordinates them**.
 
 ### The W.I.N. System: Doctrine Before Infrastructure
 
-FLOW Agent OS is the execution runtime of the **W.I.N. System** (Workstream Intellect Nexus).
+FLOW Agent AS is the execution runtime of the **W.I.N. System** (Workstream Intellect Nexus).
 
 W.I.N. is a belief system about how work should function in the AI era:
 

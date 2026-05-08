@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document defines status transitions, dead-letter rules, and queue management for FLOW Agent OS.
+This document defines status transitions, dead-letter rules, and queue management for FLOW Agent AS.
 
 ---
 

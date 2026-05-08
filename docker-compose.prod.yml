@@ -1,0 +1,15 @@
+services:
+  bizbrain-lite:
+    restart: always
+
+  agent-zero-gamma:
+    restart: always
+
+  flow-dashboard:
+    restart: always
+
+  redis:
+    restart: always
+
+  postgres:
+    restart: always

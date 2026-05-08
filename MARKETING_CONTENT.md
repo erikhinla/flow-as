@@ -1,10 +1,10 @@
-# FLOW Agent OS - Marketing & Positioning Content
+# FLOW Agent AS - Marketing & Positioning Content
 
 ---
 
 ## THE ELEVATOR PITCH (30 seconds)
 
-"FLOW Agent OS is enterprise-grade orchestration for autonomous AI agents. It solves the critical gap between LLM capability and production reality: durable state so tasks don't repeat, recursive learning so agents improve from experience, governance enforcement so high-risk work stays safe, and full observability so ops teams monitor agents like microservices.
+"FLOW Agent AS is enterprise-grade orchestration for autonomous AI agents. It solves the critical gap between LLM capability and production reality: durable state so tasks don't repeat, recursive learning so agents improve from experience, governance enforcement so high-risk work stays safe, and full observability so ops teams monitor agents like microservices.
 
 Think of it as the infrastructure layer that makes AI agents production-ready."
 
@@ -33,7 +33,7 @@ Think of it as the difference between having smart people and having a smart org
 ## ONE-LINERS (For Twitter, Profiles, etc.)
 
 - "Enterprise-grade orchestration for autonomous AI agents—production-ready, recursively learning, fully governed."
-- "Where LLM capability meets production reality: FLOW Agent OS."
+- "Where LLM capability meets production reality: FLOW Agent AS."
 - "Durable state, recursive learning, governance enforcement, and transparent operations for AI agents at scale."
 - "Build agents that improve from experience, improve with code review, and improve your bottom line."
 - "The infrastructure layer that makes AI agents production-ready."
@@ -189,7 +189,7 @@ Architecture derived from:
 
 ### For GitHub Visitors
 
-**Headline:** "FLOW Agent OS: Enterprise-grade orchestration for AI agents"
+**Headline:** "FLOW Agent AS: Enterprise-grade orchestration for AI agents"
 
 **Subheading:** "Durable state. Recursive learning. Governance enforcement. Observable operations."
 
@@ -202,13 +202,13 @@ Architecture derived from:
 ### For Social Media
 
 **LinkedIn:**
-"Excited to announce FLOW Agent OS—the orchestration layer that makes AI agents production-ready. Built on five battle-tested patterns: durable state, recursive learning, governance enforcement, observable operations, and clear ownership. Open-source, fully documented, deploy today. [GitHub link]"
+"Excited to announce FLOW Agent AS—the orchestration layer that makes AI agents production-ready. Built on five battle-tested patterns: durable state, recursive learning, governance enforcement, observable operations, and clear ownership. Open-source, fully documented, deploy today. [GitHub link]"
 
 **Twitter/X:**
-"FLOW Agent OS is live: enterprise-grade orchestration for autonomous AI agents. Durable state ✓ Recursive learning ✓ Governance enforcement ✓ Observable operations ✓ Open-source. Build agents that improve from experience. [GitHub]"
+"FLOW Agent AS is live: enterprise-grade orchestration for autonomous AI agents. Durable state ✓ Recursive learning ✓ Governance enforcement ✓ Observable operations ✓ Open-source. Build agents that improve from experience. [GitHub]"
 
 **Reddit/Dev Communities:**
-"Show HN: FLOW Agent OS—Production-ready orchestration for AI agents. We solved the state/learning/governance problems that every team rebuilds. Open-source, fully documented, deploy today. [GitHub link]"
+"Show HN: FLOW Agent AS—Production-ready orchestration for AI agents. We solved the state/learning/governance problems that every team rebuilds. Open-source, fully documented, deploy today. [GitHub link]"
 
 ### For Conferences/Speaking
 
@@ -240,7 +240,7 @@ Architecture derived from:
 **Copy:** 
 "LLMs are powerful. But deploying them safely, reliably, and at scale requires orchestration infrastructure that doesn't exist—until now.
 
-FLOW Agent OS packages five battle-tested patterns as production-ready infrastructure: persistent state (every decision tracked), recursive learning (agents improve from experience), governance enforcement (review gates on high-risk work), transparent operations (monitor agents like microservices), and clear ownership (one task, one responsible agent).
+FLOW Agent AS packages five battle-tested patterns as production-ready infrastructure: persistent state (every decision tracked), recursive learning (agents improve from experience), governance enforcement (review gates on high-risk work), transparent operations (monitor agents like microservices), and clear ownership (one task, one responsible agent).
 
 Deploy agents with confidence. Watch them improve automatically. Stay compliant with complete audit trails. Scale safely."
 
@@ -315,7 +315,7 @@ Deploy agents with confidence. Watch them improve automatically. Stay compliant 
 
 ## FINAL POSITIONING
 
-**FLOW Agent OS is the orchestration layer that makes AI agents production-ready.**
+**FLOW Agent AS is the orchestration layer that makes AI agents production-ready.**
 
 Not flashier. Not more capable LLMs.
 

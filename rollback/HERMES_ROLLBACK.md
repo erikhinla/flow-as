@@ -5,7 +5,7 @@ Define how to back Hermes out cleanly if setup introduces drift or unstable beha
 
 ## Rollback triggers
 - Hermes conflicts with canon
-- Hermes is positioned above FLOW Agent OS
+- Hermes is positioned above FLOW Agent AS
 - Hermes introduces new naming
 - Hermes touches forbidden surfaces
 - Hermes creates duplicate authority

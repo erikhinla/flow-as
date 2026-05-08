@@ -2,13 +2,13 @@
 
 Authority: _OS/02-Canon/CANONICAL_SOURCE_OF_TRUTH.md (Section 9)
 
-FLOW Agent OS is the Execution Engine.
+FLOW Agent AS is the Execution Engine.
 
 It is not the umbrella thesis.
 It is not the first customer-facing promise.
 It is the governed execution layer that routes work across agents based on risk, validation, and rollback standards.
 
-## What FLOW Agent OS is
+## What FLOW Agent AS is
 
 - The execution engine for the orchestration system
 - A governed agent coordination layer
@@ -16,7 +16,7 @@ It is the governed execution layer that routes work across agents based on risk,
 - Validation and rollback infrastructure
 - Multi-agent coordination (OpenClaw, Agent Zero, Hermes)
 
-## What FLOW Agent OS is not
+## What FLOW Agent AS is not
 
 - The business doctrine (that is TransformBy10X)
 - The infrastructure offer (that is BizBuilders)

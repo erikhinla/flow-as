@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FLOW Agent AS — Marketing Job Workflow</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0d0f14;
+      color: #e4e8f0;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 0.88rem;
+      color: #7a8599;
+      margin-bottom: 48px;
+    }
+
+    /* ── FLOW LANE ── */
+    .lanes {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .lane {
+      display: flex;
+      align-items: stretch;
+      border-bottom: 1px solid #1e2433;
+    }
+    .lane:first-child { border-top: 1px solid #1e2433; }
+
+    .lane-label {
+      width: 120px;
+      min-width: 120px;
+      background: #131722;
+      border-right: 1px solid #1e2433;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #5a6480;
+      text-align: center;
+    }
+
+    .lane-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 20px 16px;
+      overflow-x: auto;
+    }
+
+    /* ── STEP CARD ── */
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+      width: 140px;
+    }
+
+    .step-box {
+      width: 120px;
+      padding: 14px 12px;
+      border-radius: 10px;
+      border: 1.5px solid;
+      text-align: center;
+      position: relative;
+    }
+    .step-num {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      font-size: 0.65rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .step-icon {
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .step-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .step-sub {
+      font-size: 0.65rem;
+      margin-top: 4px;
+      opacity: 0.7;
+      line-height: 1.3;
+    }
+
+    /* color themes */
+    .client   { background: #0e1a2b; border-color: #1e5799; color: #6eb8f7; }
+    .client .step-num  { background: #1e5799; color: #fff; }
+    .intake   { background: #0e1f14; border-color: #1e7a3a; color: #5de88a; }
+    .intake .step-num  { background: #1e7a3a; color: #fff; }
+    .routing  { background: #1f180e; border-color: #7a5010; color: #f7b84b; }
+    .routing .step-num { background: #7a5010; color: #fff; }
+    .queue    { background: #1a0e20; border-color: #6e2d9e; color: #c77dff; }
+    .queue .step-num   { background: #6e2d9e; color: #fff; }
+    .agent    { background: #1f0e0e; border-color: #8b1e1e; color: #ff6b6b; }
+    .agent .step-num   { background: #8b1e1e; color: #fff; }
+    .output   { background: #0e1a1f; border-color: #1e7070; color: #4dcdcd; }
+    .output .step-num  { background: #1e7070; color: #fff; }
+    .review   { background: #181822; border-color: #4040a0; color: #9090ff; }
+    .review .step-num  { background: #4040a0; color: #fff; }
+
+    /* ── ARROW CONNECTOR ── */
+    .arrow {
+      width: 32px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3a4260;
+      font-size: 1.1rem;
+    }
+    .arrow-down {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 20px;
+      color: #3a4260;
+      font-size: 1rem;
+    }
+
+    /* ── STATUS BAR ── */
+    .status-bar {
+      max-width: 960px;
+      margin: 32px auto 0;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .status-pill {
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      border: 1px solid;
+    }
+    .s-pending  { background: #1a1414; border-color: #604040; color: #c08060; }
+    .s-queued   { background: #1a101a; border-color: #604060; color: #c060c0; }
+    .s-active   { background: #0e1a10; border-color: #406040; color: #60c060; }
+    .s-review   { background: #101018; border-color: #404080; color: #6060c0; }
+    .s-complete { background: #0e181a; border-color: #407070; color: #40b0b0; }
+
+    /* ── LEGEND ── */
+    .legend {
+      max-width: 960px;
+      margin: 32px auto 0;
+      padding: 20px 24px;
+      background: #131722;
+      border: 1px solid #1e2433;
+      border-radius: 12px;
+    }
+    .legend h3 {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #5a6480;
+      margin-bottom: 14px;
+    }
+    .legend-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .legend-item {
+      font-size: 0.75rem;
+      color: #a0aabf;
+      line-height: 1.5;
+    }
+    .legend-item strong {
+      color: #e4e8f0;
+      display: block;
+    }
+
+    /* ── VERTICAL CONNECTOR BETWEEN LANES ── */
+    .v-connector {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 0;
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+
+<h1>FLOW Agent AS — Marketing Job Workflow</h1>
+<p class="subtitle">End-to-end journey of a marketing task through the FLOW autonomous agent system</p>
+
+<div class="lanes">
+
+  <!-- LANE 1: CLIENT -->
+  <div class="lane">
+    <div class="lane-label">Client</div>
+    <div class="lane-body">
+      <div class="step">
+        <div class="step-box client">
+          <span class="step-num">1</span>
+          <span class="step-icon">📋</span>
+          <div class="step-title">Submit Brief</div>
+          <div class="step-sub">Define goal, audience, channel, deliverables</div>
+        </div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="step-box client">
+          <span class="step-num">2</span>
+          <span class="step-icon">🔑</span>
+          <div class="step-title">API Request</div>
+          <div class="step-sub">POST /v1/intake/task with X-Api-Token header</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LANE 2: BIZBRAIN INTAKE -->
+  <div class="lane">
+    <div class="lane-label">BizBrain Intake</div>
+    <div class="lane-body">
+      <div class="step">
+        <div class="step-box intake">
+          <span class="step-num">3</span>
+          <span class="step-icon">🔍</span>
+          <div class="step-title">Schema Validate</div>
+          <div class="step-sub">task_envelope.schema.json enforced</div>
+        </div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="step-box intake">
+          <span class="step-num">4</span>
+          <span class="step-icon">🗄️</span>
+          <div class="step-title">Write to DB</div>
+          <div class="step-sub">job_records → status: pending</div>
+        </div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="step-box intake">
+          <span class="step-num">5</span>
+          <span class="step-icon">✅</span>
+          <div class="step-title">Return job_id</div>
+          <div class="step-sub">UUID returned to caller immediately</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LANE 3: OPENCLAW ROUTING -->
+  <div class="lane">
+    <div class="lane-label">OpenClaw Router</div>
+    <div class="lane-body">
+      <div class="step">
+        <div class="step-box routing">
+          <span class="step-num">6</span>
+          <span class="step-icon">🧭</span>
+          <div class="step-title">Read task_type</div>
+          <div class="step-sub">content_prep, rewrite, implementation…</div>
+        </div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="step-box routing">
+          <span class="step-num">7</span>
+          <span class="step-icon">⚖️</span>
+          <div class="step-title">Risk Check</div>
+          <div class="step-sub">risk_tier: low/medium/high decides path</div>
+        </div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="step-box routing">
+          <span class="step-num">8</span>
+          <span class="step-icon">📬</span>
+          <div class="step-title">Assign Owner</div>
+          <div class="step-sub">hermes · openclaw · agent_zero</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LANE 4: REDIS QUEUE -->
+  <div class="lane">
+    <div class="lane-label">Redis Queue</div>
+    <div class="lane-body">
+      <div class="step">
+        <div class="step-box queue">
+          <span class="step-num">9</span>
+          <span class="step-icon">📥</span>
+          <div class="step-title">Enqueue Job</div>
+          <div class="step-sub">LPUSH flow:{owner}:jobs → status: queued</div>
+        </div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="step-box queue">
+          <span class="step-num">10</span>
+          <span class="step-icon">⏳</span>
+          <div class="step-title">BRPOP Wait</div>
+          <div class="step-sub">Worker blocks until job arrives</div>
+        </div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="step-box queue">
+          <span class="step-num">11</span>
+          <span class="step-icon">🚀</span>
+          <div class="step-title">Dequeue</div>
+          <div class="step-sub">queue_worker.py pops job → status: active</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LANE 5: AGENT EXECUTION -->
+  <div class="lane">
+    <div class="lane-label">Agent Execution</div>
+    <div class="lane-body">
+      <div class="step">
+        <div class="step-box agent">
+          <span class="step-num">12</span>
+          <span class="step-icon">🤖</span>
+          <div class="step-title">Load Context</div>
+          <div class="step-sub">Task envelope + memory + skill records</div>
+        </div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="step-box agent">
+          <span class="step-num">13</span>
+          <span class="step-icon">💡</span>
+          <div class="step-title">LLM Call</div>
+          <div class="step-sub">OpenRouter API → GPT-4o / Claude / Mistral</div>
+        </div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="step-box agent">
+          <span class="step-num">14</span>
+          <span class="step-icon">✍️</span>
+          <div class="step-title">Generate</div>
+          <div class="step-sub">Copy · strategy · visuals brief · SEO</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LANE 6: OUTPUT & STORAGE -->
+  <div class="lane">
+    <div class="lane-label">Output</div>
+    <div class="lane-body">
+      <div class="step">
+        <div class="step-box output">
+          <span class="step-num">15</span>
+          <span class="step-icon">📁</span>
+          <div class="step-title">Save Artifact</div>
+          <div class="step-sub">runtime/reviews/{job_id}/output.md</div>
+        </div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="step-box output">
+          <span class="step-num">16</span>
+          <span class="step-icon">🗃️</span>
+          <div class="step-title">Update DB</div>
+          <div class="step-sub">job_records → status: completed</div>
+        </div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="step-box output">
+          <span class="step-num">17</span>
+          <span class="step-icon">📊</span>
+          <div class="step-title">Log Reflection</div>
+          <div class="step-sub">reflection_records for skill learning</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LANE 7: REVIEW & DELIVERY -->
+  <div class="lane">
+    <div class="lane-label">Review</div>
+    <div class="lane-body">
+      <div class="step">
+        <div class="step-box review">
+          <span class="step-num">18</span>
+          <span class="step-icon">👁️</span>
+          <div class="step-title">Hermes Review</div>
+          <div class="step-sub">Quality check if review_required: true</div>
+        </div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="step-box review">
+          <span class="step-num">19</span>
+          <span class="step-icon">📤</span>
+          <div class="step-title">Deliver</div>
+          <div class="step-sub">Output available via API or runtime/reviews/</div>
+        </div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="step">
+        <div class="step-box review">
+          <span class="step-num">20</span>
+          <span class="step-icon">🔁</span>
+          <div class="step-title">Iterate</div>
+          <div class="step-sub">Feedback loop → new task envelope</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Status journey bar -->
+<div class="status-bar">
+  <div class="status-pill s-pending">● PENDING</div>
+  <span style="color:#3a4260;align-self:center;">→</span>
+  <div class="status-pill s-queued">● QUEUED</div>
+  <span style="color:#3a4260;align-self:center;">→</span>
+  <div class="status-pill s-active">● ACTIVE</div>
+  <span style="color:#3a4260;align-self:center;">→</span>
+  <div class="status-pill s-review">● IN REVIEW</div>
+  <span style="color:#3a4260;align-self:center;">→</span>
+  <div class="status-pill s-complete">● COMPLETED</div>
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <h3>Key Components &amp; Agents</h3>
+  <div class="legend-grid">
+    <div class="legend-item">
+      <strong>BizBrain Lite</strong>
+      FastAPI service on port 18000. Accepts task envelopes, validates schema, writes to Postgres, enqueues to Redis.
+    </div>
+    <div class="legend-item">
+      <strong>OpenClaw</strong>
+      Routing agent. Reads task_type + risk_tier to decide which agent owns the job.
+    </div>
+    <div class="legend-item">
+      <strong>Hermes</strong>
+      Content &amp; classification agent. Handles content_prep, rewrite, skill_extraction tasks.
+    </div>
+    <div class="legend-item">
+      <strong>Agent Zero</strong>
+      Implementation agent. Handles complex builds, landing pages, campaigns, multi-step deliverables.
+    </div>
+    <div class="legend-item">
+      <strong>Redis Queue</strong>
+      Durable FIFO per owner. Keys: <code>flow:{owner}:jobs</code>. Workers use BRPOP.
+    </div>
+    <div class="legend-item">
+      <strong>Postgres</strong>
+      job_records table tracks full status lifecycle. reflection_records store learning.
+    </div>
+    <div class="legend-item">
+      <strong>OpenRouter</strong>
+      LLM gateway. Routes to GPT-4o, Claude, Mistral based on task complexity and cost tier.
+    </div>
+    <div class="legend-item">
+      <strong>runtime/reviews/</strong>
+      Output artifact directory. Every completed job writes output.md and metadata.json here.
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

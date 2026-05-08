@@ -1,7 +1,7 @@
 # Hermes Startup
 
 ## Startup objective
-Initialize Hermes as a bounded execution agent inside FLOW Agent OS.
+Initialize Hermes as a bounded execution agent inside FLOW Agent AS.
 
 ## Preconditions
 - Canon exists in PROJECTS/_OS/02-Canon/
@@ -18,7 +18,7 @@ Initialize Hermes as a bounded execution agent inside FLOW Agent OS.
    - PROJECTS/FLOW_AGENT_OS/docs/EXECUTION_ENGINE_OVERVIEW.md
 
 2. Confirm:
-   - Hermes is inside FLOW Agent OS
+   - Hermes is inside FLOW Agent AS
    - Hermes is not doctrine
    - Hermes is not activation
    - Hermes is not interface

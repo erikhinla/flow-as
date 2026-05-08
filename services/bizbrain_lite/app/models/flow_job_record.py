@@ -1,5 +1,5 @@
 """
-FLOW Agent OS Job Record Model
+FLOW Agent AS Job Record Model
 
 Durable state for every job execution.
 Stored in Postgres, indexed by status/owner/task_type.
@@ -56,6 +56,14 @@ class RiskTier(str, Enum):
     HIGH = "high"
 
 
+class Priority(str, Enum):
+    """Task priority levels"""
+    LOW = "low"
+    NORMAL = "normal"
+    HIGH = "high"
+    URGENT = "urgent"
+
+
 class JobRecord(Base):
     """
     Durable job execution record.
@@ -77,6 +85,7 @@ class JobRecord(Base):
     status = Column(String(20), nullable=False, default=JobStatus.PENDING.value, index=True)
     task_type = Column(String(20), nullable=False, index=True)
     risk_tier = Column(String(10), nullable=False)
+    priority = Column(String(20), nullable=False, default=Priority.NORMAL.value, index=True)
     
     # Timing
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow, index=True)
@@ -89,6 +98,11 @@ class JobRecord(Base):
     review_pointer = Column(Text, nullable=True)  # Path to review artifacts
     rollback_pointer = Column(Text, nullable=True)  # Path to rollback plan
     
+    # Task context (populated from envelope at intake)
+    title = Column(String(500), nullable=True)
+    goal = Column(Text, nullable=True)
+    source = Column(String(50), nullable=True)
+
     # Retry management
     retry_count = Column(Integer, default=0)
     max_retries = Column(Integer, default=3)
@@ -100,12 +114,12 @@ class JobRecord(Base):
     
     # Indexes for common queries
     __table_args__ = (
-        Index('idx_status', 'status'),
-        Index('idx_owner', 'owner'),
-        Index('idx_task_type', 'task_type'),
-        Index('idx_created_at', 'created_at'),
-        Index('idx_owner_status', 'owner', 'status'),
-        Index('idx_task_type_status', 'task_type', 'status'),
+        Index('idx_job_records_status', 'status'),
+        Index('idx_job_records_owner', 'owner'),
+        Index('idx_job_records_task_type', 'task_type'),
+        Index('idx_job_records_created_at', 'created_at'),
+        Index('idx_job_records_owner_status', 'owner', 'status'),
+        Index('idx_job_records_task_type_status', 'task_type', 'status'),
     )
     
     def __repr__(self):

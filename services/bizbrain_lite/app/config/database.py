@@ -1,5 +1,5 @@
 """
-FLOW Agent OS Database Configuration
+FLOW Agent AS Database Configuration
 
 Postgres connection pool setup for durable job_records, reflection_records, skill_records.
 Uses SQLAlchemy AsyncIO for async/await support.

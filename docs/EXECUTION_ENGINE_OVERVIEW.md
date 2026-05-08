@@ -2,9 +2,9 @@
 
 Authority: _OS/02-Canon/CANONICAL_SOURCE_OF_TRUTH.md (Section 9)
 
-## What FLOW Agent OS Is
+## What FLOW Agent AS Is
 
-FLOW Agent OS is the execution engine.
+FLOW Agent AS is the execution engine.
 
 It is the governed mechanism that routes and carries out work.
 
@@ -18,9 +18,9 @@ It is responsible for:
 - multi-agent coordination
 - repeatable operational motion
 
-## What FLOW Agent OS Is Not
+## What FLOW Agent AS Is Not
 
-FLOW Agent OS is not the whole thesis.
+FLOW Agent AS is not the whole thesis.
 It is the execution engine that implements the orchestration system.
 
 - Not the business doctrine (that is TransformBy10X)
@@ -43,4 +43,4 @@ The execution engine sits within the canonical system architecture:
 
 1. Context → 2. Governance → 3. Orchestration → **4. Execution** → 5. Memory → 6. Adaptation
 
-FLOW Agent OS operates at layer 4. It does not define layers 1-3. It executes within them.
+FLOW Agent AS operates at layer 4. It does not define layers 1-3. It executes within them.

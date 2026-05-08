@@ -1,235 +1,123 @@
-# Flow Agent OS + Postiz Deployment Guide
+# FLOW Agent AS Deployment
 
-## Hostinger VPS Setup
+This file is the top-level deployment index. The detailed deployment runbooks live in:
 
-### Prerequisites
-- Hostinger VPS with Ubuntu 22.04+ or CentOS 8+
-- SSH access as root
-- ~4GB RAM minimum, ~20GB disk
+- `docs/deployment/hostinger-vps.md`
+- `docs/deployment/portainer-stack.md`
 
-### Step 1: Bootstrap the VPS
+## Current Deployment Shape
 
-```bash
-ssh root@<YOUR_VPS_IP>
+FLOW Agent AS is deployed as a Docker Compose stack with:
 
-# One-command setup: installs Docker, configures firewall, starts Portainer
-bash <(curl -fsSL https://raw.githubusercontent.com/erikhinla/flow-agent-os/main/scripts/bootstrap.sh)
-```
+- `flow-gateway` for intake webhook traffic
+- `flow-orchestrator` for the BizBrain Lite control plane
+- `flow-worker` services for queued execution
+- `postgres` for durable job, audit, and learning state
+- `redis` for queues and cache
+- optional local LLM services when the `local-llm` profile is enabled
 
-This will:
-- Install Docker & Docker Compose
-- Set up UFW firewall (ports 9000, 9443, 18789, 50080, 50090, 5000)
-- Create `/opt/flow-agents` directory
-- Start Portainer on port 9443
+The standalone Hermes container is not part of the production readiness gate unless it is explicitly reintroduced and verified. The validated production path is through FLOW workers.
 
-### Step 2: Configure Environment Variables
+## Local Or VPS Quick Start
 
 ```bash
-nano /opt/flow-agents/.env
-```
+cp .env.example .env
+# edit .env with real secrets
 
-Copy from `.env.example` and fill in:
-
-**Required for all services:**
-```
-OPENAI_API_KEY=sk-xxx
-A0_AUTH_PASSWORD=your_password
-FLOW_DB_PASSWORD=your_flow_db_password
-BIZBRAIN_API_TOKEN=your_bizbrain_api_token
-```
-
-**For Postiz specifically:**
-```
-POSTIZ_JWT_SECRET=<generate: openssl rand -base64 32>
-POSTIZ_DB_PASSWORD=<generate: openssl rand -base64 16>
-POSTIZ_DOMAIN=your-vps-ip.com:5000
-```
-
-### Step 3: Deploy Everything
-
-```bash
-cd /opt/flow-agents
-docker compose up -d --build
-```
-
-Wait ~2 minutes for all services to start.
-
-### Step 4: Verify Services
-
-```bash
-docker compose ps
-```
-
-All containers should be in `Up` state.
-
-## Service URLs
-
-| Service | URL | Login |
-|---------|-----|-------|
-| **Portainer** (Dashboard) | https://<VPS_IP>:9443 | admin / password |
-| **BizBrain Lite** (FLOW Control Plane) | http://<VPS_IP>:18000/docs | x-api-token for protected endpoints |
-| **Postiz** (Social Media) | http://<VPS_IP>:5000 | Create first account |
-| **OpenClaw** (Orchestrator) | http://<VPS_IP>:18789 | (API only) |
-| **AgentZero** (Executor) | http://<VPS_IP>:50080 | Admin / A0_AUTH_PASSWORD |
-| **Hermes** (Specialist) | http://<VPS_IP>:50090 | (API only) |
-
-## Firewall Configuration
-
-UFW is automatically configured to allow:
-- **Port 9443** — Portainer HTTPS
-- **Port 18000** — BizBrain Lite control plane
-- **Port 9000** — Portainer HTTP redirect
-- **Port 18789** — OpenClaw API
-- **Port 50080** — AgentZero Web UI
-- **Port 50090** — Hermes API
-- **Port 5000** — Postiz Web UI
-- **Port 22** — SSH (locked to your IP)
-
-If you need to adjust:
-
-```bash
-sudo ufw allow 5000
-sudo ufw reload
-```
-
-## First-Time Postiz Setup
-
-1. Navigate to http://<VPS_IP>:5000
-2. Create your first account (become admin automatically)
-3. Connect social media providers (X, LinkedIn, Instagram, TikTok, etc.)
-4. Set `POSTIZ_DISABLE_REGISTRATION=true` in `.env` to lock down registrations
-
-```bash
-nano /opt/flow-agents/.env
-# Edit POSTIZ_DISABLE_REGISTRATION=true
-docker compose restart postiz
-```
-
-## Database Backups
-
-Postiz uses PostgreSQL. Backup the database:
-
-```bash
-docker exec postiz-postgres pg_dump -U postiz-user postiz-db > postiz-backup-$(date +%Y%m%d).sql
-```
-
-Restore:
-
-```bash
-docker exec -i postiz-postgres psql -U postiz-user postiz-db < postiz-backup-20240330.sql
-```
-
-## Troubleshooting
-
-### Postiz not starting
-```bash
-docker logs postiz
-docker logs postiz-postgres
-docker logs postiz-redis
-```
-
-Check `.env` — ensure `POSTIZ_JWT_SECRET` and `POSTIZ_DB_PASSWORD` are set.
-
-### Agents not connecting
-```bash
-docker logs openclaw
-docker logs agent-zero
-docker logs hermes
-```
-
-Verify LLM API keys are set in `.env`.
-
-### Disk space full
-```bash
-docker system df
-docker system prune -a  # WARNING: removes unused images
-```
-
-### Port already in use
-```bash
-lsof -i :5000  # Check what's using port 5000
-# Kill if needed: kill -9 <PID>
-```
-
-## Ollama + Hermes (Local LLM, No OpenAI Key Required)
-
-The stack ships with an `ollama` service that runs `qwen2.5:3b` (fits in ≤8 GB RAM).
-Hermes is pre-configured to use it — no setup wizard needed.
-
-### Quick start (Docker Compose)
-
-```bash
-# Pull and start Ollama + Hermes (agents-only mode)
-./scripts/deploy_minimal_stack.sh --agents-only
-
-# Pull the model into the running Ollama container (first run only)
-docker exec ollama ollama pull qwen2.5:3b
-
-# Verify Hermes is using the model
-curl http://localhost:50090/v1/health
-```
-
-### Local (non-Docker) setup
-
-```bash
-# One command — handles venv, install, 64K context patch, config, and smoke test
-./scripts/setup_hermes_ollama.sh
-
-# Point at a VPS Ollama instead of localhost
-./scripts/setup_hermes_ollama.sh --vps <VPS_IP>
-
-# Use a different model (must be already pulled in Ollama)
-./scripts/setup_hermes_ollama.sh --model qwen2.5:7b
-```
-
-### Hermes config (`config/hermes/config.yaml`)
-
-```yaml
-provider: custom
-base_url: http://ollama:11434/v1   # swap for VPS IP if remote
-model: qwen2.5:3b
-context_length: 32768              # overrides Hermes 64K minimum
-api_key: "ollama"
-```
-
-Edit `config/hermes/config.yaml` before deploying to change model or endpoint.
-The file is bind-mounted directly into the Hermes container; no rebuild needed.
-
-### Switching back to OpenAI
-
-Set in `.env`:
-
-```
-HERMES_DEFAULT_MODEL=gpt-4.1-mini
-OPENAI_API_KEY=sk-...
-OPENAI_BASE_URL=   # leave blank to use OpenAI default
-```
-
-Then restart: `docker compose restart hermes`
-
-
-
-Pull latest images:
-
-```bash
-cd /opt/flow-agents
-docker compose pull
+docker compose config
+docker compose build
 docker compose up -d
 ```
 
-## Logs
+Optional local Ollama profile:
 
-View all service logs:
 ```bash
-docker compose logs -f
+docker compose --profile local-llm up -d
 ```
 
-Specific service:
+## Required Environment Values
+
+At minimum, configure:
+
+- `FLOW_DB_PASSWORD`
+- `BIZBRAIN_API_TOKEN`
+- `WEBHOOK_API_KEY`
+- `OPENAI_API_KEY` or an OpenAI-compatible provider configuration
+
+Use `.env.example` as the full reference and keep production secrets out of git.
+
+## Hostinger VPS
+
+Use the Hostinger runbook:
+
 ```bash
-docker compose logs -f postiz
+ssh root@<VPS_IP>
+mkdir -p /opt/flow-as
+cd /opt/flow-as
+git clone https://github.com/erikhinla/flow-as.git .
+bash scripts/hostinger/bootstrap_vps.sh
+bash scripts/hostinger/deploy.sh /opt/flow-as
 ```
 
-Last 100 lines:
+Validate:
+
 ```bash
-docker compose logs --tail=100 postiz
+bash scripts/hostinger/healthcheck.sh localhost
+docker compose ps
+docker compose logs -f --tail=100 flow-orchestrator
 ```
+
+## Portainer
+
+Use the Portainer runbook:
+
+- Repository URL: `https://github.com/erikhinla/flow-as.git`
+- Compose path: `docker-compose.yml`
+- Optional additional file: `docker-compose.prod.yml`
+- Environment values: paste from `.env.example` into the Portainer stack UI
+
+Post-deploy checks:
+
+```bash
+docker compose ps
+docker compose logs --tail=100 flow-orchestrator
+curl -fsS http://<VPS_IP>:18000/v1/health
+curl -fsS http://<VPS_IP>:8080/health
+```
+
+## Runtime Readiness Gate
+
+Before trusting a GO decision, verify all of the following:
+
+```bash
+python3 scripts/proof_flow_control.py
+curl -fsS http://localhost:18789/health
+curl -fsS http://localhost:18790/health
+curl -fsS http://localhost:18800/health
+```
+
+The generated `FLOW_AGENT_AS_CONTROL_LAYER_REPORT.md` is authoritative for the Alpha/Beta/Gamma control-layer gate. Treat production as NO-GO if Alpha, Beta, or Gamma are not healthy.
+
+## Public Ports
+
+- `22` SSH
+- `9443` Portainer HTTPS
+- `9000` Portainer HTTP
+- `18000` FLOW orchestrator API
+- `8080` FLOW gateway intake API
+- `50090` FLOW worker gateway, if enabled
+
+Do not expose Postgres or Redis publicly.
+
+## Rollback
+
+Hostinger:
+
+```bash
+bash scripts/hostinger/rollback.sh /opt/flow-as
+```
+
+Portainer:
+
+- redeploy a previous known-good commit SHA or tag; or
+- use the CLI fallback from `docs/deployment/portainer-stack.md`.

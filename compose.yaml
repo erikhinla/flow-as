@@ -1,0 +1,6 @@
+services:
+  flowas:
+    image: flowas
+    build:
+      context: .
+      dockerfile: ./Dockerfile

@@ -1,4 +1,4 @@
-# FLOW Agent OS - Complete Implementation ✓
+# FLOW Agent AS - Complete Implementation ✓
 
 **Final Commit:** `a44b8a2`  
 **Status:** Production-Ready
@@ -7,7 +7,7 @@
 
 ## Overview
 
-FLOW Agent OS is a **complete execution engine** for autonomous agent orchestration with governance, learning, and trusted execution.
+FLOW Agent AS is a **complete execution engine** for autonomous agent orchestration with governance, learning, and trusted execution.
 
 All 5 phases implemented:
 
@@ -362,7 +362,7 @@ Main:
 
 ## Summary
 
-**FLOW Agent OS is complete, tested, and production-ready.**
+**FLOW Agent AS is complete, tested, and production-ready.**
 
 A fully integrated orchestration system with:
 - ✓ Durable state persistence

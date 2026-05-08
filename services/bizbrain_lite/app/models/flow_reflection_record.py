@@ -1,5 +1,5 @@
 """
-FLOW Agent OS Reflection Record Model
+FLOW Agent AS Reflection Record Model
 
 Post-execution reflections for skill extraction.
 Stored in Postgres, queryable by task_type/context.
@@ -67,12 +67,12 @@ class ReflectionRecord(Base):
     
     # Indexes for common queries
     __table_args__ = (
-        Index('idx_owner', 'owner'),
-        Index('idx_task_id', 'task_id'),
-        Index('idx_job_id', 'job_id'),
-        Index('idx_created_at', 'created_at'),
-        Index('idx_context_type', 'context_type'),
-        Index('idx_skill_extraction_pending', 'skill_extraction_attempted'),
+        Index('idx_reflection_records_owner', 'owner'),
+        Index('idx_reflection_records_task_id', 'task_id'),
+        Index('idx_reflection_records_job_id', 'job_id'),
+        Index('idx_reflection_records_created_at', 'created_at'),
+        Index('idx_reflection_records_context_type', 'context_type'),
+        Index('idx_reflection_records_skill_extraction_pending', 'skill_extraction_attempted'),
     )
     
     def __repr__(self):

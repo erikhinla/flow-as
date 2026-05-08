@@ -2,7 +2,7 @@ import asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import agents, artifacts, handoffs, health, tasks, threads, flow_health, hermes_skills, openclaw_intake, agent_zero_reviews
+from app.api import agents, artifacts, handoffs, health, tasks, threads, flow_health, hermes_skills, openclaw_intake, agent_zero_reviews, performance, flow_control
 from app.config.settings import get_settings
 from app.config.database import close_db, init_db
 from app.services.redis_store import redis_store
@@ -35,6 +35,8 @@ app.include_router(flow_health.router, prefix="/v1")  # FLOW health checks
 app.include_router(hermes_skills.router, prefix="/v1")  # Hermes skill loop
 app.include_router(openclaw_intake.router, prefix="/v1")  # OpenClaw intake and routing
 app.include_router(agent_zero_reviews.router, prefix="/v1")  # Agent Zero review enforcement
+app.include_router(performance.router, prefix="/v1")  # Performance analysis and optimization
+app.include_router(flow_control.router, prefix="/v1")  # Filesystem FLOW control panel/Discord API
 
 # Skill extraction background job
 skill_extraction_job = None
@@ -104,4 +106,3 @@ async def shutdown_services():
         print("✓ FLOW Postgres connection pool closed")
     except Exception as e:
         print(f"✗ Error closing FLOW Postgres pool: {e}")
-

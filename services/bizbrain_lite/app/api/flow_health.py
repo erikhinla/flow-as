@@ -1,5 +1,5 @@
 """
-FLOW Agent OS Health Check Endpoint
+FLOW Agent AS Health Check Endpoint
 
 Extended health checks for FLOW's durable state (Postgres job_records, reflections, skills).
 Monitors queue depth, worker status, and extraction lag.
@@ -23,7 +23,7 @@ router = APIRouter(tags=["flow-health"], prefix="/flow")
 @router.get("/health")
 async def flow_health(db: AsyncSession = Depends(get_db_session)) -> Dict[str, Any]:
     """
-    FLOW Agent OS health check.
+    FLOW Agent AS health check.
     
     Returns:
     - status: "healthy", "degraded", or "unhealthy"
@@ -35,7 +35,7 @@ async def flow_health(db: AsyncSession = Depends(get_db_session)) -> Dict[str, A
     
     try:
         # Query job queue depths
-        stmt = select(JobStatus, func.count()).group_by(JobStatus)
+        stmt = select(JobRecord.status, func.count()).group_by(JobRecord.status)
         result = await db.execute(stmt)
         queue_counts = dict(result.all()) if result else {}
         
@@ -126,11 +126,11 @@ async def flow_health(db: AsyncSession = Depends(get_db_session)) -> Dict[str, A
                 "postgres": "ok",
             },
             "queues": {
-                "pending": queue_counts.get(JobStatus.PENDING, 0),
-                "queued": queue_counts.get(JobStatus.QUEUED, 0),
-                "active": queue_counts.get(JobStatus.ACTIVE, 0),
-                "review_required": queue_counts.get(JobStatus.REVIEW_REQUIRED, 0),
-                "failed": queue_counts.get(JobStatus.FAILED, 0),
+                "pending": queue_counts.get(JobStatus.PENDING.value, 0),
+                "queued": queue_counts.get(JobStatus.QUEUED.value, 0),
+                "active": queue_counts.get(JobStatus.ACTIVE.value, 0),
+                "review_required": queue_counts.get(JobStatus.REVIEW_REQUIRED.value, 0),
+                "failed": queue_counts.get(JobStatus.FAILED.value, 0),
                 "dead_letter": dead_letter_count,
                 "escalated": escalated_count,
             },
@@ -204,12 +204,12 @@ async def queue_summary(db: AsyncSession = Depends(get_db_session)) -> Dict[str,
     
     try:
         stmt = select(
-            JobStatus,
+            JobRecord.status,
             func.count(JobRecord.job_id).label('count')
-        ).group_by(JobStatus)
+        ).group_by(JobRecord.status)
         
         result = await db.execute(stmt)
-        queues = {row[0].value: row[1] for row in result.all()}
+        queues = {row[0]: row[1] for row in result.all()}
         
         return {
             "timestamp": datetime.utcnow().isoformat(),

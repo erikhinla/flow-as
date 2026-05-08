@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Task Envelope",
-  "description": "Standard task envelope for FLOW Agent OS. Every task must conform to this schema.",
+  "description": "Standard task envelope for FLOW Agent AS. Every task must conform to this schema.",
   "type": "object",
   "required": [
     "task_id",
@@ -12,6 +12,7 @@
     "task_type",
     "risk_tier",
     "preferred_owner",
+    "owner_role",
     "output_required",
     "review_required",
     "status"
@@ -29,7 +30,7 @@
     },
     "source": {
       "type": "string",
-      "enum": ["manual", "webhook", "github_action", "scheduled"],
+      "enum": ["manual", "webhook", "github_action", "scheduled", "discord", "landing_page", "proof"],
       "description": "Origin of the task"
     },
     "title": {
@@ -58,13 +59,24 @@
     },
     "risk_tier": {
       "type": "string",
-      "enum": ["low", "medium", "high"],
-      "description": "Risk assessment. High requires review_required=true."
+      "enum": ["reputation", "time_loss", "downtime_security_money"],
+      "description": "Risk assessment and routing tier. reputation routes to Alpha, time_loss to Beta, downtime_security_money to Gamma."
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["low", "normal", "high", "urgent"],
+      "default": "normal",
+      "description": "Task execution priority. Affects queue ordering and worker selection."
     },
     "preferred_owner": {
       "type": "string",
-      "enum": ["openclaw", "hermes", "agent_zero"],
-      "description": "Recommended agent to execute this task"
+      "enum": ["alpha", "beta", "gamma"],
+      "description": "Recommended FLOW role to execute this task"
+    },
+    "owner_role": {
+      "type": "string",
+      "enum": ["alpha", "beta", "gamma"],
+      "description": "Assigned FLOW role. Must match risk_tier routing."
     },
     "inputs": {
       "type": "object",

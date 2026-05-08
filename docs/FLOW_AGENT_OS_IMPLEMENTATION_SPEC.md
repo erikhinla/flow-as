@@ -1,10 +1,10 @@
 # FLOW_AGENT_OS_IMPLEMENTATION_SPEC
 
 ## Status
-Locked implementation spec for FLOW Agent OS.
+Locked implementation spec for FLOW Agent AS.
 
 ## Purpose
-FLOW Agent OS is the governed execution system behind the TransformBy10X ecosystem.
+FLOW Agent AS is the governed execution system behind the TransformBy10X ecosystem.
 
 Its job is to:
 - receive structured work
@@ -604,7 +604,7 @@ Move bounded execution:
 
 ## 16. Definition of Done
 
-FLOW Agent OS is implemented when:
+FLOW Agent AS is implemented when:
 - tasks are envelope-driven
 - every task has one owner
 - durable job state exists in Postgres
@@ -621,7 +621,7 @@ FLOW Agent OS is implemented when:
 
 ## 17. Settled Operating Truth
 
-**FLOW Agent OS is the Execution Engine. OpenClaw routes and handles repo work. Hermes turns reflections into reusable skills. Agent Zero executes approved high-risk work. Postgres holds durable state. Redis handles hot queue state. The system learns only when memory feeds back into future execution.**
+**FLOW Agent AS is the Execution Engine. OpenClaw routes and handles repo work. Hermes turns reflections into reusable skills. Agent Zero executes approved high-risk work. Postgres holds durable state. Redis handles hot queue state. The system learns only when memory feeds back into future execution.**
 
 ---
 

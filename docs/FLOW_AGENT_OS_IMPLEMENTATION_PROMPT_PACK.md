@@ -1,10 +1,10 @@
 # FLOW_AGENT_OS_IMPLEMENTATION_PROMPT_PACK
 
 ## Status
-Locked implementation prompt pack for FLOW Agent OS.
+Locked implementation prompt pack for FLOW Agent AS.
 
 ## Purpose
-This prompt pack turns the locked FLOW Agent OS implementation spec into bounded execution prompts for ChatAgents, OpenClaw, Hermes, and Agent Zero.
+This prompt pack turns the locked FLOW Agent AS implementation spec into bounded execution prompts for ChatAgents, OpenClaw, Hermes, and Agent Zero.
 
 Use these in order.
 
@@ -13,9 +13,9 @@ Use these in order.
 ## 1. ChatAgents master implementation prompt
 
 ```text
-Act as the lead implementation operator for FLOW Agent OS.
+Act as the lead implementation operator for FLOW Agent AS.
 
-Your job is to turn the locked FLOW Agent OS implementation spec into an executable build plan across OpenClaw, Hermes, and Agent Zero.
+Your job is to turn the locked FLOW Agent AS implementation spec into an executable build plan across OpenClaw, Hermes, and Agent Zero.
 
 This is not a brainstorm.
 This is not a naming exercise.
@@ -23,10 +23,10 @@ This is not permission to redesign the whole ecosystem.
 This is not permission to invent new components outside the locked spec.
 
 Authority:
-The locked source of truth is the FLOW Agent OS implementation spec.
+The locked source of truth is the FLOW Agent AS implementation spec.
 
 Core truths:
-- FLOW Agent OS is the Execution Engine
+- FLOW Agent AS is the Execution Engine
 - One task, one owner, one return path
 - OpenClaw = router + repo worker
 - Hermes = learning-loop worker
@@ -58,7 +58,7 @@ Hard rules:
 - use plain operator-first language
 
 Success condition:
-The FLOW Agent OS build is broken into a realistic, ordered execution chain with bounded worker assignments.
+The FLOW Agent AS build is broken into a realistic, ordered execution chain with bounded worker assignments.
 ```
 
 ---
@@ -66,10 +66,10 @@ The FLOW Agent OS build is broken into a realistic, ordered execution chain with
 ## 2. OpenClaw setup prompt
 
 ```text
-Perform a bounded FLOW Agent OS setup pass.
+Perform a bounded FLOW Agent AS setup pass.
 
 Authority:
-Use the locked FLOW Agent OS implementation spec as the source of truth.
+Use the locked FLOW Agent AS implementation spec as the source of truth.
 
 Your job:
 Create or update the repo-facing documentation and schema scaffolding needed to support the Execution Engine.
@@ -128,10 +128,10 @@ Reply only with:
 ## 3. OpenClaw queue and status prompt
 
 ```text
-Perform a bounded queue and status hardening pass for FLOW Agent OS.
+Perform a bounded queue and status hardening pass for FLOW Agent AS.
 
 Authority:
-Use the locked FLOW Agent OS implementation spec.
+Use the locked FLOW Agent AS implementation spec.
 
 Your tasks:
 1. create or update the queue/status documentation
@@ -177,10 +177,10 @@ Reply only with:
 ## 4. Hermes skill-loop implementation prompt
 
 ```text
-You are implementing the Hermes learning loop for FLOW Agent OS.
+You are implementing the Hermes learning loop for FLOW Agent AS.
 
 Authority:
-Use the locked FLOW Agent OS implementation spec.
+Use the locked FLOW Agent AS implementation spec.
 
 Your role:
 Hermes is the learning-loop worker.
@@ -252,7 +252,7 @@ Reply only with:
 You are extracting recurring workflow classes for Hermes.
 
 Authority:
-Use the locked FLOW Agent OS implementation spec.
+Use the locked FLOW Agent AS implementation spec.
 
 Your job:
 Identify the repeatable workflow categories Hermes should own and document them for future use.
@@ -301,7 +301,7 @@ Reply only with:
 You are implementing the control and review requirements for Agent Zero.
 
 Authority:
-Use the locked FLOW Agent OS implementation spec.
+Use the locked FLOW Agent AS implementation spec.
 
 Your role:
 Agent Zero is the high-risk executor.
@@ -349,10 +349,10 @@ Reply only with:
 ## 7. Agent Zero Hostinger prompt
 
 ```text
-You are preparing the Hostinger control-plane role for FLOW Agent OS.
+You are preparing the Hostinger control-plane role for FLOW Agent AS.
 
 Authority:
-Use the locked FLOW Agent OS implementation spec.
+Use the locked FLOW Agent AS implementation spec.
 
 Your tasks:
 1. document the Hostinger role as control plane
@@ -394,10 +394,10 @@ Reply only with:
 ## 8. Hermes Oracle prompt
 
 ```text
-You are preparing the Oracle Always Free role for FLOW Agent OS.
+You are preparing the Oracle Always Free role for FLOW Agent AS.
 
 Authority:
-Use the locked FLOW Agent OS implementation spec.
+Use the locked FLOW Agent AS implementation spec.
 
 Your tasks:
 1. document the Oracle role as Hermes worker surface
@@ -435,10 +435,10 @@ Reply only with:
 ## 9. OpenClaw GitHub Actions prompt
 
 ```text
-You are preparing the GitHub Actions role for FLOW Agent OS.
+You are preparing the GitHub Actions role for FLOW Agent AS.
 
 Authority:
-Use the locked FLOW Agent OS implementation spec.
+Use the locked FLOW Agent AS implementation spec.
 
 Your tasks:
 1. define the exact repo-native jobs OpenClaw may run in GitHub Actions
@@ -480,10 +480,10 @@ Reply only with:
 ## 10. Database spec prompt
 
 ```text
-Create the database implementation spec for FLOW Agent OS durable state.
+Create the database implementation spec for FLOW Agent AS durable state.
 
 Authority:
-Use the locked FLOW Agent OS implementation spec.
+Use the locked FLOW Agent AS implementation spec.
 
 Your tasks:
 1. define the Postgres-backed records required
@@ -521,10 +521,10 @@ Reply only with:
 ## 11. Health and failure prompt
 
 ```text
-Create the health, failure, and dead-letter implementation spec for FLOW Agent OS.
+Create the health, failure, and dead-letter implementation spec for FLOW Agent AS.
 
 Authority:
-Use the locked FLOW Agent OS implementation spec.
+Use the locked FLOW Agent AS implementation spec.
 
 Your tasks:
 1. define required health checks
@@ -565,10 +565,10 @@ Reply only with:
 ## 12. Final ChatAgents synthesis prompt
 
 ```text
-Act as the final synthesis operator for FLOW Agent OS implementation.
+Act as the final synthesis operator for FLOW Agent AS implementation.
 
 Authority:
-Use the locked FLOW Agent OS implementation spec and all generated docs created by OpenClaw, Hermes, and Agent Zero prompts.
+Use the locked FLOW Agent AS implementation spec and all generated docs created by OpenClaw, Hermes, and Agent Zero prompts.
 
 Your tasks:
 1. assess whether the spec has been fully translated into implementable docs
