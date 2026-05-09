@@ -33,7 +33,7 @@ services:
       - ./runtime/reviews:/app/runtime/reviews
       - ./runtime/queues:/app/runtime/queues
     ports:
-      - "18000:8000"
+      - "18001:8000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -55,7 +55,7 @@ services:
     restart: unless-stopped
     environment:
       DASHBOARD_BASIC_AUTH_USER: ${DASHBOARD_BASIC_AUTH_USER:-admin}
-      DASHBOARD_BASIC_AUTH_PASSWORD: ${DASHBOARD_BASIC_AUTH_PASSWORD:-}
+      DASHBOARD_BASIC_AUTH_PASSWORD: ${DASHBOARD_BASIC_AUTH_PASSWORD:-change-me-dashboard-password}
     ports:
       - "5173:80"
     depends_on:
