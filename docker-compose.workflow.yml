@@ -1,0 +1,79 @@
+services:
+  flow-asset-worker:
+    image: node:20-alpine
+    container_name: flow-asset-worker
+    restart: unless-stopped
+    working_dir: /app
+    command: ["node", "/app/scripts/asset-worker.js"]
+    environment:
+      FLOW_STATE_DIR: /state
+      FLOW_WORKSPACE_DIR: /workspace
+      FLOW_ARTIFACTS_DIR: /artifacts
+      REDIS_URL: redis://redis:6379
+    volumes:
+      - ./scripts:/app/scripts:ro
+      - ${FLOW_HOST_ROOT:-/opt/flow-agent-as}/state:/state
+      - ${FLOW_HOST_ROOT:-/opt/flow-agent-as}/workspace:/workspace
+      - ${FLOW_HOST_ROOT:-/opt/flow-agent-as}/artifacts:/artifacts
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - flow-internal
+
+  activepieces:
+    image: activepieces/activepieces:latest
+    container_name: flow-activepieces
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      AP_ENVIRONMENT: prod
+      AP_FRONTEND_URL: ${ACTIVEPIECES_URL:-http://localhost:8081}
+      AP_WEBHOOK_URL: ${ACTIVEPIECES_URL:-http://localhost:8081}
+      AP_DB_TYPE: POSTGRES
+      AP_POSTGRES_DATABASE: activepieces
+      AP_POSTGRES_HOST: activepieces-postgres
+      AP_POSTGRES_PORT: 5432
+      AP_POSTGRES_USERNAME: activepieces
+      AP_POSTGRES_PASSWORD: ${ACTIVEPIECES_DB_PASSWORD:-change-me}
+      AP_REDIS_TYPE: STANDALONE
+      AP_REDIS_HOST: redis
+      AP_REDIS_PORT: 6379
+      AP_ENCRYPTION_KEY: ${ACTIVEPIECES_ENCRYPTION_KEY:-change-me-32-character-minimum-key}
+      AP_JWT_SECRET: ${ACTIVEPIECES_JWT_SECRET:-change-me-64-character-minimum-key}
+      AP_TELEMETRY_ENABLED: "false"
+    volumes:
+      - activepieces_data:/root/.activepieces
+      - ${FLOW_HOST_ROOT:-/opt/flow-agent-as}/state:/state
+      - ${FLOW_HOST_ROOT:-/opt/flow-agent-as}/workspace:/workspace
+      - ${FLOW_HOST_ROOT:-/opt/flow-agent-as}/artifacts:/artifacts
+    depends_on:
+      redis:
+        condition: service_healthy
+      activepieces-postgres:
+        condition: service_healthy
+    networks:
+      - flow-internal
+
+  activepieces-postgres:
+    image: postgres:16-alpine
+    container_name: flow-activepieces-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: activepieces
+      POSTGRES_PASSWORD: ${ACTIVEPIECES_DB_PASSWORD:-change-me}
+      POSTGRES_DB: activepieces
+    volumes:
+      - activepieces_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U activepieces -d activepieces"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - flow-internal
+
+volumes:
+  activepieces_data:
+  activepieces_postgres_data:
