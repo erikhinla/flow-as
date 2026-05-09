@@ -56,8 +56,68 @@ services:
     environment:
       DASHBOARD_BASIC_AUTH_USER: ${DASHBOARD_BASIC_AUTH_USER:-admin}
       DASHBOARD_BASIC_AUTH_PASSWORD: ${DASHBOARD_BASIC_AUTH_PASSWORD:-}
+      BIZBRAIN_API_TOKEN: ${BIZBRAIN_API_TOKEN:-change-me}
     ports:
       - "5173:80"
+    depends_on:
+      bizbrain-lite:
+        condition: service_healthy
+    networks:
+      - flow-internal
+
+  openclaw-alpha:
+    build:
+      context: .
+      dockerfile: services/bizbrain_lite/Dockerfile
+    container_name: openclaw-alpha
+    restart: unless-stopped
+    command: ["python", "scripts/openclaw_runtime.py", "--role", "alpha", "--port", "18789"]
+    environment:
+      FLOW_STATE_DIR: /root/.openclaw/state
+      OPENCLAW_POLL_INTERVAL: ${OPENCLAW_POLL_INTERVAL:-2}
+    volumes:
+      - ${HOME}/.openclaw/state:/root/.openclaw/state
+    ports:
+      - "18789:18789"
+    depends_on:
+      bizbrain-lite:
+        condition: service_healthy
+    networks:
+      - flow-internal
+
+  openclaw-beta:
+    build:
+      context: .
+      dockerfile: services/bizbrain_lite/Dockerfile
+    container_name: openclaw-beta
+    restart: unless-stopped
+    command: ["python", "scripts/openclaw_runtime.py", "--role", "beta", "--port", "18790"]
+    environment:
+      FLOW_STATE_DIR: /root/.openclaw/state
+      OPENCLAW_POLL_INTERVAL: ${OPENCLAW_POLL_INTERVAL:-2}
+    volumes:
+      - ${HOME}/.openclaw/state:/root/.openclaw/state
+    ports:
+      - "18790:18790"
+    depends_on:
+      bizbrain-lite:
+        condition: service_healthy
+    networks:
+      - flow-internal
+
+  agent-zero-gamma:
+    build:
+      context: .
+      dockerfile: services/bizbrain_lite/Dockerfile
+    container_name: agent-zero-gamma
+    restart: unless-stopped
+    command: ["python", "scripts/gamma_runtime.py", "--port", "18800"]
+    environment:
+      FLOW_STATE_DIR: /root/.openclaw/state
+    volumes:
+      - ${HOME}/.openclaw/state:/root/.openclaw/state
+    ports:
+      - "18800:18800"
     depends_on:
       bizbrain-lite:
         condition: service_healthy

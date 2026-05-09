@@ -1,11 +1,13 @@
 # Domain, Repo, and Operations Map
 
-This document serves as the canonical source of truth for mapping domains, code repositories, deployment targets, and operational ownership across the FLOW Agent OS (FAAS) ecosystem.
+This document serves as the canonical source of truth for mapping domains, code repositories, deployment targets, and operational ownership across the FLOW Agent AS / F.A.A.S. ecosystem.
+
+Current posture: two public sites first. BizBot Marketing is a premium BizBuilders unlock, not a separate public URL unless that decision is changed later.
 
 ## Primary System: FLOW/FAAS Control Plane
 - **Brand System:** FLOW Agent Architected Schemas (FAAS)
 - **Domain:** TBD (e.g., `flow-as.example.com` or private IP)
-- **Repo:** `flow-as`
+- **Repo:** `FLOW-AGENT-AS`
 - **Deploy Target:** Hostinger/VPS (Docker Compose Runtime)
 - **Owner:** Erik
 - **Core Function:** Governed orchestration, task routing, intake queues, execution runtime.
@@ -16,23 +18,23 @@ This document serves as the canonical source of truth for mapping domains, code 
 - **Repo:** `tbtx-next-ecosystem`
 - **Deploy Target:** Vercel (extrapolated) / TBD
 - **Owner:** Erik
-- **Core Function:** B2C Digital Fog entry layer, Fog Diagnostic, Fog Lift Kit delivery.
+- **Core Function:** B2C doctrine/philosophy site, AI Preparedness and Digital Fog diagnostic, `$7 / $27 / $97` offer ladder, founder story, proof of work, and bridge to BizBuilders AI.
 
 ## Property: BizBuilders AI
 - **Brand System:** BizBuilders AI
 - **Domain:** `bizbuilders.ai`
-- **Repo:** TBD (assumed either independent repo or integrated in `tbtx-next-ecosystem`)
+- **Repo:** `tbtx-next-ecosystem` unless split later
 - **Deploy Target:** TBD
 - **Owner:** Erik
-- **Core Function:** B2B Infrastructure Readiness Diagnostic, Custom Roadmap generation.
+- **Core Function:** B2B lead generation, AVA-guided infrastructure assessment, blueprint generation, schedule-call handoff, and premium BizBot Marketing unlock.
 
-## Property: BizBot Mktng
+## Premium Unlock: BizBot Marketing
 - **Brand System:** BizBot Mktng
-- **Domain:** TBD (e.g., `bizbotmktng.com`)
-- **Repo:** TBD
-- **Deploy Target:** TBD
+- **Domain:** Internal route only (no separate public URL)
+- **Repo:** `tbtx-next-ecosystem`
+- **Deploy Target:** Same as BizBuilders AI
 - **Owner:** Erik
-- **Core Function:** Activation and growth execution surface, Reddit Marketing Guide, RevAnew.
+- **Core Function:** Premium growth layer unlocked inside BizBuilders AI after infrastructure assessment context. Accessed via qualified lead flow. Includes RevAnew, Reddit Account Growth Engine, Account Intelligence Report, Marketing Blueprint, and Social Automation Starter Kit.
 
 ## Operational Ownership Matrix
 | Function | Owner | System/Provider |
