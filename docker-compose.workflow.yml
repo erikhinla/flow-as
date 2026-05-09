@@ -74,6 +74,56 @@ services:
     networks:
       - flow-internal
 
+  postiz:
+    image: ghcr.io/gitroomhq/postiz-app:latest
+    container_name: flow-postiz
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      MAIN_URL: ${POSTIZ_DOMAIN:-http://localhost:5000}
+      FRONTEND_URL: ${POSTIZ_DOMAIN:-http://localhost:5000}
+      NEXT_PUBLIC_BACKEND_URL: ${POSTIZ_DOMAIN:-http://localhost:5000}/api
+      JWT_SECRET: ${POSTIZ_JWT_SECRET:-change-me-postiz-jwt-secret}
+      DATABASE_URL: postgresql://postiz:${POSTIZ_DB_PASSWORD:-change-me}@postiz-postgres:5432/postiz
+      REDIS_URL: redis://redis:6379
+      BACKEND_INTERNAL_URL: http://localhost:5000
+      IS_GENERAL: "true"
+      STORAGE_PROVIDER: local
+      UPLOAD_DIRECTORY: /uploads
+    volumes:
+      - postiz_uploads:/uploads
+      - ${FLOW_HOST_ROOT:-/opt/flow-agent-as}/state:/state
+      - ${FLOW_HOST_ROOT:-/opt/flow-agent-as}/workspace:/workspace
+      - ${FLOW_HOST_ROOT:-/opt/flow-agent-as}/artifacts:/artifacts
+    depends_on:
+      redis:
+        condition: service_healthy
+      postiz-postgres:
+        condition: service_healthy
+    networks:
+      - flow-internal
+
+  postiz-postgres:
+    image: postgres:16-alpine
+    container_name: flow-postiz-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postiz
+      POSTGRES_PASSWORD: ${POSTIZ_DB_PASSWORD:-change-me}
+      POSTGRES_DB: postiz
+    volumes:
+      - postiz_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postiz -d postiz"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - flow-internal
+
 volumes:
   activepieces_data:
   activepieces_postgres_data:
+  postiz_postgres_data:
+  postiz_uploads:
