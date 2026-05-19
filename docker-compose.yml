@@ -47,6 +47,28 @@ services:
     networks:
       - flow-internal
 
+  notion-flow-bridge:
+    image: node:20-alpine
+    container_name: notion-flow-bridge
+    working_dir: /app
+    command: ["node", "scripts/notion-flow-bridge.mjs"]
+    restart: unless-stopped
+    environment:
+      NOTION_TOKEN: ${NOTION_TOKEN}
+      NOTION_TASKS_DATABASE_ID: ${NOTION_TASKS_DATABASE_ID}
+      FLOW_INTAKE_URL: ${FLOW_INTAKE_URL:-http://bizbrain-lite:8000/v1/intake/task}
+      FLOW_API_TOKEN: ${FLOW_API_TOKEN}
+      POLL_INTERVAL_MS: ${POLL_INTERVAL_MS:-30000}
+      DEFAULT_OWNER: ${DEFAULT_OWNER:-agent_zero}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      - .:/app:ro
+    depends_on:
+      bizbrain-lite:
+        condition: service_healthy
+    networks:
+      - flow-internal
+
   flow-dashboard:
     build:
       context: .
