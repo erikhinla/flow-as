@@ -2,20 +2,23 @@
 
 This document maps domains, repositories, deployment targets, and operational
 ownership across the FLOW Agent Architected Schemas (FAAS) ecosystem. Values
-marked `TBD` or `decision required` are not production claims.
+marked `TBD` are not production claims.
 
 ## Primary System: FLOW / FAAS Control Plane
 
 - **Brand System:** FLOW Agent Architected Schemas (FAAS)
 - **Domain:** TBD (private control-plane endpoint or approved subdomain)
 - **Repo:** `flow-as`
-- **Deploy Target:** Decision required before production promotion; existing
-  runbooks reference Hostinger/VPS and Hetzner may be used for staging proof
+- **Staging Deploy Target:** Hetzner VPS for FAAS/Hermes proving runs
+- **Production Deploy Target:** Hostinger VPS after approved staging promotion
 - **Owner:** Erik
 - **Core Function:** Governed orchestration, task routing, approval, evidence,
   audit, and final state for specialized worker lanes
 - **First Worker Decision:** Hermes is a standalone FAAS-governed
   canon-and-learning execution worker; adapter implementation pending
+- **Promotion Gate:** No Hermes worker promotion from Hetzner staging to
+  Hostinger production without proof, idempotency verification, rollback plan,
+  and Erik's approval
 
 ## Property: TransformBy10X
 
@@ -55,8 +58,9 @@ marked `TBD` or `decision required` are not production claims.
 | Canon and commercial activation decisions | Erik | FAAS operating layer | Active authority |
 | Code review and merge approval | Erik | GitHub | Active authority |
 | FAAS task routing, approval evidence, audit, terminal state | FAAS | `flow-as` | Control-plane code exists; worker contract reconciliation in progress |
-| Hermes bounded artifact execution and reflection | Hermes under FAAS | Standalone worker + adapter | Planned, not deployed by current compose |
-| FAAS production host | Erik | Hostinger or Hetzner role decision | Decision required |
+| Hermes bounded artifact execution and reflection | Hermes under FAAS | Standalone worker + adapter | Planned; first proving deployment targets Hetzner staging |
+| FAAS staging host | Erik | Hetzner VPS | Approved staging authority |
+| FAAS production host | Erik | Hostinger VPS | Approved production destination; promotion gated by evidence |
 | DNS administration | Erik | TBD | Decision required |
 | Payment and fulfillment | Erik | TBD | Decision required |
 | CRM and lead capture | Erik | TBD | Decision required |
