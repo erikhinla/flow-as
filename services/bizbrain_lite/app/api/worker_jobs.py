@@ -55,26 +55,20 @@ class ReflectionRequest(BaseModel):
 
 def job_payload(job: JobRecord) -> Dict[str, Any]:
     return {
-        "job_id": job.job_id,
-        "task_id": job.task_id,
-        "owner": job.owner,
-        "status": job.status,
-        "task_type": job.task_type,
-        "risk_tier": job.risk_tier,
-        "attempt_number": job.attempt_number,
+        "job_id": job.job_id, "task_id": job.task_id, "owner": job.owner,
+        "status": job.status, "task_type": job.task_type, "risk_tier": job.risk_tier,
+        "title": job.title, "goal": job.goal, "inputs": job.inputs,
+        "output_required": job.output_required, "attempt_number": job.attempt_number,
         "claimed_by": job.claimed_by,
         "lease_expires_at": job.lease_expires_at.isoformat() if job.lease_expires_at else None,
-        "result_pointer": job.result_pointer,
-        "review_required": job.review_required,
+        "result_pointer": job.result_pointer, "review_required": job.review_required,
         "execution_approval_required": job.execution_approval_required,
         "error_message": job.error_message,
     }
 
 
 async def locked_job(db: AsyncSession, task_id: str) -> JobRecord:
-    result = await db.execute(
-        select(JobRecord).where(JobRecord.task_id == task_id).with_for_update()
-    )
+    result = await db.execute(select(JobRecord).where(JobRecord.task_id == task_id).with_for_update())
     job = result.scalar_one_or_none()
     if not job:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -102,7 +96,6 @@ async def claim_job(task_id: str, request: ClaimRequest, db: AsyncSession = Depe
         return {"outcome": "already_running", "job": job_payload(job)}
     if job.status not in [JobStatus.QUEUED.value, JobStatus.ACTIVE.value]:
         raise HTTPException(status_code=409, detail=f"Task in state {job.status} cannot be claimed")
-
     job.status = JobStatus.ACTIVE.value
     job.claimed_by = request.worker_id
     job.attempt_number = (job.attempt_number or 0) + 1
@@ -110,8 +103,8 @@ async def claim_job(task_id: str, request: ClaimRequest, db: AsyncSession = Depe
     job.updated_at = now
     job.lease_expires_at = now + timedelta(seconds=request.lease_seconds)
     await record_audit_event(
-        db, AuditEventType.JOB_STARTED, f"Worker claimed task: {job.title}",
-        job_id=job.job_id, task_id=job.task_id, agent=job.owner, action_by=request.worker_id,
+        db, AuditEventType.JOB_STARTED, f"Worker claimed task: {job.title}", job_id=job.job_id,
+        task_id=job.task_id, agent=job.owner, action_by=request.worker_id,
         description="FAAS lease granted for bounded worker execution",
         event_data={"attempt_number": job.attempt_number, "lease_seconds": request.lease_seconds},
     )
@@ -122,8 +115,8 @@ async def claim_job(task_id: str, request: ClaimRequest, db: AsyncSession = Depe
 @router.post("/{task_id}/complete")
 async def complete_job(task_id: str, request: CompletionRequest, db: AsyncSession = Depends(get_db_session)) -> Dict[str, Any]:
     job = await locked_job(db, task_id)
-    if job.status == JobStatus.COMPLETED.value and job.result_pointer == request.result_pointer:
-        return {"outcome": "already_completed", "job": job_payload(job)}
+    if job.status in [JobStatus.COMPLETED.value, JobStatus.REVIEW_REQUIRED.value] and job.result_pointer == request.result_pointer:
+        return {"outcome": "already_recorded", "job": job_payload(job)}
     if job.status != JobStatus.ACTIVE.value or job.claimed_by != request.worker_id:
         raise HTTPException(status_code=409, detail="Only the worker holding the active claim may complete this task")
     job.result_pointer = request.result_pointer
@@ -131,8 +124,8 @@ async def complete_job(task_id: str, request: CompletionRequest, db: AsyncSessio
     job.completed_at = datetime.utcnow()
     job.lease_expires_at = None
     await record_audit_event(
-        db, AuditEventType.JOB_COMPLETED, f"Worker delivered task: {job.title}",
-        job_id=job.job_id, task_id=job.task_id, agent=job.owner, action_by=request.worker_id,
+        db, AuditEventType.JOB_COMPLETED, f"Worker delivered task: {job.title}", job_id=job.job_id,
+        task_id=job.task_id, agent=job.owner, action_by=request.worker_id,
         description="Worker result recorded through FAAS API",
         event_data={"result_pointer": request.result_pointer, "status": job.status},
         requires_human_approval=job.status == JobStatus.REVIEW_REQUIRED.value,
@@ -150,8 +143,8 @@ async def fail_job(task_id: str, request: FailureRequest, db: AsyncSession = Dep
     job.error_message = request.error_message
     job.lease_expires_at = None
     await record_audit_event(
-        db, AuditEventType.JOB_FAILED, f"Worker failed task: {job.title}",
-        job_id=job.job_id, task_id=job.task_id, agent=job.owner, action_by=request.worker_id,
+        db, AuditEventType.JOB_FAILED, f"Worker failed task: {job.title}", job_id=job.job_id,
+        task_id=job.task_id, agent=job.owner, action_by=request.worker_id,
         description=request.error_message,
     )
     await db.commit()
@@ -169,10 +162,9 @@ async def escalate_job(task_id: str, request: EscalationRequest, db: AsyncSessio
     job.escalation_notified_to = request.notify_to
     job.lease_expires_at = None
     await record_audit_event(
-        db, AuditEventType.ESCALATION_TRIGGERED, f"Worker escalated task: {job.title}",
-        job_id=job.job_id, task_id=job.task_id, agent=job.owner, action_by=request.worker_id,
-        description=request.reason, event_data={"notify_to": request.notify_to},
-        requires_human_approval=True,
+        db, AuditEventType.ESCALATION_TRIGGERED, f"Worker escalated task: {job.title}", job_id=job.job_id,
+        task_id=job.task_id, agent=job.owner, action_by=request.worker_id,
+        description=request.reason, event_data={"notify_to": request.notify_to}, requires_human_approval=True,
     )
     await db.commit()
     return {"outcome": "recorded", "job": job_payload(job)}
@@ -183,26 +175,21 @@ async def write_reflection(task_id: str, request: ReflectionRequest, db: AsyncSe
     job = await locked_job(db, task_id)
     if job.claimed_by != request.worker_id:
         raise HTTPException(status_code=409, detail="Only the task worker may write its reflection")
-    existing_result = await db.execute(
-        select(ReflectionRecord).where(
-            ReflectionRecord.task_id == task_id,
-            ReflectionRecord.sequence_number == request.sequence_number,
-        )
-    )
-    existing = existing_result.scalar_one_or_none()
+    result = await db.execute(select(ReflectionRecord).where(ReflectionRecord.task_id == task_id, ReflectionRecord.sequence_number == request.sequence_number))
+    existing = result.scalar_one_or_none()
     if existing:
         return {"outcome": "already_recorded", "reflection_id": existing.reflection_id}
     reflection = ReflectionRecord(
-        task_id=job.task_id, job_id=job.job_id, owner=job.owner,
-        sequence_number=request.sequence_number, what_worked=request.what_worked,
-        what_failed=request.what_failed, pattern_observed=request.pattern_observed,
-        context_type=request.context_type, tool_sequence=request.tool_sequence,
-        success_signal=request.success_signal, failure_signal=request.failure_signal,
+        task_id=job.task_id, job_id=job.job_id, owner=job.owner, sequence_number=request.sequence_number,
+        what_worked=request.what_worked, what_failed=request.what_failed,
+        pattern_observed=request.pattern_observed, context_type=request.context_type,
+        tool_sequence=request.tool_sequence, success_signal=request.success_signal,
+        failure_signal=request.failure_signal,
     )
     db.add(reflection)
     await record_audit_event(
-        db, AuditEventType.REFLECTION_WRITTEN, f"Reflection written: {job.title}",
-        job_id=job.job_id, task_id=job.task_id, agent=job.owner, action_by=request.worker_id,
+        db, AuditEventType.REFLECTION_WRITTEN, f"Reflection written: {job.title}", job_id=job.job_id,
+        task_id=job.task_id, agent=job.owner, action_by=request.worker_id,
         event_data={"sequence_number": request.sequence_number},
     )
     await db.commit()
