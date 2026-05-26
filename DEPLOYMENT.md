@@ -1,24 +1,60 @@
 # FLOW Agent AS Deployment
 
-This file is the top-level deployment index. The detailed deployment runbooks live in:
+This file describes the checked-in Docker Compose runtime and separates it
+from planned worker deployment work. Detailed runbooks live in:
 
 - `docs/deployment/hostinger-vps.md`
 - `docs/deployment/portainer-stack.md`
 
-## Current Deployment Shape
+## Canonical Runtime Statement
 
-FLOW Agent AS is deployed as a Docker Compose stack with:
+FAAS means **FLOW Agent Architected Schemas**. FAAS is the governed execution
+and proof layer coordinating specialized AI workers.
 
-- `flow-gateway` for intake webhook traffic
-- `flow-orchestrator` for the BizBrain Lite control plane
-- `flow-worker` services for queued execution
-- `postgres` for durable job, audit, and learning state
-- `redis` for queues and cache
-- optional local LLM services when the `local-llm` profile is enabled
+Hermes is a planned standalone **FAAS-governed canon-and-learning execution
+worker**. Hermes is not the Execution Engine and not a runtime governor. A
+Hermes installation is not part of FAAS runtime until a worker adapter,
+write-back contract, proof run, and approval gate are implemented and verified.
 
-The standalone Hermes container is not part of the production readiness gate unless it is explicitly reintroduced and verified. The validated production path is through FLOW workers.
+## Current Checked-In Compose Shape
 
-## Local Or VPS Quick Start
+The current root `docker-compose.yml` defines:
+
+- `flow-gateway` for intake webhook traffic, exposed on port `8080`;
+- `bizbrain-lite` / container `flow-orchestrator` for the FAAS control-plane
+  API, exposed on port `18001`;
+- `notion-flow-bridge` for polling and forwarding Notion tasks;
+- `flow-dashboard` for operator visibility, exposed on port `5173`;
+- optional `flow-discord-bot` under the `discord` profile;
+- `postgres` for durable application state;
+- `redis` for queues and cache.
+
+The current compose file does **not** define `flow-worker-hermes`, OpenClaw
+worker services, Agent Zero Gamma, Portainer, Postiz, or local-LLM services.
+Do not describe any of those as active production services solely from this
+repository configuration.
+
+`docker-compose.prod.yml` currently references `agent-zero-gamma`, which is
+not present in the root compose file. Treat that production override as
+unreconciled and do not apply it until it is updated alongside an approved
+worker topology.
+
+## Planned Hermes Worker Introduction
+
+Hermes will be introduced through a separate reviewed implementation after the
+FAAS worker contract is locked. The worker introduction must include:
+
+1. a standalone `flow-worker-hermes` service with restricted credentials;
+2. a FAAS Hermes Worker Adapter, rather than direct database writes;
+3. atomic claim and idempotent replay using `task_id`;
+4. explicit risk-tier enforcement and separate artifact-review versus
+   execution-approval fields;
+5. a real proving run that returns an artifact, reflection, and proof to FAAS.
+
+See `docs/architecture/FAAS_HERMES_WORKER_CONTRACT.md` for the required
+contract before implementation begins.
+
+## Local Or VPS Control-Plane Quick Start
 
 ```bash
 cp .env.example .env
@@ -29,95 +65,54 @@ docker compose build
 docker compose up -d
 ```
 
-Optional local Ollama profile:
-
-```bash
-docker compose --profile local-llm up -d
-```
-
 ## Required Environment Values
 
-At minimum, configure:
+At minimum for the currently defined compose stack, configure:
 
 - `FLOW_DB_PASSWORD`
 - `BIZBRAIN_API_TOKEN`
 - `WEBHOOK_API_KEY`
-- `OPENAI_API_KEY` or an OpenAI-compatible provider configuration
+- Notion bridge values only if `notion-flow-bridge` will be used
+- provider credentials only for features that invoke a hosted model
 
-Use `.env.example` as the full reference and keep production secrets out of git.
+Use `.env.example` as the reference when it matches the current compose file,
+and keep production secrets out of git.
 
-## Hostinger VPS
+## Target Host Decision Gate
 
-Use the Hostinger runbook:
+The canonical production host must be explicitly recorded before deployment.
+The repository previously referenced Hostinger/VPS, while Hetzner may be used
+as a staging environment for the Hermes proving run. Until that decision is
+recorded, do not claim either host is the verified FAAS production runtime.
+
+## Validation For The Current Compose Stack
+
+After deploying the current control-plane stack, verify only the services
+actually defined by `docker-compose.yml`:
 
 ```bash
-ssh root@<VPS_IP>
-mkdir -p /opt/flow-as
-cd /opt/flow-as
-git clone https://github.com/erikhinla/flow-as.git .
-bash scripts/hostinger/bootstrap_vps.sh
-bash scripts/hostinger/deploy.sh /opt/flow-as
-```
-
-Validate:
-
-```bash
-bash scripts/hostinger/healthcheck.sh localhost
+docker compose config
 docker compose ps
-docker compose logs -f --tail=100 flow-orchestrator
+curl -fsS http://localhost:18001/v1/health
+curl -fsS http://localhost:8080/health
 ```
 
-## Portainer
+The existing `scripts/proof_flow_control.py` and
+`FLOW_AGENT_AS_CONTROL_LAYER_REPORT.md` demonstrate a local Alpha/Beta/Gamma
+proof path from an earlier/runtime-specific configuration. They are evidence
+of implemented control logic, not evidence that those worker services are
+currently deployed by the root compose stack.
 
-Use the Portainer runbook:
+## Public Ports In The Current Compose File
 
-- Repository URL: `https://github.com/erikhinla/flow-as.git`
-- Compose path: `docker-compose.yml`
-- Optional additional file: `docker-compose.prod.yml`
-- Environment values: paste from `.env.example` into the Portainer stack UI
-
-Post-deploy checks:
-
-```bash
-docker compose ps
-docker compose logs --tail=100 flow-orchestrator
-curl -fsS http://<VPS_IP>:18000/v1/health
-curl -fsS http://<VPS_IP>:8080/health
-```
-
-## Runtime Readiness Gate
-
-Before trusting a GO decision, verify all of the following:
-
-```bash
-python3 scripts/proof_flow_control.py
-curl -fsS http://localhost:18789/health
-curl -fsS http://localhost:18790/health
-curl -fsS http://localhost:18800/health
-```
-
-The generated `FLOW_AGENT_AS_CONTROL_LAYER_REPORT.md` is authoritative for the Alpha/Beta/Gamma control-layer gate. Treat production as NO-GO if Alpha, Beta, or Gamma are not healthy.
-
-## Public Ports
-
-- `22` SSH
-- `9443` Portainer HTTPS
-- `9000` Portainer HTTP
-- `18000` FLOW orchestrator API
 - `8080` FLOW gateway intake API
-- `50090` FLOW worker gateway, if enabled
+- `18001` FAAS control-plane API
+- `5173` FLOW dashboard
 
 Do not expose Postgres or Redis publicly.
 
 ## Rollback
 
-Hostinger:
-
-```bash
-bash scripts/hostinger/rollback.sh /opt/flow-as
-```
-
-Portainer:
-
-- redeploy a previous known-good commit SHA or tag; or
-- use the CLI fallback from `docs/deployment/portainer-stack.md`.
+When a production host and compose topology are approved, the host runbook must
+define the corresponding rollback procedure and verified commit SHA. Do not
+rely on an unreconciled override file for rollback-sensitive deployment.
