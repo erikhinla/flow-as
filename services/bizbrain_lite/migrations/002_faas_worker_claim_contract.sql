@@ -1,6 +1,8 @@
 -- FAAS governed worker contract: apply on Hetzner staging before proving run.
 -- If historic jobs already duplicate a task_id, stop and reconcile them deliberately.
 
+ALTER TABLE job_records ADD COLUMN IF NOT EXISTS inputs JSONB NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE job_records ADD COLUMN IF NOT EXISTS output_required TEXT;
 ALTER TABLE job_records ADD COLUMN IF NOT EXISTS review_required BOOLEAN NOT NULL DEFAULT FALSE;
 ALTER TABLE job_records ADD COLUMN IF NOT EXISTS execution_approval_required BOOLEAN NOT NULL DEFAULT FALSE;
 ALTER TABLE job_records ADD COLUMN IF NOT EXISTS attempt_number INTEGER NOT NULL DEFAULT 0;
