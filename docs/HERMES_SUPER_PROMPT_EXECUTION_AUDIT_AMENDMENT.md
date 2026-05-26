@@ -14,7 +14,7 @@ historical audit.
 | Hermes may be treated as an available production control-plane service. | Hermes artifacts and historical compose definitions exist; the current root `docker-compose.yml` does not deploy a Hermes service. |
 | FLOW workers are deployed by the current root compose configuration. | The current root compose configuration defines control-plane, gateway, dashboard, Notion bridge, Redis, and Postgres services; worker services have not yet been integrated into that compose topology. |
 | Current production readiness can rely on Alpha/Beta/Gamma proof artifacts alone. | The control-layer report proves a local runtime-specific path; production readiness requires a reconciled compose topology and a host-specific proving run. |
-| Hostinger is confirmed production deployment authority. | Hostinger is referenced by existing runbooks; the canonical production host and any Hetzner staging role must be explicitly approved and recorded. |
+| Deployment-host authority was not settled. | **Hetzner VPS is staging** for proving runs. **Hostinger VPS is production** after evidence review, rollback readiness, and Erik's approval. |
 
 ## Locked Architecture
 
@@ -26,6 +26,8 @@ historical audit.
   claiming, idempotent replay, task-scoped workspaces, and proof write-back.
 - Hermes must not receive production deploy, billing, DNS, or unrestricted
   infrastructure authority for the first proving run.
+- Hetzner staging is the first worker proving environment; Hostinger production
+  receives only an explicitly approved promotion.
 
 ## Evidence Boundary
 
@@ -37,14 +39,15 @@ Not yet proven by current checked-in deployment configuration:
 
 - a deployed standalone Hermes FAAS worker;
 - a Hermes adapter consuming governed FAAS jobs and writing results back;
-- a production host running the approved worker topology;
+- a Hetzner staging host running the approved worker topology;
+- a Hostinger production promotion of that topology;
 - a real TBTX or BBAI delivery completed through the integrated Hermes lane.
 
 ## Next Verified Milestone
 
-The next milestone is contract reconciliation followed by a staging proving run
-in which a FAAS-routed Hermes task produces the TBTX Fog Diagnostic UI
-implementation specification and component schema from attached canonical
+The next milestone is contract reconciliation followed by a Hetzner staging
+proving run in which a FAAS-routed Hermes task produces the TBTX Fog Diagnostic
+UI implementation specification and component schema from attached canonical
 source logic, with artifact review, proof, reflection, and idempotent replay.
 
 See `docs/architecture/FAAS_HERMES_WORKER_CONTRACT.md` and `DEPLOYMENT.md` for
