@@ -1,38 +1,30 @@
-"""
-Hermes Skill Loop API Endpoints
-
-Endpoints for:
-- Writing reflections (POST /reflections)
-- Triggering skill extraction (POST /extract-skills)
-- Retrieving skills for task enrichment (GET /skills)
-- Updating skill confidence (POST /skills/{skill_id}/feedback)
-"""
+"""Legacy Hermes skill loop endpoints; worker write-back belongs under /jobs."""
 
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, HTTPException, Body
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.deps import require_api_token
 from app.config.database import get_db_session
 from app.models.flow_reflection_record import ReflectionRecord
 from app.models.flow_skill_record import SkillRecord
 from app.services.skill_extraction_service import SkillExtractionService
 
-router = APIRouter(tags=["hermes-skills"], prefix="/hermes")
+router = APIRouter(
+    tags=["hermes-skills"], prefix="/hermes", dependencies=[Depends(require_api_token)]
+)
 
-
-# ============================================================================
-# Pydantic Models
-# ============================================================================
 
 class ReflectionCreate(BaseModel):
-    """Input model for writing a reflection"""
     task_id: str
     job_id: str
-    owner: str  # openclaw, hermes, agent_zero
+    owner: str
+    sequence_number: Optional[int] = None
     what_worked: str
     what_failed: str
     pattern_observed: Optional[str] = None
@@ -44,10 +36,10 @@ class ReflectionCreate(BaseModel):
 
 
 class ReflectionResponse(BaseModel):
-    """Output model for a reflection"""
     reflection_id: str
     task_id: str
     job_id: str
+    sequence_number: int
     owner: str
     what_worked: str
     what_failed: str
@@ -58,7 +50,6 @@ class ReflectionResponse(BaseModel):
 
 
 class SkillResponse(BaseModel):
-    """Output model for a skill"""
     skill_id: str
     name: str
     task_type: str
@@ -73,224 +64,100 @@ class SkillResponse(BaseModel):
 
 
 class SkillFeedback(BaseModel):
-    """Input model for skill confidence update"""
     task_succeeded: bool
     notes: Optional[str] = None
 
 
 class ExtractionStats(BaseModel):
-    """Output model for extraction pass stats"""
     extracted: int
     skipped: int
     errors: int
 
 
-# ============================================================================
-# Endpoints
-# ============================================================================
-
 @router.post("/reflections", response_model=ReflectionResponse)
-async def write_reflection(
-    reflection: ReflectionCreate,
-    db: AsyncSession = Depends(get_db_session)
-) -> ReflectionResponse:
-    """
-    Write a reflection after task completion.
-    
-    Called by agents after job completes (success or failure).
-    
-    Input:
-    {
-        "task_id": "task-123",
-        "job_id": "job-456",
-        "owner": "hermes",
-        "what_worked": "Regex pattern matched 95% of inputs",
-        "what_failed": "Edge cases with special chars",
-        "pattern_observed": "Intake submissions follow header+body pattern",
-        "context_type": "intake_form",
-        "tool_sequence": ["regex_match", "fallback_rule", "json_output"],
-        "success_signal": "All files classified with confidence >= 0.9"
-    }
-    """
-    
-    reflection_record = ReflectionRecord(
-        reflection_id=str(uuid4()),
-        task_id=reflection.task_id,
-        job_id=reflection.job_id,
-        owner=reflection.owner,
-        what_worked=reflection.what_worked,
-        what_failed=reflection.what_failed,
-        pattern_observed=reflection.pattern_observed,
-        context_type=reflection.context_type,
-        tool_sequence=reflection.tool_sequence,
-        success_signal=reflection.success_signal,
-        failure_signal=reflection.failure_signal,
-        sensitivity_level=reflection.sensitivity_level,
-        created_at=datetime.utcnow(),
-        skill_extraction_attempted='N',
+async def write_reflection(reflection: ReflectionCreate, db: AsyncSession = Depends(get_db_session)) -> ReflectionResponse:
+    """Compatibility endpoint; governed workers should use /jobs/{task_id}/reflections."""
+    if reflection.sequence_number is None:
+        next_result = await db.execute(
+            select(func.coalesce(func.max(ReflectionRecord.sequence_number), 0) + 1)
+            .where(ReflectionRecord.task_id == reflection.task_id)
+        )
+        sequence_number = next_result.scalar_one()
+    else:
+        sequence_number = reflection.sequence_number
+    existing_result = await db.execute(
+        select(ReflectionRecord).where(
+            ReflectionRecord.task_id == reflection.task_id,
+            ReflectionRecord.sequence_number == sequence_number,
+        )
     )
-    
-    db.add(reflection_record)
-    await db.commit()
-    await db.refresh(reflection_record)
-    
+    existing = existing_result.scalar_one_or_none()
+    if existing:
+        record = existing
+    else:
+        record = ReflectionRecord(
+            reflection_id=str(uuid4()), task_id=reflection.task_id, job_id=reflection.job_id,
+            sequence_number=sequence_number, owner=reflection.owner,
+            what_worked=reflection.what_worked, what_failed=reflection.what_failed,
+            pattern_observed=reflection.pattern_observed, context_type=reflection.context_type,
+            tool_sequence=reflection.tool_sequence, success_signal=reflection.success_signal,
+            failure_signal=reflection.failure_signal, sensitivity_level=reflection.sensitivity_level,
+            created_at=datetime.utcnow(), skill_extraction_attempted='N',
+        )
+        db.add(record)
+        await db.commit()
+        await db.refresh(record)
     return ReflectionResponse(
-        reflection_id=reflection_record.reflection_id,
-        task_id=reflection_record.task_id,
-        job_id=reflection_record.job_id,
-        owner=reflection_record.owner,
-        what_worked=reflection_record.what_worked,
-        what_failed=reflection_record.what_failed,
-        pattern_observed=reflection_record.pattern_observed,
-        context_type=reflection_record.context_type,
-        created_at=reflection_record.created_at.isoformat(),
-        skill_extraction_attempted=reflection_record.skill_extraction_attempted,
+        reflection_id=record.reflection_id, task_id=record.task_id, job_id=record.job_id,
+        sequence_number=record.sequence_number, owner=record.owner, what_worked=record.what_worked,
+        what_failed=record.what_failed, pattern_observed=record.pattern_observed,
+        context_type=record.context_type, created_at=record.created_at.isoformat(),
+        skill_extraction_attempted=record.skill_extraction_attempted,
     )
 
 
 @router.post("/extract-skills", response_model=ExtractionStats)
-async def extract_skills(
-    db: AsyncSession = Depends(get_db_session)
-) -> ExtractionStats:
-    """
-    Trigger a skill extraction pass.
-    
-    Processes all reflections marked as pending extraction.
-    Extracts reusable patterns and indexes them by task_type + context.
-    
-    Returns extraction statistics:
-    {
-        "extracted": 5,
-        "skipped": 2,
-        "errors": 0
-    }
-    
-    Call this endpoint periodically (every 5-10 minutes) or on-demand.
-    """
-    
+async def extract_skills(db: AsyncSession = Depends(get_db_session)) -> ExtractionStats:
     stats = await SkillExtractionService.process_pending_reflections(db)
     return ExtractionStats(**stats)
 
 
 @router.get("/skills", response_model=List[SkillResponse])
 async def retrieve_skills(
-    task_type: str = 'classification',
-    context_type: Optional[str] = None,
-    limit: int = 3,
-    db: AsyncSession = Depends(get_db_session)
+    task_type: str = 'classification', context_type: Optional[str] = None,
+    limit: int = 3, db: AsyncSession = Depends(get_db_session),
 ) -> List[SkillResponse]:
-    """
-    Retrieve skills for task enrichment.
-    
-    Called before task execution to enrich context with prior skills.
-    Returns top-N skills ordered by confidence.
-    
-    Query parameters:
-    - task_type: 'classification', 'rewrite', 'content_prep' (default: 'classification')
-    - context_type: optional, e.g., 'intake_form'
-    - limit: max results (default: 3)
-    
-    Example response:
-    [
-        {
-            "skill_id": "skill-123",
-            "name": "openclaw__intake_form__abc12345",
-            "task_type": "classification",
-            "context_type": "intake_form",
-            "pattern": "Intake submissions follow predictable header+body pattern",
-            "tool_sequence": ["regex_match", "fallback_rule"],
-            "confidence": 0.85,
-            "times_used": 10,
-            "times_succeeded": 9,
-            "times_failed": 1,
-            "status": "trusted"
-        }
-    ]
-    """
-    
     skills = await SkillExtractionService.retrieve_skills_for_task(
-        db,
-        task_type=task_type,
-        context_type=context_type,
-        limit=limit
+        db, task_type=task_type, context_type=context_type, limit=limit
     )
-    
     return [SkillResponse(**skill) for skill in skills]
 
 
 @router.post("/skills/{skill_id}/feedback")
 async def update_skill_feedback(
-    skill_id: str,
-    feedback: SkillFeedback,
-    db: AsyncSession = Depends(get_db_session)
+    skill_id: str, feedback: SkillFeedback, db: AsyncSession = Depends(get_db_session)
 ) -> Dict[str, Any]:
-    """
-    Update a skill's confidence based on task outcome.
-    
-    Called after a task completes to track if the skill helped or hurt.
-    
-    Input:
-    {
-        "task_succeeded": true,
-        "notes": "Regex pattern worked perfectly on all inputs"
-    }
-    
-    Returns updated skill state.
-    """
-    
-    await SkillExtractionService.update_skill_confidence(
-        db,
-        skill_id=skill_id,
-        task_succeeded=feedback.task_succeeded
-    )
-    
-    # Fetch updated skill
-    from sqlalchemy import select
-    stmt = select(SkillRecord).where(SkillRecord.skill_id == skill_id)
-    result = await db.execute(stmt)
+    await SkillExtractionService.update_skill_confidence(db, skill_id=skill_id, task_succeeded=feedback.task_succeeded)
+    result = await db.execute(select(SkillRecord).where(SkillRecord.skill_id == skill_id))
     skill = result.scalar_one_or_none()
-    
     if not skill:
         raise HTTPException(status_code=404, detail=f"Skill {skill_id} not found")
-    
     return {
-        "skill_id": skill.skill_id,
-        "confidence": skill.confidence,
-        "times_used": skill.times_used,
-        "times_succeeded": skill.times_succeeded,
-        "times_failed": skill.times_failed,
-        "status": skill.status,
-        "success_rate": f"{skill.success_rate():.2%}",
+        "skill_id": skill.skill_id, "confidence": skill.confidence, "times_used": skill.times_used,
+        "times_succeeded": skill.times_succeeded, "times_failed": skill.times_failed,
+        "status": skill.status, "success_rate": f"{skill.success_rate():.2%}",
     }
 
 
-@router.get("/skills/{skill_id}")
-async def get_skill(
-    skill_id: str,
-    db: AsyncSession = Depends(get_db_session)
-) -> SkillResponse:
-    """
-    Get a specific skill by ID.
-    """
-    
-    from sqlalchemy import select
-    stmt = select(SkillRecord).where(SkillRecord.skill_id == skill_id)
-    result = await db.execute(stmt)
+@router.get("/skills/{skill_id}", response_model=SkillResponse)
+async def get_skill(skill_id: str, db: AsyncSession = Depends(get_db_session)) -> SkillResponse:
+    result = await db.execute(select(SkillRecord).where(SkillRecord.skill_id == skill_id))
     skill = result.scalar_one_or_none()
-    
     if not skill:
         raise HTTPException(status_code=404, detail=f"Skill {skill_id} not found")
-    
     return SkillResponse(
-        skill_id=skill.skill_id,
-        name=skill.name,
-        task_type=skill.task_type,
-        context_type=skill.context_type,
-        pattern=skill.pattern,
-        tool_sequence=skill.tool_sequence,
-        confidence=skill.confidence,
-        times_used=skill.times_used,
-        times_succeeded=skill.times_succeeded,
-        times_failed=skill.times_failed,
-        status=skill.status,
+        skill_id=skill.skill_id, name=skill.name, task_type=skill.task_type,
+        context_type=skill.context_type, pattern=skill.pattern, tool_sequence=skill.tool_sequence,
+        confidence=skill.confidence, times_used=skill.times_used,
+        times_succeeded=skill.times_succeeded, times_failed=skill.times_failed, status=skill.status,
     )

@@ -1,136 +1,32 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Task Envelope",
-  "description": "Standard task envelope for FLOW Agent AS. Every task must conform to this schema.",
+  "title": "FAAS Task Envelope",
+  "description": "Governed task envelope for FLOW Agent Architected Schemas.",
   "type": "object",
-  "required": [
-    "task_id",
-    "created_at",
-    "source",
-    "title",
-    "goal",
-    "task_type",
-    "risk_tier",
-    "preferred_owner",
-    "owner_role",
-    "output_required",
-    "review_required",
-    "status"
-  ],
+  "required": ["task_id", "created_at", "source", "title", "goal", "task_type", "risk_tier", "output_required", "review_required", "status"],
   "properties": {
-    "task_id": {
-      "type": "string",
-      "description": "UUID identifying this task uniquely",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
-    },
-    "created_at": {
-      "type": "string",
-      "format": "date-time",
-      "description": "ISO8601 timestamp when task was created"
-    },
-    "source": {
-      "type": "string",
-      "enum": ["manual", "webhook", "github_action", "scheduled", "discord", "landing_page", "proof"],
-      "description": "Origin of the task"
-    },
-    "title": {
-      "type": "string",
-      "minLength": 5,
-      "maxLength": 200,
-      "description": "Short, imperative task title"
-    },
-    "goal": {
-      "type": "string",
-      "minLength": 10,
-      "maxLength": 1000,
-      "description": "Single finishable outcome. Must be observable and bounded."
-    },
+    "task_id": {"type": "string", "description": "Idempotency key for the task"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "source": {"type": "string", "enum": ["manual", "webhook", "github_action", "scheduled", "discord", "landing_page", "proof"]},
+    "title": {"type": "string", "minLength": 5, "maxLength": 200},
+    "goal": {"type": "string", "minLength": 10, "maxLength": 4000},
     "task_type": {
       "type": "string",
-      "enum": [
-        "classification",
-        "rewrite",
-        "content_prep",
-        "implementation",
-        "skill_extraction",
-        "healthcheck"
-      ],
-      "description": "Category of work"
+      "enum": ["classification", "rewrite", "content_prep", "artifact_production", "implementation", "skill_extraction", "healthcheck"]
     },
-    "risk_tier": {
-      "type": "string",
-      "enum": ["reputation", "time_loss", "downtime_security_money"],
-      "description": "Risk assessment and routing tier. reputation routes to Alpha, time_loss to Beta, downtime_security_money to Gamma."
-    },
-    "priority": {
-      "type": "string",
-      "enum": ["low", "normal", "high", "urgent"],
-      "default": "normal",
-      "description": "Task execution priority. Affects queue ordering and worker selection."
-    },
-    "preferred_owner": {
-      "type": "string",
-      "enum": ["alpha", "beta", "gamma"],
-      "description": "Recommended FLOW role to execute this task"
-    },
-    "owner_role": {
-      "type": "string",
-      "enum": ["alpha", "beta", "gamma"],
-      "description": "Assigned FLOW role. Must match risk_tier routing."
-    },
-    "inputs": {
-      "type": "object",
-      "properties": {
-        "files": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Relative file paths to operate on"
-        },
-        "notes": {
-          "type": "string",
-          "description": "Additional context or instructions"
-        },
-        "context_refs": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "References to canon docs, prior tasks, or relevant context"
-        }
-      }
-    },
-    "output_required": {
-      "type": "string",
-      "description": "Description of the observable artifact or state change required"
-    },
-    "review_required": {
-      "type": "boolean",
-      "description": "If true, task must pass review before completion is final. Always true for high-risk tasks."
-    },
-    "rollback_required": {
-      "type": "boolean",
-      "default": false,
-      "description": "If true, a rollback plan (task.rollback.md) must exist before execution"
-    },
+    "risk_tier": {"type": "string", "enum": ["low", "medium", "high"]},
+    "priority": {"type": "string", "enum": ["low", "normal", "high", "urgent"], "default": "normal"},
+    "preferred_owner": {"type": ["string", "null"], "enum": ["openclaw", "hermes", "agent_zero", null]},
+    "owner_role": {"type": ["string", "null"], "enum": ["openclaw", "hermes", "agent_zero", null]},
+    "inputs": {"type": "object"},
+    "output_required": {"type": "string"},
+    "review_required": {"type": "boolean"},
+    "execution_approval_required": {"type": "boolean", "default": false},
+    "rollback_required": {"type": "boolean", "default": false},
     "status": {
       "type": "string",
-      "enum": [
-        "pending",
-        "validated",
-        "queued",
-        "active",
-        "review_required",
-        "completed",
-        "failed",
-        "dead_letter",
-        "blocked",
-        "escalated",
-        "archived"
-      ],
-      "default": "pending",
-      "description": "Current task status"
+      "enum": ["pending", "validated", "queued", "active", "review_required", "completed", "failed", "dead_letter", "blocked", "escalated", "archived"],
+      "default": "pending"
     }
   },
   "additionalProperties": false

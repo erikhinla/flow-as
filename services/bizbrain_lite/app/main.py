@@ -2,7 +2,7 @@ import asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import agents, artifacts, handoffs, health, tasks, threads, flow_health, hermes_skills, openclaw_intake, agent_zero_reviews, performance, flow_control
+from app.api import agents, artifacts, handoffs, health, tasks, threads, flow_health, hermes_skills, openclaw_intake, agent_zero_reviews, performance, flow_control, worker_jobs
 from app.config.settings import get_settings
 from app.config.database import close_db, init_db
 from app.services.redis_store import redis_store
@@ -31,78 +31,72 @@ app.include_router(artifacts.router, prefix="/v1")
 app.include_router(handoffs.router, prefix="/v1")
 app.include_router(threads.router, prefix="/v1")
 app.include_router(agents.router, prefix="/v1")
-app.include_router(flow_health.router, prefix="/v1")  # FLOW health checks
-app.include_router(hermes_skills.router, prefix="/v1")  # Hermes skill loop
-app.include_router(openclaw_intake.router, prefix="/v1")  # OpenClaw intake and routing
-app.include_router(agent_zero_reviews.router, prefix="/v1")  # Agent Zero review enforcement
-app.include_router(performance.router, prefix="/v1")  # Performance analysis and optimization
-app.include_router(flow_control.router, prefix="/v1")  # Filesystem FLOW control panel/Discord API
+app.include_router(flow_health.router, prefix="/v1")
+app.include_router(hermes_skills.router, prefix="/v1")
+app.include_router(openclaw_intake.router, prefix="/v1")
+app.include_router(worker_jobs.router, prefix="/v1")
+app.include_router(agent_zero_reviews.router, prefix="/v1")
+app.include_router(performance.router, prefix="/v1")
+app.include_router(flow_control.router, prefix="/v1")
 
-# Skill extraction background job
 skill_extraction_job = None
-
-# Redis queue service (initialized on startup)
 redis_queue_service = None
 
 
 @app.on_event("startup")
 async def startup_services():
-    """Initialize all FLOW services on app startup"""
+    """Initialize all FLOW services on app startup."""
     global skill_extraction_job, redis_queue_service
 
     try:
         await init_db()
-        print("✓ FLOW Postgres tables initialized")
-    except Exception as e:
-        print(f"✗ Failed to initialize FLOW Postgres tables: {e}")
+        print("FLOW Postgres tables initialized")
+    except Exception as exc:
+        print(f"Failed to initialize FLOW Postgres tables: {exc}")
         raise
-    
-    # Initialize Redis queue service
+
     try:
         redis_url = settings.bizbrain_redis_url
         redis_client = await get_redis_client(redis_url)
         redis_queue_service = RedisQueueService(redis_client)
         openclaw_intake.redis_queue_service = redis_queue_service
-        print(f"✓ Redis queue service initialized: {redis_url}")
-    except Exception as e:
-        print(f"✗ Failed to initialize Redis: {e}")
+        print(f"Redis queue service initialized: {redis_url}")
+    except Exception as exc:
+        print(f"Failed to initialize Redis: {exc}")
         redis_queue_service = None
-    
-    # Initialize skill extraction background job
+
     try:
-        skill_extraction_job = SkillExtractionJob(interval_seconds=300)  # Run every 5 minutes
+        skill_extraction_job = SkillExtractionJob(interval_seconds=300)
         asyncio.create_task(skill_extraction_job.start())
-        print("✓ Skill extraction job started")
-    except Exception as e:
-        print(f"✗ Failed to start skill extraction job: {e}")
+        print("Skill extraction job started")
+    except Exception as exc:
+        print(f"Failed to start skill extraction job: {exc}")
         skill_extraction_job = None
 
 
 @app.on_event("shutdown")
 async def shutdown_services():
-    """Clean up services on app shutdown"""
+    """Clean up services on app shutdown."""
     global skill_extraction_job, redis_queue_service
-    
-    # Stop skill extraction job
+
     if skill_extraction_job:
         await skill_extraction_job.stop()
-    
-    # Close Redis connection
+
     if redis_queue_service:
         try:
             await redis_queue_service.redis.close()
-            print("✓ Redis connection closed")
-        except Exception as e:
-            print(f"✗ Error closing Redis: {e}")
+            print("Redis connection closed")
+        except Exception as exc:
+            print(f"Error closing Redis: {exc}")
 
     try:
         await redis_store.close()
-        print("✓ Redis store closed")
-    except Exception as e:
-        print(f"✗ Error closing Redis store: {e}")
+        print("Redis store closed")
+    except Exception as exc:
+        print(f"Error closing Redis store: {exc}")
 
     try:
         await close_db()
-        print("✓ FLOW Postgres connection pool closed")
-    except Exception as e:
-        print(f"✗ Error closing FLOW Postgres pool: {e}")
+        print("FLOW Postgres connection pool closed")
+    except Exception as exc:
+        print(f"Error closing FLOW Postgres pool: {exc}")
