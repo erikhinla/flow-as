@@ -10,6 +10,7 @@ from enum import Enum
 from uuid import uuid4
 
 from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text, Index
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -49,14 +50,12 @@ class TaskType(str, Enum):
 
 
 class RiskTier(str, Enum):
-    """Risk assessment levels."""
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
 
 
 class Priority(str, Enum):
-    """Task priority levels."""
     LOW = "low"
     NORMAL = "normal"
     HIGH = "high"
@@ -87,9 +86,12 @@ class JobRecord(Base):
     review_pointer = Column(Text, nullable=True)
     rollback_pointer = Column(Text, nullable=True)
 
+    # The claimed worker receives this bounded brief, not just a queue ID.
     title = Column(String(500), nullable=True)
     goal = Column(Text, nullable=True)
     source = Column(String(50), nullable=True)
+    inputs = Column(JSONB, nullable=False, default=dict)
+    output_required = Column(Text, nullable=True)
     review_required = Column(Boolean, nullable=False, default=False)
     execution_approval_required = Column(Boolean, nullable=False, default=False)
 
