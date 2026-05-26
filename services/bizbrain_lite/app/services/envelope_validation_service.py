@@ -84,7 +84,6 @@ class EnvelopeValidationService:
         task_type = envelope.get('task_type')
         preferred = envelope.get('preferred_owner')
         owner_role = envelope.get('owner_role')
-
         if risk_tier not in EnvelopeValidationService.VALID_RISK_TIERS:
             return False, f"Invalid risk_tier '{risk_tier}'. Must be low, medium, or high"
         if task_type not in EnvelopeValidationService.VALID_TASK_TYPES:
@@ -94,20 +93,16 @@ class EnvelopeValidationService:
                 return False, f"Invalid {label} '{owner}'"
         if preferred and owner_role and preferred != owner_role:
             return False, "preferred_owner and owner_role must identify the same worker"
-
         requested_owner = owner_role or preferred
         default_owner = EnvelopeValidationService.ROUTING_RULES[task_type]
         if requested_owner and requested_owner != default_owner:
             return False, f"task_type={task_type} routes to owner_role={default_owner}"
-
         if risk_tier == 'high':
             if default_owner != 'agent_zero':
                 return False, "High-risk work routes only to agent_zero"
             if not envelope.get('review_required') or not envelope.get('execution_approval_required'):
                 return False, "High-risk work requires review_required=true and execution_approval_required=true"
-
-        goal = envelope.get('goal', '')
-        if len(goal) < 10:
+        if len(envelope.get('goal', '')) < 10:
             return False, "Goal must be at least 10 characters and observable"
         if task_type == 'implementation' and envelope.get('rollback_required'):
             if not envelope.get('inputs', {}).get('rollback_plan'):
@@ -123,36 +118,27 @@ class EnvelopeValidationService:
         db: AsyncSession, envelope: Dict[str, Any], source: str = 'manual'
     ) -> Tuple[bool, Optional[str], Optional[JobRecord], bool]:
         """Return success, error, job, created_new; task_id is idempotent."""
-        existing_result = await db.execute(
-            select(JobRecord).where(JobRecord.task_id == envelope.get('task_id'))
-        )
+        existing_result = await db.execute(select(JobRecord).where(JobRecord.task_id == envelope.get('task_id')))
         existing = existing_result.scalar_one_or_none()
         if existing:
             return True, None, existing, False
-
         schema_valid, schema_error = EnvelopeValidationService.validate_schema(envelope)
         if not schema_valid:
             return False, schema_error, None, False
         rules_valid, rules_error = EnvelopeValidationService.validate_business_rules(envelope)
         if not rules_valid:
             return False, rules_error, None, False
-
         owner = EnvelopeValidationService.determine_owner(envelope)
         try:
             job = JobRecord(
-                job_id=envelope['task_id'],
-                task_id=envelope['task_id'],
-                owner=owner,
-                status=JobStatus.VALIDATED.value,
-                task_type=envelope['task_type'],
-                risk_tier=envelope['risk_tier'],
-                title=envelope.get('title'),
-                goal=envelope.get('goal'),
-                source=source,
+                job_id=envelope['task_id'], task_id=envelope['task_id'], owner=owner,
+                status=JobStatus.VALIDATED.value, task_type=envelope['task_type'],
+                risk_tier=envelope['risk_tier'], priority=envelope.get('priority', 'normal'),
+                title=envelope.get('title'), goal=envelope.get('goal'), source=source,
+                inputs=envelope.get('inputs', {}), output_required=envelope.get('output_required'),
                 review_required=bool(envelope.get('review_required')),
                 execution_approval_required=bool(envelope.get('execution_approval_required')),
-                created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow(),
+                created_at=datetime.utcnow(), updated_at=datetime.utcnow(),
             )
             db.add(job)
             await db.commit()
@@ -188,7 +174,4 @@ class RoutingService:
 
     @staticmethod
     async def get_all_queue_depths(redis_client) -> Dict[str, int]:
-        return {
-            owner: await RoutingService.get_queue_depth(redis_client, owner)
-            for owner in EnvelopeValidationService.VALID_OWNERS
-        }
+        return {owner: await RoutingService.get_queue_depth(redis_client, owner) for owner in EnvelopeValidationService.VALID_OWNERS}
