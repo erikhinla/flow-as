@@ -12,6 +12,18 @@ governor, and not authorized to determine whether a result ships.
 This document is the contract gate for the future `flow-worker-hermes` adapter.
 It does not assert that the adapter or worker container is already deployed.
 
+## Host Roles
+
+| Environment | Host | Role |
+| --- | --- | --- |
+| Staging | Hetzner VPS | Install, integrate, and prove the FAAS/Hermes worker path |
+| Production | Hostinger VPS | Receive only reviewed and approved promotions from staging |
+
+The first real Hermes proving task must run on Hetzner. A successful staging
+run does not itself authorize a Hostinger production deployment; promotion
+requires evidence review, rollback readiness, separate production secrets, and
+Erik's explicit approval.
+
 ## Ownership
 
 | Concern | Authority |
@@ -115,11 +127,12 @@ A low-risk TBTX component specification may set `review_required: true` and
 
 ## Security Boundary For The Proving Run
 
-For the first real Hermes assignment:
+For the first real Hermes assignment on Hetzner staging:
 
 - use a dedicated non-root worker identity when containerized;
-- provide only the model credential and limited FAAS callback credential;
-- provide no deployment, billing, DNS, or production database credentials;
+- use staging-only FAAS credentials and a model credential;
+- provide no Hostinger production deployment, billing, DNS, or production
+  database credentials;
 - do not mount a host Docker socket;
 - disable general terminal execution unless a separately reviewed sandbox
   boundary is implemented;
@@ -153,9 +166,10 @@ not infer it from a description alone.
 ## Implementation Gates
 
 1. Correct current documentation and authority language.
-2. Confirm canonical deployment host and staging role.
+2. Record Hostinger as production and Hetzner as staging. **Complete.**
 3. Implement or reconcile the Postgres-backed job APIs and risk/status model.
 4. Add the Hermes adapter and worker service with idempotent claiming.
-5. Execute the real proving task in staging.
+5. Execute the real proving task on Hetzner staging.
 6. Demonstrate replay returns existing artifacts without re-execution.
-7. Review evidence before any production promotion.
+7. Review evidence and rollback readiness.
+8. Promote to Hostinger production only after Erik explicitly approves.
