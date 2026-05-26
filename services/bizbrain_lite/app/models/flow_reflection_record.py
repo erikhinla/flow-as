@@ -7,10 +7,9 @@ Stored in Postgres, queryable by task_type/context.
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional, List
 from uuid import uuid4
 
-from sqlalchemy import Column, DateTime, String, Text, Index, Float
+from sqlalchemy import Column, DateTime, String, Text, Index, Integer, UniqueConstraint
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.dialects.postgresql import ARRAY
 
@@ -18,55 +17,40 @@ Base = declarative_base()
 
 
 class SensitivityLevel(str, Enum):
-    """Data sensitivity for reflection"""
+    """Data sensitivity for reflection."""
     PUBLIC = "public"
     INTERNAL = "internal"
     REDACTED = "redacted"
 
 
 class ReflectionRecord(Base):
-    """
-    Post-execution reflection record.
-    
-    Written after every completed job. Used for skill extraction.
-    Schema matches /schemas/reflection_record.schema.json.
-    """
-    
+    """Post-execution reflection record, append-only per task sequence."""
+
     __tablename__ = "reflection_records"
-    
-    # Primary key
+
     reflection_id = Column(String(36), primary_key=True, default=lambda: str(uuid4()))
-    
-    # References
-    task_id = Column(String(36), nullable=False, index=True)
-    job_id = Column(String(36), nullable=False, index=True)
-    
-    # Ownership
-    owner = Column(String(20), nullable=False)  # openclaw, hermes, agent_zero
-    
-    # Reflection content (required)
-    what_worked = Column(Text, nullable=False)  # What succeeded
-    what_failed = Column(Text, nullable=False)  # What didn't work
-    
-    # Pattern extraction (optional but valuable)
-    pattern_observed = Column(Text, nullable=True)  # Reusable pattern description
-    context_type = Column(String(100), nullable=True, index=True)  # e.g., "intake_form", "blog_post"
-    tool_sequence = Column(ARRAY(String), nullable=True)  # e.g., ["regex_classify", "markdown_format"]
-    success_signal = Column(Text, nullable=True)  # Observable success indicator
-    failure_signal = Column(Text, nullable=True)  # Observable failure indicator
-    
-    # Data sensitivity
+    task_id = Column(String(100), nullable=False, index=True)
+    job_id = Column(String(100), nullable=False, index=True)
+    sequence_number = Column(Integer, nullable=False, default=1)
+
+    owner = Column(String(20), nullable=False)
+    what_worked = Column(Text, nullable=False)
+    what_failed = Column(Text, nullable=False)
+
+    pattern_observed = Column(Text, nullable=True)
+    context_type = Column(String(100), nullable=True, index=True)
+    tool_sequence = Column(ARRAY(String), nullable=True)
+    success_signal = Column(Text, nullable=True)
+    failure_signal = Column(Text, nullable=True)
+
     sensitivity_level = Column(String(20), default=SensitivityLevel.INTERNAL.value)
-    
-    # Timing
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow, index=True)
-    
-    # Skill extraction tracking
-    skill_extraction_attempted = Column(String(1), default='N')  # Y/N flag
-    skills_extracted = Column(ARRAY(String), nullable=True)  # Array of extracted skill IDs
-    
-    # Indexes for common queries
+
+    skill_extraction_attempted = Column(String(1), default='N')
+    skills_extracted = Column(ARRAY(String), nullable=True)
+
     __table_args__ = (
+        UniqueConstraint('task_id', 'sequence_number', name='uq_reflection_task_sequence'),
         Index('idx_reflection_records_owner', 'owner'),
         Index('idx_reflection_records_task_id', 'task_id'),
         Index('idx_reflection_records_job_id', 'job_id'),
@@ -74,20 +58,17 @@ class ReflectionRecord(Base):
         Index('idx_reflection_records_context_type', 'context_type'),
         Index('idx_reflection_records_skill_extraction_pending', 'skill_extraction_attempted'),
     )
-    
+
     def __repr__(self):
         return f"<ReflectionRecord(reflection_id={self.reflection_id}, job_id={self.job_id})>"
-    
+
     def is_extraction_pending(self) -> bool:
-        """Check if skill extraction has been attempted"""
         return self.skill_extraction_attempted == 'N'
-    
+
     def mark_extraction_attempted(self):
-        """Mark extraction as attempted"""
         self.skill_extraction_attempted = 'Y'
-    
+
     def has_extractable_pattern(self) -> bool:
-        """Check if reflection contains enough info to extract a skill"""
         return (
             bool(self.pattern_observed) and
             bool(self.success_signal) and
