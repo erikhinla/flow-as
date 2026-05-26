@@ -1,61 +1,46 @@
-"""
-OpenClaw Router API Endpoints
-
-Intake for task envelopes:
-- POST /intake/task - receive and validate task envelope
-- GET /intake/status - check intake health
-- GET /queues/status - check all queue depths
-- POST /queues/clear - clear a queue (admin)
-"""
+"""Governed task intake and queue visibility endpoints."""
 
 from typing import Dict, Any, Optional
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, Body, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field, field_validator
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import require_api_token
 from app.config.database import get_db_session
-from app.services.envelope_validation_service import EnvelopeValidationService, RoutingService, TASK_ENVELOPE_SCHEMA
+from app.services.envelope_validation_service import EnvelopeValidationService, TASK_ENVELOPE_SCHEMA
 from app.services.input_normalization import normalize_text, normalize_value
 from app.services.redis_queue_service import RedisQueueService
 from app.services.audit_service import record_audit_event
 from app.models.flow_job_record import JobStatus
 from app.models.audit_log import AuditEventType
 
-router = APIRouter(tags=["openclaw-intake"], prefix="/intake", dependencies=[Depends(require_api_token)])
-
-# Will be set by dependency injection
+router = APIRouter(tags=["intake"], prefix="/intake", dependencies=[Depends(require_api_token)])
 redis_queue_service: Optional[RedisQueueService] = None
 
 
 def get_redis_queue_service() -> RedisQueueService:
-    """Dependency injection for Redis queue service"""
     if not redis_queue_service:
         raise HTTPException(status_code=503, detail="Redis queue service not initialized")
     return redis_queue_service
 
 
-# ============================================================================
-# Pydantic Models
-# ============================================================================
-
 class TaskEnvelopeInput(BaseModel):
-    """Input model for task envelope"""
     task_id: str
     created_at: str
-    source: str  # manual, webhook, github_action, scheduled
+    source: str
     title: str
     goal: str
-    task_type: str  # classification, rewrite, implementation, etc.
-    risk_tier: str  # low, medium, high
+    task_type: str
+    risk_tier: str
     preferred_owner: Optional[str] = None
-    owner_role: str
+    owner_role: Optional[str] = None
     inputs: Dict[str, Any] = Field(default_factory=dict)
     output_required: str
-    review_required: Optional[bool] = False
-    rollback_required: Optional[bool] = False
+    review_required: bool = False
+    execution_approval_required: bool = False
+    rollback_required: bool = False
     status: str = "pending"
 
     @field_validator("title", "goal", "output_required", mode="before")
@@ -70,8 +55,7 @@ class TaskEnvelopeInput(BaseModel):
 
 
 class TaskIntakeResponse(BaseModel):
-    """Response after task intake"""
-    status: str  # accepted, rejected
+    status: str
     job_id: Optional[str] = None
     owner: Optional[str] = None
     queue: Optional[str] = None
@@ -80,313 +64,106 @@ class TaskIntakeResponse(BaseModel):
 
 
 class QueueStatusResponse(BaseModel):
-    """Queue status response"""
     timestamp: str
-    queues: Dict[str, int]  # {owner: depth}
+    queues: Dict[str, int]
     total: int
 
 
 class IntakeStatusResponse(BaseModel):
-    """Intake service status"""
-    status: str  # healthy, degraded, unhealthy
+    status: str
     timestamp: str
     checks: Dict[str, str]
 
 
-# ============================================================================
-# Endpoints
-# ============================================================================
-
 @router.post("/task", response_model=TaskIntakeResponse)
 async def intake_task(
     envelope: TaskEnvelopeInput,
-    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db_session),
-    queue_service: RedisQueueService = Depends(get_redis_queue_service)
+    queue_service: RedisQueueService = Depends(get_redis_queue_service),
 ) -> TaskIntakeResponse:
-    """
-    Intake a task envelope.
-
-    Validates schema and business rules, creates job record, routes to queue.
-
-    Input:
-    {
-        "task_id": "task-123",
-        "task_type": "classification",
-        "risk_tier": "low",
-        "title": "Classify intake submissions",
-        "goal": "Classify all intake submissions by type with 95%+ accuracy",
-        "source": "webhook",
-        "output_required": "JSON file with classifications",
-        "review_required": false,
-        "inputs": {
-            "files": ["submission_1.json", "submission_2.json"],
-            "context_refs": ["docs/INTAKE_RULES.md"]
-        }
-    }
-
-    Response (if accepted):
-    {
-        "status": "accepted",
-        "job_id": "task-123",
-        "owner": "openclaw",
-        "queue": "flow:openclaw:jobs",
-        "message": "Task routed to openclaw queue"
-    }
-
-    Response (if rejected):
-    {
-        "status": "rejected",
-        "error": "High-risk task missing review_required=true"
-    }
-    """
-
-    # Convert input to dict for validation
-    envelope_dict = envelope.dict()
-
-    # Validate and create job
-    success, error_msg, job = await EnvelopeValidationService.validate_and_create_job(
-        db,
-        envelope_dict,
-        source=envelope.source
+    success, error_msg, job, created_new = await EnvelopeValidationService.validate_and_create_job(
+        db, envelope.model_dump(), source=envelope.source
     )
-
     if not success:
-        # Record rejection in audit log
         await record_audit_event(
-            db,
-            event_type=AuditEventType.JOB_SUBMITTED,
-            title=f"Task intake rejected: {envelope.title}",
-            task_id=envelope.task_id,
-            agent="openclaw",
-            action_by="system",
-            description=f"Schema validation failed: {error_msg}",
+            db, AuditEventType.JOB_SUBMITTED, f"Task intake rejected: {envelope.title}",
+            task_id=envelope.task_id, agent="faas", description=error_msg,
             event_data={"error": error_msg, "task_type": envelope.task_type},
         )
         await db.commit()
+        return TaskIntakeResponse(status="rejected", error=error_msg)
+
+    if not created_new:
         return TaskIntakeResponse(
-            status="rejected",
-            error=error_msg
+            status="accepted", job_id=job.job_id, owner=job.owner,
+            message=f"Idempotent replay: existing job is {job.status}",
         )
 
-    # Record task submission
     await record_audit_event(
-        db,
-        event_type=AuditEventType.JOB_SUBMITTED,
-        title=f"Task intake: {envelope.title}",
-        job_id=job.job_id,
-        task_id=envelope.task_id,
-        agent="openclaw",
-        action_by=envelope.source,
-        description=f"Task submitted for {job.owner} agent",
-        event_data={"task_type": envelope.task_type, "risk_tier": job.risk_tier},
+        db, AuditEventType.JOB_SUBMITTED, f"Task intake: {envelope.title}",
+        job_id=job.job_id, task_id=job.task_id, agent="faas", action_by=envelope.source,
+        description=f"Task submitted for {job.owner}",
+        event_data={"task_type": job.task_type, "risk_tier": job.risk_tier},
     )
-    await db.commit()
 
-    # High-risk Agent Zero work must wait for review artifacts before entering the queue.
-    if job.owner == 'agent_zero' and job.risk_tier == 'high' and envelope.review_required:
+    if job.owner == 'agent_zero' and job.risk_tier == 'high' and job.execution_approval_required:
         job.status = JobStatus.REVIEW_REQUIRED.value
-        db.add(job)
-        await db.commit()
-
-        # Record review hold in audit log
         await record_audit_event(
-            db,
-            event_type=AuditEventType.REVIEW_REQUESTED,
-            title=f"High-risk task held for review: {envelope.title}",
-            job_id=job.job_id,
-            task_id=envelope.task_id,
-            agent="openclaw",
-            action_by="system",
-            description="High-risk Agent Zero task waiting for review artifacts and approval",
-            event_data={"risk_tier": job.risk_tier},
-            is_production=True,
-            requires_human_approval=True,
+            db, AuditEventType.REVIEW_REQUESTED, f"High-risk task held for review: {envelope.title}",
+            job_id=job.job_id, task_id=job.task_id, agent="faas",
+            description="Execution approval is required before queueing high-risk work",
+            event_data={"risk_tier": job.risk_tier}, requires_human_approval=True,
         )
         await db.commit()
-
         return TaskIntakeResponse(
-            status="accepted",
-            job_id=job.job_id,
-            owner=job.owner,
-            queue=None,
-            message="High-risk Agent Zero task accepted and held for review approval"
+            status="accepted", job_id=job.job_id, owner=job.owner,
+            message="High-risk task accepted and held for execution approval",
         )
 
-    # Route to queue (background task to avoid blocking)
     queue_name = queue_service.get_queue_name(job.owner)
     await queue_service.enqueue_job(job.owner, job.job_id)
-
-    # Record queue entry in audit log
+    job.status = JobStatus.QUEUED.value
     await record_audit_event(
-        db,
-        event_type=AuditEventType.JOB_QUEUED,
-        title=f"Task queued for {job.owner}: {envelope.title}",
-        job_id=job.job_id,
-        task_id=envelope.task_id,
-        agent="openclaw",
-        action_by="system",
+        db, AuditEventType.JOB_QUEUED, f"Task queued for {job.owner}: {envelope.title}",
+        job_id=job.job_id, task_id=job.task_id, agent="faas",
         description=f"Task moved to {job.owner} queue for execution",
         event_data={"queue": queue_name, "priority": job.priority},
     )
-
-    # Update job status to QUEUED
-    job.status = 'queued'
-    db.add(job)
     await db.commit()
-
     return TaskIntakeResponse(
-        status="accepted",
-        job_id=job.job_id,
-        owner=job.owner,
-        queue=queue_name,
-        message=f"Task routed to {job.owner} queue"
+        status="accepted", job_id=job.job_id, owner=job.owner, queue=queue_name,
+        message=f"Task routed to {job.owner} queue",
     )
 
 
 @router.get("/status", response_model=IntakeStatusResponse)
-async def intake_status(
-    queue_service: RedisQueueService = Depends(get_redis_queue_service)
-) -> IntakeStatusResponse:
-    """
-    Check OpenClaw intake service health.
-
-    Returns:
-    {
-        "status": "healthy",
-        "timestamp": "2026-04-03T...",
-        "checks": {
-            "redis": "ok",
-            "database": "ok",
-            "schema": "ok"
-        }
+async def intake_status(queue_service: RedisQueueService = Depends(get_redis_queue_service)) -> IntakeStatusResponse:
+    checks = {
+        'redis': 'ok' if await queue_service.healthcheck() else 'error',
+        'schema': 'ok' if TASK_ENVELOPE_SCHEMA else 'warning',
     }
-    """
-
-    checks = {}
-
-    # Check Redis
-    redis_ok = await queue_service.healthcheck()
-    checks['redis'] = 'ok' if redis_ok else 'error'
-
-    # Check schema
-    schema_loaded = bool(TASK_ENVELOPE_SCHEMA)
-    checks['schema'] = 'ok' if schema_loaded else 'warning'
-
-    # Determine overall status
-    if all(v == 'ok' for v in checks.values()):
-        status = 'healthy'
-    elif any(v == 'error' for v in checks.values()):
-        status = 'unhealthy'
-    else:
-        status = 'degraded'
-
-    return IntakeStatusResponse(
-        status=status,
-        timestamp=datetime.utcnow().isoformat(),
-        checks=checks
-    )
+    status = 'unhealthy' if 'error' in checks.values() else ('healthy' if all(v == 'ok' for v in checks.values()) else 'degraded')
+    return IntakeStatusResponse(status=status, timestamp=datetime.utcnow().isoformat(), checks=checks)
 
 
 @router.get("/queues/status", response_model=QueueStatusResponse)
-async def queue_status(
-    queue_service: RedisQueueService = Depends(get_redis_queue_service)
-) -> QueueStatusResponse:
-    """
-    Get status of all job queues.
-
-    Returns:
-    {
-        "timestamp": "2026-04-03T...",
-        "queues": {
-            "openclaw": 5,
-            "hermes": 2,
-            "agent_zero": 0
-        },
-        "total": 7
-    }
-    """
-
+async def queue_status(queue_service: RedisQueueService = Depends(get_redis_queue_service)) -> QueueStatusResponse:
     depths = await queue_service.get_all_queue_depths()
-
-    return QueueStatusResponse(
-        timestamp=datetime.utcnow().isoformat(),
-        queues=depths,
-        total=sum(depths.values())
-    )
+    return QueueStatusResponse(timestamp=datetime.utcnow().isoformat(), queues=depths, total=sum(depths.values()))
 
 
 @router.post("/queues/clear")
-async def clear_queue(
-    owner: str,
-    confirm: bool = False,
-    queue_service: RedisQueueService = Depends(get_redis_queue_service)
-) -> Dict[str, Any]:
-    """
-    Clear all jobs from a queue (ADMIN ONLY - DESTRUCTIVE).
-
-    Query params:
-    - owner: openclaw, hermes, or agent_zero
-    - confirm: must be true to actually clear
-
-    Returns:
-    {
-        "status": "cleared",
-        "queue": "flow:openclaw:jobs",
-        "message": "All pending jobs removed"
-    }
-    """
-
+async def clear_queue(owner: str, confirm: bool = False, queue_service: RedisQueueService = Depends(get_redis_queue_service)) -> Dict[str, Any]:
     if not confirm:
-        return {
-            "status": "not_confirmed",
-            "message": "Pass confirm=true to actually clear the queue"
-        }
-
-    if owner not in ['openclaw', 'hermes', 'agent_zero']:
+        return {"status": "not_confirmed", "message": "Pass confirm=true to actually clear the queue"}
+    if owner not in EnvelopeValidationService.VALID_OWNERS:
         raise HTTPException(status_code=400, detail=f"Invalid owner: {owner}")
-
-    success = await queue_service.clear_queue(owner)
-
-    if success:
-        return {
-            "status": "cleared",
-            "queue": queue_service.get_queue_name(owner),
-            "message": "All pending jobs removed (DESTRUCTIVE)"
-        }
-    else:
+    if not await queue_service.clear_queue(owner):
         raise HTTPException(status_code=500, detail="Failed to clear queue")
+    return {"status": "cleared", "queue": queue_service.get_queue_name(owner)}
 
 
 @router.get("/dlq")
-async def get_dead_letter_queue(
-    count: int = 10,
-    queue_service: RedisQueueService = Depends(get_redis_queue_service)
-) -> Dict[str, Any]:
-    """
-    Get jobs from dead-letter queue (failed/abandoned tasks).
-
-    Query params:
-    - count: how many to retrieve (default: 10)
-
-    Returns:
-    {
-        "status": "ok",
-        "count": 3,
-        "items": [
-            {
-                "job_id": "job-123",
-                "reason": "max retries exceeded",
-                "timestamp": "2026-04-03T..."
-            }
-        ]
-    }
-    """
-
+async def get_dead_letter_queue(count: int = 10, queue_service: RedisQueueService = Depends(get_redis_queue_service)) -> Dict[str, Any]:
     items = await queue_service.get_dlq(count=count)
-
-    return {
-        "status": "ok",
-        "count": len(items),
-        "items": items
-    }
+    return {"status": "ok", "count": len(items), "items": items}
