@@ -1777,7 +1777,7 @@
         const activationGap = flagged.some(g => g.layer === "Activation");
         const hasWatchSignal = gaps.some(g => g.watchCount > 0);
         const personalDoor = { href: "/fog-free-daily", label: "Fog-Free Daily" };
-        const businessDoor = { href: "/bizbuilders-ai/diagnostic?entry=infrastructure", label: "Infrastructure Assessment" };
+        const businessDoor = { href: "/bizbuilders-ai/#assessment", label: "Infrastructure Assessment" };
         const growthDoor = { href: "/bizbot-mrktng/", label: "Growth activation" };
         const reviewDoor = { href: "/#path", label: "Review the route map" };
         const routingProfile = (() => {
@@ -1861,7 +1861,17 @@
           ? artifact.operational_notes
           : answers.filter(a => a.textAnswer && a.text).map(a => a.text);
         const primaryDoor = routingProfile.primaryDoor;
-        const secondaryDoors = [personalDoor, businessDoor, growthDoor].filter(door => door.href !== primaryDoor.href);
+        const secondaryDoors = (() => {
+          const doors = [];
+          if (routeScope === "growth" && primaryDoor.href !== growthDoor.href) {
+            doors.push({ href: growthDoor.href, label: "Growth after the base is clear" });
+          }
+          if (routeScope === "business" && !operatingLayerGap && activationGap && primaryDoor.href !== growthDoor.href) {
+            doors.push(growthDoor);
+          }
+          if (primaryDoor.href !== reviewDoor.href) doors.push(reviewDoor);
+          return doors;
+        })();
         const layerDetails = gaps.map(gap => {
           const reportCopy = layerReportCopy(gap);
           return {
