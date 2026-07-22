@@ -23,3 +23,14 @@ runtime/queues/pending/*.json
 runtime/ingress_rate_limit_*.md
 runtime/post_rate_limit_auth_regression_results.md
 runtime/test_*.sh
+.vercel
+.env*
+*.swp
+*.swo
+tmp/
+scratch/
+output/
+generated/
+launch/output/
+launch/verification-screenshots/
+github ssh key*
