@@ -1,0 +1,93 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/bizbuilders-ai/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/fog-free-daily",
+      "destination": "/foglift-kit.html"
+    },
+    {
+      "source": "/foglift-kit",
+      "destination": "/foglift-kit.html"
+    },
+    {
+      "source": "/erikhbush",
+      "destination": "/erikhbush.html"
+    },
+    {
+      "source": "/diagnostic",
+      "destination": "/bizbuilders-ai/diagnostic"
+    },
+    {
+      "source": "/diagnostic.html",
+      "destination": "/bizbuilders-ai/diagnostic"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/campaign",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/field-note",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/blueprint",
+      "destination": "/bizbuilders-ai/",
+      "permanent": false
+    },
+    {
+      "source": "/intellectual-ore",
+      "destination": "/bizbuilders-ai/",
+      "permanent": false
+    },
+    {
+      "source": "/infrastructure",
+      "destination": "/bizbuilders-ai/",
+      "permanent": false
+    },
+    {
+      "source": "/bizbuilders-ai/index",
+      "destination": "/bizbuilders-ai/",
+      "permanent": true
+    },
+    {
+      "source": "/bizbuilders-ai/index.html",
+      "destination": "/bizbuilders-ai/",
+      "permanent": true
+    },
+    {
+      "source": "/bizbot",
+      "destination": "/bizbot-mrktng/",
+      "permanent": true
+    },
+    {
+      "source": "/bizbot.html",
+      "destination": "/bizbot-mrktng/",
+      "permanent": true
+    }
+  ]
+}
