@@ -494,6 +494,42 @@ body.bold-diagnostic {
   color: var(--assessment-muted);
 }
 
+.score-guide {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0 0 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--assessment-line);
+  background: rgba(255, 253, 248, 0.74);
+}
+
+.score-guide b,
+.score-guide small {
+  font-family: "DM Mono", ui-monospace, monospace;
+  letter-spacing: 0.04em;
+}
+
+.score-guide b {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  color: var(--assessment-red);
+}
+
+.score-guide p,
+.score-guide span,
+.score-guide small {
+  margin: 0;
+  color: var(--assessment-muted);
+}
+
+.score-guide p {
+  color: var(--assessment-black);
+}
+
+.score-guide small {
+  font-size: 0.68rem;
+}
+
 .result-doors {
   margin: 1.5rem 0 1rem;
   padding: 1.15rem 1.1rem;

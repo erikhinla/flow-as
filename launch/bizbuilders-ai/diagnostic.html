@@ -742,8 +742,8 @@
 
       function routeScopeLabel(scope = selectedRouteScope()) {
         if (scope === "personal") return "Personal fog";
-        if (scope === "business") return "Business fog";
-        if (scope === "growth") return "Growth fog";
+        if (scope === "business") return "Business operating layer";
+        if (scope === "growth") return "Growth activation";
         return "Scope still unclear";
       }
 
@@ -804,31 +804,31 @@
           return {
             band: "Low fog",
             label: `${score}/${maxScore}: low fog`,
-            meaning: "The system is mostly clear. Keep proof visible before adding speed.",
-            context: "A 2/16 means fog is present, but it is not running the day yet."
+            meaning: "Most signals are clear. The day or system is not being run by fog.",
+            context: "Think of 2/16 as light fog: a few weak spots, but the base is still usable."
           };
         }
         if (score <= 7 || ratio <= 0.44) {
           return {
             band: "Watch zone",
             label: `${score}/${maxScore}: watch zone`,
-            meaning: "Fog is showing up. The risk is hidden manual correction.",
-            context: "A 6/16 means the work still moves, but people or memory are probably holding it together."
+            meaning: "Fog is showing up often enough to cost attention, time, or trust.",
+            context: "Think of 6/16 as working-but-noisy: things still move, but people or memory are holding too much together."
           };
         }
         if (score <= 11 || ratio <= 0.69) {
           return {
             band: "Active fog",
             label: `${score}/${maxScore}: active fog`,
-            meaning: "Friction is no longer occasional. Fix the first unstable layer before scaling.",
-            context: "An 8-11/16 means the cleanup job is becoming part of the operating system."
+            meaning: "Friction is no longer occasional. The cleanup work is becoming part of the work.",
+            context: "Think of 8 to 11/16 as active fog: the first unstable layer needs attention before more speed helps."
           };
         }
         return {
           band: "Heavy fog",
           label: `${score}/${maxScore}: heavy fog`,
-          meaning: "The cleanup job is now the job. More AI or growth will amplify the mess.",
-          context: "A 16/16 means every signal points to fog. Stop adding speed and clear the foundation first."
+          meaning: "The fog is now shaping the day, the team, or the path to growth.",
+          context: "Think of 16/16 as full fog: every signal points to the base needing cleanup before more tools or demand."
         };
       }
 
@@ -969,6 +969,7 @@
           "How to read it",
           scoreInterpretation(fogIndex, maxScore).meaning,
           scoreInterpretation(fogIndex, maxScore).context,
+          "Low scores mean fog is present but contained. Mid scores mean hidden effort is holding things together. High scores mean speed will probably multiply the break.",
           "",
           "What this says",
           shareSubhead,
@@ -1094,7 +1095,7 @@
         if (q.routing) {
           return `Question ${index + 1} of ${questions.length}. ${q.prompt} Say option one through ${q.options.length}.`;
         }
-        return `Question ${index + 1} of ${questions.length}. ${q.prompt} Say yes, partial, no, or option one through ${q.options.length}.`;
+        return `Question ${index + 1} of ${questions.length}. ${q.prompt} Say option one through ${q.options.length}.`;
       }
 
       function chooseArVAVoice() {
@@ -1537,7 +1538,7 @@
           "",
           payload.score_context,
           "",
-          "## Executive read",
+          "## Plain read",
           "",
           payload.executive_read,
           "",
@@ -1557,11 +1558,11 @@
           "",
           payload.route,
           "",
-          "## Scope",
+          "## Context selected",
           "",
           payload.route_scope || "Unclear scope",
           "",
-          "## Sequence rule",
+          "## Order of work",
           "",
           payload.sequence_rule,
           "",
@@ -1776,7 +1777,7 @@
         const activationGap = flagged.some(g => g.layer === "Activation");
         const hasWatchSignal = gaps.some(g => g.watchCount > 0);
         const personalDoor = { href: "/fog-free-daily", label: "Fog-Free Daily" };
-        const businessDoor = { href: "/bizbuilders-ai/diagnostic?entry=infrastructure", label: "Operating layer" };
+        const businessDoor = { href: "/bizbuilders-ai/diagnostic?entry=infrastructure", label: "Infrastructure Assessment" };
         const growthDoor = { href: "/bizbot-mrktng/", label: "Growth activation" };
         const reviewDoor = { href: "/#path", label: "Review the route map" };
         const routingProfile = (() => {
@@ -1790,7 +1791,7 @@
           }
           if (routeScope === "business") {
             return {
-              route: "Operating fog. Fix the layer before adding speed.",
+              route: "Operating layer gap. Fix the base before adding speed.",
               primaryDoor: businessDoor,
               nextAction:
                 "Make the earliest break visible: truth, owner, route, proof. Then decide what needs architecture."
@@ -1799,7 +1800,7 @@
           if (routeScope === "growth") {
             if (operatingLayerGap) {
               return {
-                route: "Growth is exposing operating fog.",
+                route: "Growth is exposing an operating-layer gap.",
                 primaryDoor: businessDoor,
                 nextAction:
                   "Pause new demand pressure. Find the first break in context, ownership, routing, or proof. Fix that before scaling the channel."
@@ -1814,7 +1815,7 @@
           }
           if (operatingLayerGap || flagged.length >= 2) {
             return {
-              route: "Operating fog. Start at the first unstable layer.",
+              route: "Operating layer gap. Start at the first unstable layer.",
               primaryDoor: businessDoor,
               nextAction:
                 "Name the first unstable layer. Make its truth, owner, route, and proof visible before adding more tools or campaigns."
@@ -1837,10 +1838,10 @@
             };
           }
           return {
-            route: "No default offer selected.",
+            route: "No default path selected.",
             primaryDoor: reviewDoor,
             nextAction:
-              "Confirm the real need before adding a product, tool, or campaign. The diagnostic names the fog; the next door depends on who owns it."
+              "Confirm the real need before adding a product, tool, or campaign. The diagnostic names the fog. The next door depends on who owns it."
           };
         })();
         const route = routingProfile.route;
@@ -1916,6 +1917,7 @@
             <b>${escapeHtml(scoreRead.label)}</b>
             <p>${escapeHtml(scoreRead.meaning)}</p>
             <span>${escapeHtml(scoreRead.context)}</span>
+            <small>Low means contained. Mid means hidden effort. High means speed will amplify the break.</small>
           </div>
           <h2>${escapeHtml(shareStrategy.share_headline)}</h2>
           <p class="report-lede">${escapeHtml(shareStrategy.share_subhead)} ${escapeHtml(executiveRead)}</p>
@@ -1969,7 +1971,7 @@
             `).join("")}
           </div>
           <div class="report-block">
-            <b>Sequence rule</b>
+            <b>Order of work</b>
             <p>${escapeHtml(enforced)}</p>
           </div>
           <div class="report-block">
@@ -1989,7 +1991,7 @@
             <pre class="report-markdown" id="reportMarkdownPreview"></pre>
           </div>
           <div class="result-doors" aria-label="Responsible next moves">
-            <p class="result-doors__label">If you want help from here</p>
+            <p class="result-doors__label">Keep going if this fits</p>
             <div class="cta-row cta-row--doors">
               <a class="lever lever-primary" href="${primaryDoor.href}">${escapeHtml(primaryDoor.label)}</a>
               ${secondaryDoors.map(door => `<a class="lever lever-secondary" href="${door.href}">${escapeHtml(door.label)}</a>`).join("")}
