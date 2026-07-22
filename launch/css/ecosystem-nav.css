@@ -1,0 +1,280 @@
+/* Unified TransformBy10X ecosystem navigation */
+
+.eco-site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(5, 6, 8, 0.94);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.eco-nav__inner {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0.85rem clamp(1rem, 4vw, 2rem);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+
+.eco-nav__brand {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: #f4f6f8;
+  margin-right: auto;
+  min-width: 10rem;
+}
+
+.eco-nav__brand-main {
+  font-family: "DM Sans", "Inter", system-ui, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.eco-nav__brand-main em {
+  font-style: normal;
+  opacity: 0.92;
+}
+
+.eco-nav__brand-sub {
+  font-family: "DM Mono", "JetBrains Mono", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(244, 246, 248, 0.55);
+  margin-top: 0.15rem;
+}
+
+.eco-site-header--infrastructure .eco-nav__brand-sub {
+  color: #e61919;
+}
+
+.eco-site-header--activation .eco-nav__brand-sub {
+  color: #7dd3a8;
+}
+
+.eco-nav__back {
+  font-family: "DM Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(244, 246, 248, 0.65);
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.35rem 0.65rem;
+  white-space: nowrap;
+}
+
+.eco-nav__back:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.eco-nav__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  align-items: center;
+}
+
+.eco-nav__links a {
+  font-family: "DM Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(244, 246, 248, 0.72);
+  text-decoration: none;
+}
+
+.eco-nav__links a:hover,
+.eco-nav__links a.is-current {
+  color: #fff;
+}
+
+.eco-nav__links a.is-current {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+  padding-bottom: 0.1rem;
+}
+
+.canon-page .eco-nav__cta,
+.bold-diagnostic .eco-nav__cta {
+  font-family: "DM Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #050608;
+  background: #f4f6f8;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid #f4f6f8;
+  white-space: nowrap;
+}
+
+.canon-page .eco-nav__cta:hover,
+.bold-diagnostic .eco-nav__cta:hover {
+  background: #fff;
+}
+
+.eco-site-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1.25rem clamp(1rem, 4vw, 2rem);
+  font-family: "DM Mono", monospace;
+  font-size: 0.68rem;
+  color: rgba(244, 246, 248, 0.55);
+}
+
+.eco-footer__inner {
+  max-width: 72rem;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  justify-content: space-between;
+}
+
+.eco-footer__trail a {
+  color: rgba(244, 246, 248, 0.72);
+  text-decoration: none;
+}
+
+.eco-footer__trail a:hover {
+  color: #fff;
+}
+
+/* Cinema pages — hide legacy header when eco nav present */
+body.has-eco-nav .site-header--cinema {
+  display: none;
+}
+
+/* Bold pages */
+body.has-eco-nav .bold-header {
+  display: none;
+}
+
+/* Diagnostic film overlay */
+.diagnostic-film {
+  position: relative;
+}
+
+.diagnostic-film__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: clamp(1.5rem, 5vw, 3rem);
+  background: linear-gradient(
+    180deg,
+    rgba(5, 5, 5, 0.15) 0%,
+    rgba(5, 5, 5, 0.55) 45%,
+    rgba(5, 5, 5, 0.92) 100%
+  );
+  pointer-events: none;
+}
+
+.diagnostic-film__overlay * {
+  pointer-events: auto;
+}
+
+.diagnostic-film__overlay .kicker {
+  margin: 0 0 0.5rem;
+}
+
+.diagnostic-film__overlay h1 {
+  margin: 0 0 1rem;
+  max-width: 14ch;
+  color: #fff;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+}
+
+.diagnostic-film {
+  max-height: min(52dvh, 520px);
+}
+
+/* TBTX cinema — linked strip & gallery */
+a.cinema-strip__link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: background 0.2s ease;
+}
+
+a.cinema-strip__link:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+a.cinema-strip__link .cinema-strip__go {
+  display: inline-block;
+  margin-top: 1rem;
+  font-family: "DM Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+a.cinema-strip__link:hover .cinema-strip__go {
+  opacity: 1;
+}
+
+a.cinema-signpost-gallery__plate {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+a.cinema-signpost-gallery__plate:hover {
+  transform: translateY(-2px);
+}
+
+a.cinema-signpost-gallery__plate figcaption::after {
+  content: " →";
+  opacity: 0;
+}
+
+a.cinema-signpost-gallery__plate:hover figcaption::after {
+  opacity: 1;
+}
+
+.terms-cinema__card .terms-cinema__door {
+  display: inline-block;
+  margin-top: 1rem;
+  font-family: "DM Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(244, 246, 248, 0.85);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.terms-cinema__card .terms-cinema__door:hover {
+  color: #fff;
+}
+
+.eco-cinema__card--context {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 720px) {
+  .eco-nav__back {
+    order: 3;
+    width: 100%;
+  }
+
+  .eco-nav__links {
+    order: 4;
+    width: 100%;
+  }
+
+  .eco-nav__cta {
+    order: 2;
+  }
+}

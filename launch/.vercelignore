@@ -1,0 +1,14 @@
+profile-bio-pack
+campaign-command-center
+transformby10x-campaign
+Archive.zip
+docs
+*.md
+!README.md
+scripts/_build_hero
+verification-screenshots
+output
+assets/foglift/fog-lift-kit-source.html
+assets/downloads/Fog-Lift-Kit.pdf
+assets/downloads/digital-fog-lift-kit.pdf
+assets/downloads/fog-lift-kit.zip

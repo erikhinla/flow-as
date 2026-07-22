@@ -1,0 +1,2258 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Digital Fog Diagnostic: routed questions that surface where tools outpace architecture. Architecture before automation. One readout. One next move."
+    />
+    <title>Digital Fog Diagnostic | TransformBy10X</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/bizbuilders-ai/styles.css?v=20260718p0" />
+    <link rel="stylesheet" href="/css/ecosystem-nav.css?v=20260718p0" />
+    <link rel="stylesheet" href="/bizbuilders-ai/diagnostic-refinement.css?v=20260718p0" />
+    <link rel="stylesheet" href="/css/cinematic-site.css?v=20260720e" />
+  </head>
+  <body class="bold-diagnostic diagnostic-public cinematic-page cinematic-diagnostic" data-eco-layer="tbtx" data-eco-current="diagnostic">
+    <a class="skip-link" href="#questionCard">Skip to diagnostic questions</a>
+
+    <nav class="cinema-nav" aria-label="Primary">
+      <a class="cinema-nav__brand" href="/" aria-label="TransformBy10X home">
+        <img class="cinema-nav__orb" src="../assets/brand/magenta-orb.png" alt="" width="44" height="44" />
+        <span class="cinema-visually-hidden">TransformBy10X</span>
+      </a>
+      <div class="cinema-nav__links">
+        <a href="/diagnostic" aria-current="page">Diagnose</a>
+        <a href="/bizbuilders-ai/">B2B build</a>
+        <a href="/fog-free-daily">Fog-Free Daily</a>
+        <a href="/bizbot-mrktng/">Growth</a>
+      </div>
+    </nav>
+
+    <main class="diagnostic-main">
+      <section class="assessment-hero" aria-labelledby="assessment-hero-title">
+        <video
+          src="/assets/video/mdf/web-loops/diagnostic-route-loop.mp4"
+          poster="/assets/video/mdf/posters/diagnostic-route-poster.jpg"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+        ></video>
+        <div class="assessment-hero__scrim" aria-hidden="true"></div>
+        <div class="assessment-hero__copy">
+          <p class="kicker" id="assessmentEntryKicker">TRANSFORMBY10X / DIGITAL FOG DIAGNOSTIC</p>
+          <h1 id="assessment-hero-title">Architecture before automation.</h1>
+          <p id="assessmentEntryLede">
+            Managing Digital Fog starts by finding where truth, ownership, routing, and proof are breaking down. Routed questions. One readout. One next move.
+          </p>
+          <p class="assessment-hero__rule" id="assessmentHeroRule">You can't automate a mess.</p>
+          <a class="primary-start" id="assessmentEntryCta" href="#questionCard">Start the Digital Fog Diagnostic</a>
+        </div>
+      </section>
+
+      <section class="friction-cinema" aria-labelledby="friction-cinema-title">
+        <video
+          src="/assets/video/mdf/web-loops/digital-fog-effects-loop.mp4"
+          poster="/assets/video/mdf/posters/digital-fog-effects-poster.jpg"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+        ></video>
+        <div class="friction-cinema__scrim" aria-hidden="true"></div>
+        <div class="friction-cinema__copy">
+          <p class="kicker">DIGITAL FRICTION</p>
+          <h2 id="friction-cinema-title">Connected doesn't mean architected.</h2>
+          <p id="frictionCinemaLede">Digital Friction is what's felt when Digital Fog is left untreated and work moves faster than context can follow.</p>
+        </div>
+      </section>
+
+      <section class="assessment-entry" id="assessment-start" aria-labelledby="assessment-title">
+        <header class="assessment-entry__intro">
+          <p class="kicker" id="assessmentSectionKicker">DIGITAL FOG DIAGNOSTIC</p>
+          <h2 id="assessment-title">Find the earliest unstable layer.</h2>
+          <p id="assessmentIntroNote">Choose the closest truth. Answers stay in this browser unless you export the result.</p>
+        </header>
+
+        <div class="diagnostic-shell">
+          <div class="question-flow">
+            <div class="assessment-progress" aria-live="polite">
+              <p class="step-label" id="stepLabel">Question 1</p>
+              <div class="progress-track" aria-hidden="true">
+                <div class="progress-fill" id="progressFill"></div>
+              </div>
+              <p id="aivaNote">Choose the closest truth. A gap is a signal.</p>
+            </div>
+            <section class="question-card" id="questionCard" aria-live="polite"></section>
+          </div>
+
+          <!-- Voice UI held until production-ready. Keep incomplete controls hidden. -->
+          <div class="assessment-runtime-controls" id="assessmentRuntimeControls" hidden aria-hidden="true">
+            <button class="voice-button arva-soon-cta" type="button" id="grokVoiceBtn" disabled aria-disabled="true" tabindex="-1">Voice guide</button>
+            <button class="manual-button is-active" type="button" id="manualBtn" tabindex="-1">Answer in writing</button>
+            <button class="voice-button voice-button-secondary" type="button" id="voiceBtn" tabindex="-1">Legacy guided voice</button>
+            <label for="voiceSelect">Browser voice</label>
+            <select id="voiceSelect" tabindex="-1"></select>
+            <button class="voice-test-button" type="button" id="voiceTestBtn" tabindex="-1">Test voice</button>
+            <p class="runtime-status" id="runtimeStatus" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="assessment-result-path" aria-labelledby="result-path-title">
+        <div>
+          <p class="kicker">WHAT HAPPENS NEXT</p>
+          <h2 id="result-path-title">Your readout names the path to Fog-Free.</h2>
+          <p id="resultPathLede">Fog-Free means truth, ownership, routing, proof, and enough foundation to move without creating more fog.</p>
+          <a class="secondary-start" id="resultPathCta" href="/#path">See the route map</a>
+        </div>
+        <ol id="resultPathSteps" aria-label="Diagnostic path">
+          <li><span>01</span><b>See the Fog</b></li>
+          <li><span>02</span><b>Diagnose the Fog</b></li>
+          <li><span>03</span><b>Name the layer</b></li>
+          <li><span>04</span><b>Make the next clean move</b></li>
+        </ol>
+      </section>
+    </main>
+
+    <div class="arva-orb-overlay" id="arvaOrbOverlay" hidden>
+      <button type="button" class="arva-orb-backdrop" data-arva-backdrop aria-label="Close voice guide"></button>
+      <div class="arva-orb-panel" role="dialog" aria-labelledby="arvaOrbTitle" aria-modal="true">
+        <div class="arva-orb-panel__bar" aria-hidden="true"></div>
+        <div class="arva-orb-panel__head">
+          <div>
+            <p class="kicker">Digital Fog voice guide</p>
+            <h2 id="arvaOrbTitle">Cut through the fog</h2>
+          </div>
+          <button type="button" class="arva-orb-close" data-arva-close>Close</button>
+        </div>
+        <div class="arva-orb-core">
+          <div class="arva-orb" data-arva-orb>
+            <span class="arva-orb-mark" aria-hidden="true">A</span>
+          </div>
+        </div>
+        <div class="arva-orb-beats" aria-hidden="true">
+          <span data-arva-bar></span>
+          <span data-arva-bar></span>
+          <span data-arva-bar></span>
+          <span data-arva-bar></span>
+          <span data-arva-bar></span>
+        </div>
+        <p class="arva-orb-beat-label" data-arva-beat>Context</p>
+        <div class="arva-orb-transcript" aria-live="polite">
+          <div class="arva-orb-bubble" data-arva-arva-block hidden>
+            <p class="kicker">Voice guide</p>
+            <p data-arva-line></p>
+          </div>
+          <div class="arva-orb-bubble" data-arva-user-block hidden>
+            <p class="kicker">You</p>
+            <p data-arva-user></p>
+          </div>
+        </div>
+        <p class="arva-orb-status" data-arva-status></p>
+        <div class="arva-orb-actions">
+          <button type="button" data-arva-retry hidden>Try voice again</button>
+          <button type="button" data-arva-manual>Prefer writing →</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="cinema-footer" aria-label="Site summary">
+      <div class="cinema-shell cinema-footer__inner">
+        <p>The diagnostic names what's keeping the system from becoming Fog-Free.</p>
+        <a class="cinema-button" href="/#path">Review route map</a>
+      </div>
+    </footer>
+
+    <script>
+      // Public default: Digital Fog Diagnostic (TransformBy10X).
+      // Deep BBAI path only: ?entry=infrastructure or ?entry=bbai
+      const urlParams = new URLSearchParams(location.search);
+      const entryParam = (urlParams.get("entry") || "").toLowerCase();
+      const pathParam = (urlParams.get("path") || "").toLowerCase();
+      const infrastructureEntry =
+        entryParam === "infrastructure" || entryParam === "bbai" || entryParam === "assessment";
+      const initialRouteScope = infrastructureEntry
+        ? "business"
+        : ["personal", "business", "growth"].includes(pathParam)
+          ? pathParam
+          : ["personal", "growth"].includes(entryParam)
+            ? entryParam
+            : "";
+      const fogEntryMode = !infrastructureEntry;
+
+      function applyEntryIdentity() {
+        if (fogEntryMode) {
+          document.title = "Digital Fog Diagnostic | TransformBy10X";
+          const meta = document.querySelector('meta[name="description"]');
+          if (meta) {
+            meta.setAttribute(
+              "content",
+              "Digital Fog Diagnostic: routed questions that surface where tools outpace architecture. Architecture before automation. One readout. One next move."
+            );
+          }
+          document.body.dataset.ecoLayer = "tbtx";
+          document.body.dataset.ecoCurrent = "diagnostic";
+          document.body.classList.add("diagnostic-public");
+          document.body.classList.remove("diagnostic-bbai");
+          return;
+        }
+        document.title = "AI Infrastructure Assessment | BizBuilders AI";
+        const meta = document.querySelector('meta[name="description"]');
+        if (meta) {
+          meta.setAttribute(
+            "content",
+            "BizBuilders AI Infrastructure Assessment: find where context, ownership, routing, and proof break down before more AI adds pressure."
+          );
+        }
+        document.body.dataset.ecoLayer = "infrastructure";
+        document.body.dataset.ecoCurrent = "bbai";
+        document.body.classList.add("diagnostic-bbai");
+        document.body.classList.remove("diagnostic-public");
+        document.getElementById("assessmentEntryKicker").textContent = "BIZBUILDERS AI / AI INFRASTRUCTURE ASSESSMENT";
+        document.getElementById("assessment-hero-title").textContent = "You can't automate a mess.";
+        document.getElementById("assessmentEntryLede").textContent =
+          "Find where context, ownership, routing, and proof are breaking down before more AI adds speed to the wrong system.";
+        document.getElementById("assessmentEntryCta").textContent = "Start the AI Infrastructure Assessment";
+        document.getElementById("assessmentSectionKicker").textContent = "THE ASSESSMENT";
+        document.getElementById("assessment-title").textContent = "A few questions. One clear readout.";
+        document.getElementById("result-path-title").textContent =
+          "Your result becomes the starting point for an AI Biz Blueprint.";
+        document.getElementById("resultPathLede").textContent =
+          "The readout identifies the priority gaps. The Blueprint turns those findings into a recommended sequence.";
+        document.getElementById("resultPathCta").textContent = "Understand the AI Biz Blueprint";
+        document.getElementById("resultPathCta").href = "/bizbuilders-ai/#blueprint";
+        document.getElementById("resultPathSteps").innerHTML = `
+          <li><span>01</span><b>Assessment</b></li>
+          <li><span>02</span><b>Infrastructure readout</b></li>
+          <li><span>03</span><b>Priority gaps</b></li>
+          <li><span>04</span><b>Recommended sequence</b></li>
+          <li><span>05</span><b>AI Biz Blueprint</b></li>
+        `;
+        const rule = document.getElementById("assessmentHeroRule");
+        if (rule) rule.textContent = "Architecture before automation.";
+      }
+      applyEntryIdentity();
+
+      const routeScopeOptions = [
+        ["personal", "Personal: attention, open loops, daily execution"],
+        ["business", "Business: ownership, routing, context, proof"],
+        ["growth", "Growth: demand, follow-up, activation"],
+        ["not_sure", "Not sure: find the first unstable layer"]
+      ];
+      const routeScopeQuestion = {
+        layer: "Where's the fog",
+        prompt: "Where's the fog showing up for you?",
+        routing: true,
+        options: routeScopeOptions
+      };
+      const questionSets = {
+        personal: [
+          {
+            layer: "Context",
+            prompt: "When the day gets noisy, what tells you what matters next?",
+            options: [
+              ["stable", "A clear written priority system"],
+              ["watch", "A few reliable cues, but not full clarity"],
+              ["watch", "Intuition and experience"],
+              ["gap", "Whatever feels most urgent"],
+              ["gap", "I'm not sure until the day is moving"]
+            ]
+          },
+          {
+            layer: "System Architecture",
+            prompt: "As responsibility increases, what happens?",
+            options: [
+              ["stable", "My system absorbs the increase without much strain"],
+              ["watch", "Some strain appears, but it stays manageable"],
+              ["gap", "Open loops multiply quickly"],
+              ["gap", "I become the pressure valve"],
+              ["watch", "It depends on the week"]
+            ]
+          },
+          {
+            layer: "System Architecture",
+            prompt: "How do tools and AI fit into daily work?",
+            options: [
+              ["stable", "They support a clear rhythm"],
+              ["watch", "They help in spots, but the system is fragmented"],
+              ["gap", "They create more outputs to reconcile"],
+              ["gap", "I'm unsure what is worth automating"],
+              ["watch", "I use them differently depending on the day"]
+            ]
+          },
+          {
+            layer: "Interface",
+            prompt: "If your normal routine paused for two weeks, what happens?",
+            options: [
+              ["stable", "The important work would keep moving"],
+              ["watch", "A few decisions would wait, but the basics would hold"],
+              ["gap", "Many decisions would bottleneck"],
+              ["gap", "The whole rhythm would slow materially"],
+              ["watch", "I'm not sure"]
+            ]
+          },
+          {
+            layer: "Activation",
+            prompt: "If one thing improved now, what creates relief?",
+            options: [
+              ["watch", "Gaining clarity on what matters next"],
+              ["gap", "Reducing mental load and open loops"],
+              ["watch", "Using tools or AI with more intention"],
+              ["gap", "Turning stuck ideas into finished action"]
+            ]
+          },
+          {
+            layer: "Context",
+            prompt: "At the end of the day, where do loose thoughts go?",
+            options: [
+              ["stable", "Into one trusted place"],
+              ["watch", "Mostly captured, but not always reviewed"],
+              ["watch", "Across notes, apps, and memory"],
+              ["gap", "They stay open in my head"],
+              ["gap", "They disappear until they become urgent"]
+            ]
+          }
+        ],
+        business: [
+          {
+            layer: "Activation",
+            prompt: "How do clients, projects, or opportunities find you now?",
+            options: [
+              ["stable", "Mostly through a trackable, consistent system"],
+              ["watch", "Mostly referrals and word of mouth"],
+              ["watch", "A mix, but it feels inconsistent"],
+              ["gap", "Several sources, but attribution is unclear"],
+              ["gap", "I'm not sure what's working"]
+            ]
+          },
+          {
+            layer: "Context",
+            prompt: "When the business changes something, what drives the decision?",
+            options: [
+              ["stable", "Clear tracking and attribution"],
+              ["watch", "A few strong indicators, but not full clarity"],
+              ["watch", "Intuition and experience"],
+              ["gap", "The loudest problem that week"],
+              ["gap", "It varies too much to trust"]
+            ]
+          },
+          {
+            layer: "System Architecture",
+            prompt: "As scale or complexity increases, what happens?",
+            options: [
+              ["stable", "Systems absorb the increase without much strain"],
+              ["watch", "Some strain appears, but it stays manageable"],
+              ["gap", "Strain increases quickly and needs constant attention"],
+              ["gap", "The founder becomes the pressure valve"],
+              ["watch", "It depends on the month"]
+            ]
+          },
+          {
+            layer: "System Architecture",
+            prompt: "How are automation or AI used day to day?",
+            options: [
+              ["stable", "Intentional across key workflows"],
+              ["watch", "A few automations, but fragmented"],
+              ["gap", "Experiments happened, but they haven't stuck"],
+              ["gap", "Not much has been implemented yet"],
+              ["gap", "It's unclear what is worth automating"]
+            ]
+          },
+          {
+            layer: "Interface",
+            prompt: "If the main owner stepped away for two weeks, what happens?",
+            options: [
+              ["stable", "The operation would keep moving steadily"],
+              ["watch", "A few decisions would wait, but core systems would run"],
+              ["gap", "Many decisions would bottleneck"],
+              ["gap", "The business would slow materially"],
+              ["watch", "I'm not sure"]
+            ]
+          },
+          {
+            layer: "Activation",
+            prompt: "If one thing improved now, where's the leverage?",
+            options: [
+              ["watch", "Gaining clarity on what to prioritize next"],
+              ["gap", "Reducing operational strain"],
+              ["watch", "Increasing leverage through better systems or AI"],
+              ["gap", "Getting the right changes implemented"]
+            ]
+          }
+        ],
+        growth: [
+          {
+            layer: "Activation",
+            prompt: "Where does demand come from now?",
+            options: [
+              ["stable", "Consistent, trackable, and tied to follow-up"],
+              ["watch", "Mostly organic, referrals, or social"],
+              ["watch", "A mix, but inconsistent"],
+              ["gap", "Demand appears, then gets lost in handoff"],
+              ["gap", "I'm not sure what's producing demand"]
+            ]
+          },
+          {
+            layer: "Context",
+            prompt: "When a lead appears, what decides the next move?",
+            options: [
+              ["stable", "Clear rules, attribution, and owner assignment"],
+              ["watch", "A few strong signals, but not a full system"],
+              ["watch", "Experience and judgment"],
+              ["gap", "Whoever notices it first"],
+              ["gap", "It varies too much to trust"]
+            ]
+          },
+          {
+            layer: "System Architecture",
+            prompt: "Can the operating layer carry more demand?",
+            options: [
+              ["stable", "Yes: intake, routing, follow-up, and proof are clear"],
+              ["watch", "Mostly, but a few handoffs still need attention"],
+              ["gap", "Not yet: follow-up or ownership breaks under load"],
+              ["gap", "No: more demand would expose the mess"],
+              ["watch", "I'm not sure"]
+            ]
+          },
+          {
+            layer: "Activation",
+            prompt: "Which growth leak costs the most right now?",
+            options: [
+              ["watch", "Weak account signal or inconsistent public presence"],
+              ["gap", "Dormant leads and missed follow-up"],
+              ["watch", "Voice, intake, or handoff gaps"],
+              ["gap", "Too many channels with no clean review rhythm"],
+              ["watch", "I'm still clarifying the leak"]
+            ]
+          },
+          {
+            layer: "Interface",
+            prompt: "When someone enters through a growth channel, what happens next?",
+            options: [
+              ["stable", "The path is clear and consistently owned"],
+              ["watch", "The path exists, but depends on manual attention"],
+              ["gap", "The handoff is easy to miss"],
+              ["gap", "The promise and actual next step don't match"],
+              ["watch", "It depends on the source"]
+            ]
+          },
+          {
+            layer: "System Architecture",
+            prompt: "What happens when growth creates more work?",
+            options: [
+              ["stable", "The system absorbs it"],
+              ["watch", "It holds, but only with extra attention"],
+              ["watch", "A few handoffs get noisy"],
+              ["gap", "Follow-up starts slipping"],
+              ["gap", "More demand creates more fog"]
+            ]
+          }
+        ],
+        not_sure: [
+          {
+            layer: "Context",
+            prompt: "When work gets foggy, where does uncertainty start?",
+            options: [
+              ["stable", "The next priority is clear"],
+              ["watch", "A few signals are clear, but not the whole picture"],
+              ["gap", "Ownership or decision rules are unclear"],
+              ["gap", "The source of truth is scattered"],
+              ["watch", "It changes week to week"]
+            ]
+          },
+          {
+            layer: "System Architecture",
+            prompt: "As complexity increases, what happens?",
+            options: [
+              ["stable", "The system absorbs it"],
+              ["watch", "Some strain appears, but stays manageable"],
+              ["gap", "Handoffs break or depend on memory"],
+              ["gap", "One person becomes the pressure valve"],
+              ["watch", "I'm not sure"]
+            ]
+          },
+          {
+            layer: "System Architecture",
+            prompt: "How do tools or AI fit right now?",
+            options: [
+              ["stable", "Tools support a clear system"],
+              ["watch", "Useful in places, fragmented overall"],
+              ["gap", "Outputs pile up faster than decisions move"],
+              ["gap", "Automation would probably amplify the mess"],
+              ["watch", "I'm unsure what is worth automating"]
+            ]
+          },
+          {
+            layer: "Activation",
+            prompt: "Where does momentum leak?",
+            options: [
+              ["stable", "Momentum is usually sustained"],
+              ["watch", "Priorities shift before work is finished"],
+              ["gap", "Follow-up slips"],
+              ["gap", "Demand or ideas arrive without a clean next step"],
+              ["watch", "It depends on the situation"]
+            ]
+          },
+          {
+            layer: "Interface",
+            prompt: "Does the outside promise match what the system can deliver?",
+            options: [
+              ["stable", "Yes: promise and delivery match"],
+              ["watch", "Mostly, with a few rough edges"],
+              ["gap", "Not consistently"],
+              ["gap", "The promise creates pressure the system cannot carry"],
+              ["watch", "I'm not sure"]
+            ]
+          },
+          {
+            layer: "Context",
+            prompt: "What would make the fog easier to clear first?",
+            options: [
+              ["stable", "A clearer source of truth"],
+              ["watch", "A better way to decide what matters now"],
+              ["watch", "A cleaner handoff or owner map"],
+              ["gap", "Stopping the open loops from multiplying"],
+              ["gap", "I need the diagnostic to show me the first layer"]
+            ]
+          }
+        ]
+      };
+      const closingQuestions = [
+        {
+          layer: "Interface",
+          prompt: "If this worked the way it should, what would feel true?",
+          options: [
+            ["stable", "Work would feel calmer and more predictable"],
+            ["watch", "Fewer decisions would depend on memory"],
+            ["watch", "Systems would absorb complexity more effectively"],
+            ["gap", "The ideal state is still unclear"]
+          ]
+        },
+        {
+          layer: "Activation",
+          prompt: "If one thing improved now, where should the next move focus?",
+          options: [
+            ["watch", "Clarifying what to prioritize next"],
+            ["gap", "Reducing strain"],
+            ["watch", "Increasing leverage through better systems or AI"],
+            ["gap", "Getting the right changes implemented"]
+          ]
+        }
+      ];
+
+      function routeScopeText(scope) {
+        return routeScopeOptions.find(([value]) => value === scope)?.[1] || routeScopeOptions[3][1];
+      }
+
+      function buildQuestionFlow(scope = "not_sure") {
+        return [
+          routeScopeQuestion,
+          ...(questionSets[scope] || questionSets.not_sure),
+          ...closingQuestions
+        ];
+      }
+
+      let questions = buildQuestionFlow(initialRouteScope || "not_sure");
+
+      const answers = [];
+      if (initialRouteScope) {
+        answers[0] = {
+          layer: "Routing Scope",
+          value: initialRouteScope,
+          text: routeScopeText(initialRouteScope),
+          routeAnswer: true
+        };
+      }
+      let index = initialRouteScope ? 1 : 0;
+      const card = document.getElementById("questionCard");
+      const label = document.getElementById("stepLabel");
+      const fill = document.getElementById("progressFill");
+      const note = document.getElementById("aivaNote");
+      const voiceBtn = document.getElementById("voiceBtn");
+      const manualBtn = document.getElementById("manualBtn");
+      const voiceSelect = document.getElementById("voiceSelect");
+      const voiceTestBtn = document.getElementById("voiceTestBtn");
+      const theater = document.getElementById("diagnosticTheater");
+      const fogStage = document.getElementById("fogStage");
+      const theaterRead = document.getElementById("theaterRead");
+      const activeLayerName = document.getElementById("activeLayerName");
+      const activeLayerMeaning = document.getElementById("activeLayerMeaning");
+      const fogIndexValue = document.getElementById("fogIndexValue");
+      const routePreview = document.getElementById("routePreview");
+      const frictionBrief = document.getElementById("frictionBrief");
+      const currentGateLabel = document.getElementById("currentGateLabel");
+      const momentumLabel = document.getElementById("momentumLabel");
+      const nextGateLabel = document.getElementById("nextGateLabel");
+      const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      let guidedMode = false;
+      let recognition = null;
+      let recognitionActive = false;
+      let arvaAudio = null;
+      let arvaSessionToken = sessionStorage.getItem("arvaSessionToken") || null;
+      let arvaSessionId = sessionStorage.getItem("arvaSessionId") || null;
+      let arvaResultArtifact = null;
+      let arvaRuntimeReady = false;
+      const runtimeStatus = document.getElementById("runtimeStatus");
+      let availableVoices = [];
+      const preferredVoiceNames = [
+        "Aaron", "Adam", "Antoni", "Josh", "Arnold", "Sam",
+        "Reed", "Eddy", "Rocko", "Daniel",
+        "Alex", "Thomas", "Oliver", "George", "Arthur",
+        "Guy", "David", "Matthew", "Brian", "James", "Ryan"
+      ];
+
+      document.querySelectorAll(".signal-jump").forEach(button => {
+        button.addEventListener("click", () => {
+          const layer = button.dataset.jumpLayer;
+          if (!layer) return;
+          const nextIndex = questions.findIndex(q => q.layer === layer);
+          if (nextIndex >= 0) {
+            index = nextIndex;
+            renderQuestion();
+            document.querySelector(".diagnostic-shell")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            note.textContent = `Starting with ${layer}. That's where the fog's loudest.`;
+          }
+        });
+      });
+
+      document.querySelectorAll("[data-meter-layer]").forEach(button => {
+        button.addEventListener("click", () => {
+          const layer = button.dataset.meterLayer;
+          const nextIndex = questions.findIndex(q => q.layer === layer);
+          if (nextIndex >= 0) {
+            saveAnswer();
+            index = nextIndex;
+            renderQuestion();
+            document.querySelector(".diagnostic-shell")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            note.textContent = `Checking ${layer}.`;
+          }
+        });
+      });
+
+      document.querySelectorAll("[data-gate-layer]").forEach(button => {
+        button.addEventListener("click", () => {
+          const layer = button.dataset.gateLayer;
+          const nextIndex = questions.findIndex(q => q.layer === layer);
+          if (nextIndex >= 0) {
+            saveAnswer();
+            index = nextIndex;
+            renderQuestion();
+            document.querySelector(".diagnostic-shell")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            note.textContent = `On ${gateForLayer(layer).title}.`;
+          }
+        });
+      });
+
+      const layerProfiles = {
+        "Context": {
+          metaphor: "source-of-truth chamber",
+          meaning: "Truth, language, and decision rules are not yet stable enough for reliable leverage.",
+          action: "Create one canonical brief: priority, promise, exclusions, language, and decision rules.",
+          risk: "AI will amplify inconsistent context and turn scattered judgment into faster scattered output."
+        },
+        "System Architecture": {
+          metaphor: "routing chassis",
+          meaning: "The work may be happening, but the path is not clear enough to repeat without rework.",
+          action: "Document the real path, define owners, and mark which handoffs need proof or approval.",
+          risk: "Automation will move work faster into unclear ownership, missing context, or invisible rework."
+        },
+        "Activation": {
+          metaphor: "revenue conveyor",
+          meaning: "Momentum, follow-up, or outreach is not yet moving with dependable rhythm.",
+          action: "Stabilize one source of momentum, one follow-up path, and one review cadence before adding more channels.",
+          risk: "Demand or action will leak through unowned follow-up, inconsistent rhythm, or tools disconnected from proof."
+        },
+        "Interface": {
+          metaphor: "public-facing control panel",
+          meaning: "The way people enter the system may not match the way the work actually gets delivered.",
+          action: "Align the visible promise, intake, payment, onboarding, and next step with the real operating layer.",
+          risk: "People may receive promises, instructions, or handoff signals that create friction before the work begins."
+        }
+      };
+      const theaterLayers = ["Context", "System Architecture", "Activation", "Interface"];
+      const fogWeights = { stable: 0, watch: 1, gap: 2 };
+      const gateFlow = [
+        {
+          layer: "Context",
+          gate: "Gate 01",
+          title: "See truth",
+          next: "Next: govern structure",
+          momentum: "Foundation is being inspected."
+        },
+        {
+          layer: "System Architecture",
+          gate: "Gate 02",
+          title: "Govern structure",
+          next: "Next: route motion",
+          momentum: "The backbone is being tested."
+        },
+        {
+          layer: "Activation",
+          gate: "Gate 03",
+          title: "Route motion",
+          next: "Next: prove readiness",
+          momentum: "Growth pressure is being routed."
+        },
+        {
+          layer: "Interface",
+          gate: "Gate 04",
+          title: "Prove readiness",
+          next: "Next: generate readout",
+          momentum: "The public promise is being checked."
+        }
+      ];
+
+      function visibleLayer(layer) {
+        return theaterLayers.includes(layer) ? layer : "Context";
+      }
+
+      function layerStats() {
+        return theaterLayers.map(layer => {
+          const layerAnswers = answers.filter(answer => answer.layer === layer);
+          const stable = layerAnswers.filter(answer => answer.value === "stable").length;
+          const watch = layerAnswers.filter(answer => answer.value === "watch").length;
+          const gap = layerAnswers.filter(answer => answer.value === "gap").length;
+          const score = layerAnswers.reduce((sum, answer) => sum + (fogWeights[answer.value] || 0), 0);
+          const possible = Math.max(1, questions.filter(question => question.layer === layer && !question.text).length * 2);
+          return {
+            layer,
+            stable,
+            watch,
+            gap,
+            score,
+            possible,
+            intensity: Math.min(1, score / possible)
+          };
+        });
+      }
+
+      function selectedRouteScope() {
+        return answers.find(answer => answer?.routeAnswer)?.value || "not_sure";
+      }
+
+      function routeScopeLabel(scope = selectedRouteScope()) {
+        if (scope === "personal") return "Personal fog";
+        if (scope === "business") return "Business fog";
+        if (scope === "growth") return "Growth fog";
+        return "Scope still unclear";
+      }
+
+      function hasOperatingLayerGap(stats) {
+        return stats.some(stat =>
+          ["Context", "System Architecture", "Interface"].includes(stat.layer) && stat.gap > 0
+        );
+      }
+
+      function hasActivationSignal(stats) {
+        return stats.some(stat => stat.layer === "Activation" && (stat.gap > 0 || stat.watch > 0));
+      }
+
+      function routeFromStats(stats) {
+        const fogIndex = stats.reduce((sum, stat) => sum + stat.score, 0);
+        const flagged = stats.filter(stat => stat.gap > 0);
+        const routeScope = selectedRouteScope();
+        const operatingGap = hasOperatingLayerGap(stats);
+        const activationSignal = hasActivationSignal(stats);
+
+        if (routeScope === "personal") return "Personal clarity first";
+        if (routeScope === "business") return "Operating layer first";
+        if (routeScope === "growth") {
+          return operatingGap
+            ? "Clear the operating layer before growth"
+            : "Growth activation path";
+        }
+        if (operatingGap || flagged.length >= 2 || fogIndex >= 5) {
+          return "Operating layer first";
+        }
+        if (activationSignal) return "Growth activation path";
+        return "Find the owner of the fog first";
+      }
+
+      function escapeHtml(value = "") {
+        return String(value).replace(/[&<>"']/g, character => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          "\"": "&quot;",
+          "'": "&#39;"
+        })[character]);
+      }
+
+      function diagnosticPublicUrl() {
+        return fogEntryMode
+          ? "https://transformby10x.ai/diagnostic"
+          : "https://transformby10x.ai/bizbuilders-ai/diagnostic?entry=infrastructure";
+      }
+
+      function maxFogIndex() {
+        return questions.filter(question => !question.text && !question.routing).length * 2;
+      }
+
+      function scoreInterpretation(score, maxScore) {
+        const ratio = maxScore ? score / maxScore : 0;
+        if (score <= 3 || ratio <= 0.19) {
+          return {
+            band: "Low fog",
+            label: `${score}/${maxScore}: low fog`,
+            meaning: "The system is mostly clear. Keep proof visible before adding speed.",
+            context: "A 2/16 means fog is present, but it is not running the day yet."
+          };
+        }
+        if (score <= 7 || ratio <= 0.44) {
+          return {
+            band: "Watch zone",
+            label: `${score}/${maxScore}: watch zone`,
+            meaning: "Fog is showing up. The risk is hidden manual correction.",
+            context: "A 6/16 means the work still moves, but people or memory are probably holding it together."
+          };
+        }
+        if (score <= 11 || ratio <= 0.69) {
+          return {
+            band: "Active fog",
+            label: `${score}/${maxScore}: active fog`,
+            meaning: "Friction is no longer occasional. Fix the first unstable layer before scaling.",
+            context: "An 8-11/16 means the cleanup job is becoming part of the operating system."
+          };
+        }
+        return {
+          band: "Heavy fog",
+          label: `${score}/${maxScore}: heavy fog`,
+          meaning: "The cleanup job is now the job. More AI or growth will amplify the mess.",
+          context: "A 16/16 means every signal points to fog. Stop adding speed and clear the foundation first."
+        };
+      }
+
+      function layerScore(read) {
+        return (read.gapCount * 2) + read.watchCount;
+      }
+
+      function layerSignals(layer) {
+        return answers
+          .filter(answer => answer?.layer === layer && !answer.textAnswer && !answer.routeAnswer)
+          .filter(answer => answer.value === "gap" || answer.value === "watch")
+          .map(answer => ({
+            level: answer.value === "gap" ? "Gap" : "Watch",
+            text: answer.text
+          }))
+          .slice(0, 3);
+      }
+
+      function layerReportCopy(read) {
+        const profile = layerProfiles[read.layer];
+        if (read.flagged) {
+          return {
+            meaning: profile.meaning,
+            action: profile.action,
+            risk: profile.risk
+          };
+        }
+        if (read.watchCount > 0) {
+          return {
+            meaning: "This layer is holding, but it still depends on memory, habit, or manual correction.",
+            action: "Write the rule, owner, and proof point before scaling the connected workflow.",
+            risk: "The layer can look stable until volume increases or a key person steps away."
+          };
+        }
+        return {
+          meaning: "This layer reports enough stability to support the next layer.",
+            action: "Keep it as a constraint. Don't let downstream speed rewrite the operating truth.",
+          risk: "Stable layers drift when new tools create new handoffs without proof."
+        };
+      }
+
+      function firstMoveForLayer(layer, routeScope, route) {
+        if (routeScope === "personal") {
+          return "Pick one recurring fog loop. Write the trigger, next move, and proof of done. Run that rhythm for seven days before adding another app.";
+        }
+        if (route.includes("Growth path")) {
+          return "Pick one demand path. Define capture, follow-up, owner, proof, and weekly review before adding another channel.";
+        }
+        if (layer === "Context") {
+          return "Write one operating brief: offer, audience, promise, exclusions, decision rules, and the language everyone must use.";
+        }
+        if (layer === "System Architecture") {
+          return "Map the real intake-to-delivery path. Put an owner and proof point on every handoff.";
+        }
+        if (layer === "Activation") {
+          return "Choose one lead source and one follow-up path. Make the owner, timing, and proof visible.";
+        }
+        if (layer === "Interface") {
+          return "Walk the public path like a new client. Remove every promise, payment step, or intake signal the operating layer cannot support.";
+        }
+        return "Choose the earliest unstable layer and make one rule, one owner, and one proof point visible.";
+      }
+
+      function doNotDoForLayer(layer, routeScope, route) {
+        if (routeScope === "personal") return "Don't turn personal fog into a full business infrastructure project.";
+        if (route.includes("Growth path")) return "Don't add channels until follow-up and measurement have one owner.";
+        if (layer === "Context") return "Don't add more AI output until the source of truth is written.";
+        if (layer === "System Architecture") return "Don't automate handoffs that still depend on guessing.";
+        if (layer === "Activation") return "Don't pour demand into a follow-up path nobody owns.";
+        if (layer === "Interface") return "Don't promise what the operating layer can't deliver consistently.";
+        return "Don't buy the next tool before naming the layer that's actually breaking.";
+      }
+
+      function proofForLayer(layer, routeScope, route) {
+        if (routeScope === "personal") return "A daily rhythm that survives two normal workdays without relying on panic or memory.";
+        if (route.includes("Growth path")) return "A lead can be captured, followed up, and reviewed without heroics.";
+        if (layer === "Context") return "One operating brief people use when deciding what to say, sell, route, or refuse.";
+        if (layer === "System Architecture") return "Every handoff has an owner, a trigger, and proof that the next step happened.";
+        if (layer === "Activation") return "A visible path from lead source to follow-up to measured outcome.";
+        if (layer === "Interface") return "A new client can move from page to intake without mismatched expectations.";
+        return "The next person can run the workflow without asking where truth lives.";
+      }
+
+      function buildShareStrategy({ gaps, flagged, routeScope, route, fogIndex, maxScore, firstGap }) {
+        const firstWatch = gaps.find(gap => gap.watchCount > 0);
+        const strongestLayer = gaps.slice().sort((a, b) => layerScore(b) - layerScore(a))[0];
+        const anchorLayer = firstGap || firstWatch || strongestLayer;
+        const anchorName = anchorLayer?.layer || "Context";
+        const publicLayerName = anchorName === "System Architecture" ? "Architecture" : anchorName;
+        const noUnstableLayer = flagged.length === 0 && !firstWatch;
+        const firstMove = noUnstableLayer
+          ? route.includes("Growth path")
+            ? "Choose one demand path. Define capture, follow-up, owner, proof, and weekly review before adding another channel."
+            : "Pick one workflow to govern first. Confirm the source of truth, owner map, handoff proof, and review rhythm before scaling."
+          : firstMoveForLayer(anchorName, routeScope, route);
+        const doNotDo = noUnstableLayer
+          ? "Don't scale every layer at once. Choose the next governed workflow and make proof visible."
+          : doNotDoForLayer(anchorName, routeScope, route);
+        const proof = noUnstableLayer
+          ? "One workflow can move from trigger to output with clear ownership, evidence, and review."
+          : proofForLayer(anchorName, routeScope, route);
+        const shareHeadline = routeScope === "personal"
+          ? "Personal fog needs a rhythm, not another app."
+          : flagged.length
+            ? `${publicLayerName} is where the fog starts.`
+            : firstWatch
+              ? `${publicLayerName} is the watch point.`
+              : "The base can carry the next move.";
+        const shareSubhead = routeScope === "personal"
+          ? "It's not a willpower problem. It's a rhythm problem."
+          : flagged.length
+            ? "It's not a motivation problem. It's a sequence problem."
+            : firstWatch
+              ? "Nothing is fully broken. The risk is drift under more volume."
+              : "The next constraint is proof, measurement, and clean activation.";
+        const publicShareText = [
+          fogEntryMode ? "Digital Fog Report" : "AI Infrastructure Report",
+          "",
+          "Tools got faster. The work got foggier.",
+          "",
+          `My readout: ${shareHeadline}`,
+          `Fog index: ${fogIndex}/${maxScore}`,
+          `Earliest layer: ${publicLayerName}`,
+          `Route: ${route}`,
+          `First move: ${firstMove}`,
+          "",
+          "Get Fog-Free before adding speed.",
+          `Map yours: ${diagnosticPublicUrl()}`
+        ].join("\n");
+        const teamBrief = [
+          fogEntryMode ? "Digital Fog Report" : "AI Infrastructure Report",
+          "",
+          `Fog index: ${fogIndex}/${maxScore}`,
+          `Score band: ${scoreInterpretation(fogIndex, maxScore).band}`,
+          `Scope: ${routeScopeLabel(routeScope)}`,
+          `Readout: ${route}`,
+          "",
+          "How to read it",
+          scoreInterpretation(fogIndex, maxScore).meaning,
+          scoreInterpretation(fogIndex, maxScore).context,
+          "",
+          "What this says",
+          shareSubhead,
+          "",
+          "First 72-hour move",
+          firstMove,
+          "",
+          "Don't do next",
+          doNotDo,
+          "",
+          "Proof to collect",
+          proof,
+          "",
+          "Fog-Free looks like",
+          "Truth, ownership, routing, proof, and enough foundation to move without creating more fog.",
+          "",
+          `Diagnostic: ${diagnosticPublicUrl()}`
+        ].join("\n");
+        return {
+          anchor_layer: anchorName,
+          public_layer_name: publicLayerName,
+          share_headline: shareHeadline,
+          share_subhead: shareSubhead,
+          first_72_hour_move: firstMove,
+          do_not_do_next: doNotDo,
+          proof_to_collect: proof,
+          public_share_text: publicShareText,
+          team_brief: teamBrief
+        };
+      }
+
+      function gateForLayer(layer) {
+        return gateFlow.find(gate => gate.layer === visibleLayer(layer)) || gateFlow[0];
+      }
+
+      function updateDiagnosticTheater() {
+        const current = questions[index];
+        const activeLayer = visibleLayer(current?.layer || "Context");
+        const profile = layerProfiles[activeLayer];
+        const stats = layerStats();
+        const activeStats = stats.find(stat => stat.layer === activeLayer) || stats[0];
+        const fogIndex = stats.reduce((sum, stat) => sum + stat.score, 0);
+        const route = routeFromStats(stats);
+        const strongestLayer = stats.slice().sort((a, b) => b.score - a.score)[0];
+        const gate = gateForLayer(activeLayer);
+
+        if (fogStage) {
+          fogStage.dataset.activeLayer = activeLayer;
+          fogStage.dataset.fogLevel = String(Math.min(5, fogIndex));
+          if (!fogStage.classList.contains("fog-stage--clean")) {
+            const strength = Math.min(1, fogIndex / 10);
+            fogStage.style.setProperty("--fog-strength", strength.toFixed(2));
+            fogStage.style.setProperty("--fog-blur", `${(strength * 1.4).toFixed(2)}px`);
+            fogStage.style.setProperty("--fog-scale", (1.01 + strength * 0.035).toFixed(3));
+            fogStage.style.setProperty("--fog-opacity", Math.max(0.78, 0.62 + strength * 0.18).toFixed(2));
+            fogStage.style.setProperty("--fog-saturation", (0.84 + strength * 0.36).toFixed(2));
+            fogStage.style.setProperty("--fog-contrast", (1.02 + strength * 0.14).toFixed(2));
+            fogStage.style.setProperty("--mist-green", (0.14 + strength * 0.18).toFixed(2));
+            fogStage.style.setProperty("--mist-brass", (0.12 + strength * 0.16).toFixed(2));
+            fogStage.style.setProperty("--mist-paper", (0.62 - strength * 0.22).toFixed(2));
+            fogStage.style.setProperty("--fog-grid-opacity", (strength * 0.42).toFixed(2));
+            fogStage.style.setProperty("--fog-grain-opacity", (0.08 + strength * 0.12).toFixed(2));
+            fogStage.style.setProperty("--fog-word-alpha", (0.2 + strength * 0.18).toFixed(2));
+            fogStage.style.setProperty("--operator-fog-opacity", (0.13 + strength * 0.12).toFixed(2));
+            fogStage.style.setProperty("--brand-fog-opacity", (0.54 + strength * 0.34).toFixed(2));
+          }
+        }
+        if (theater) {
+          theater.dataset.route = route;
+          theater.dataset.activeLayer = activeLayer;
+        }
+        if (activeLayerName) activeLayerName.textContent = activeLayer === "System Architecture" ? "Architecture" : activeLayer;
+        if (activeLayerMeaning) activeLayerMeaning.textContent = profile.meaning;
+        if (fogIndexValue) fogIndexValue.textContent = String(fogIndex);
+        if (routePreview) routePreview.textContent = route;
+        if (theaterRead) {
+          theaterRead.textContent = activeStats.score > 0
+            ? `${activeLayer} is carrying ${activeStats.score} fog point${activeStats.score === 1 ? "" : "s"}. ${profile.action}`
+            : `${activeLayer} is under inspection. ${profile.risk}`;
+        }
+        if (frictionBrief) {
+          frictionBrief.textContent = strongestLayer.score > 0
+            ? `The strongest friction signal is ${strongestLayer.layer}. Motion should pause there until truth, ownership, and proof are visible.`
+            : "No hard friction has been tallied yet. Keep answering; the route sharpens as the system gets evidence.";
+        }
+        if (currentGateLabel) currentGateLabel.textContent = `${gate.gate} / ${gate.title}`;
+        if (momentumLabel) {
+          momentumLabel.textContent = strongestLayer.score > 0
+            ? `${strongestLayer.layer} is setting the pace. The system is gating motion before it accelerates.`
+            : gate.momentum;
+        }
+        if (nextGateLabel) nextGateLabel.textContent = gate.next;
+
+        stats.forEach(stat => {
+          const value = document.querySelector(`[data-meter-value="${stat.layer}"]`);
+          const bar = document.querySelector(`[data-meter-bar="${stat.layer}"]`);
+          const meter = document.querySelector(`[data-meter-layer="${stat.layer}"]`);
+          if (value) value.textContent = String(stat.score);
+          if (bar) bar.style.width = `${Math.max(8, stat.intensity * 100)}%`;
+          if (meter) meter.classList.toggle("is-active", stat.layer === activeLayer);
+        });
+
+        document.querySelectorAll("[data-orbit-layer]").forEach(node => {
+          node.classList.toggle("is-active", node.dataset.orbitLayer === activeLayer);
+        });
+        document.querySelectorAll("[data-gate-layer]").forEach((node, nodeIndex) => {
+          const gateIndex = gateFlow.findIndex(item => item.layer === activeLayer);
+          const itemIndex = gateFlow.findIndex(item => item.layer === node.dataset.gateLayer);
+          node.classList.toggle("is-active", node.dataset.gateLayer === activeLayer);
+          node.classList.toggle("is-complete", itemIndex >= 0 && itemIndex < gateIndex);
+          node.style.setProperty("--gate-progress", itemIndex >= 0 && itemIndex <= gateIndex ? "1" : "0");
+        });
+      }
+
+      function currentSpeechText() {
+        const q = questions[index];
+        if (!q) {
+          return "Your readout is ready. I'll summarize what the system found.";
+        }
+        if (q.text) {
+          return `${q.prompt} Answer in one or two sentences.`;
+        }
+        if (q.routing) {
+          return `Question ${index + 1} of ${questions.length}. ${q.prompt} Say option one through ${q.options.length}.`;
+        }
+        return `Question ${index + 1} of ${questions.length}. ${q.prompt} Say yes, partial, no, or option one through ${q.options.length}.`;
+      }
+
+      function chooseArVAVoice() {
+        const voices = availableVoices.length ? availableVoices : window.speechSynthesis?.getVoices?.() || [];
+        const savedVoiceURI = localStorage.getItem("arvaBrowserVoiceURI");
+        return (
+          voices.find(v => v.voiceURI === savedVoiceURI) ||
+          voices.find(v => /\bAaron\b/i.test(v.name) && /en-US|en_US/i.test(v.lang)) ||
+          preferredVoiceNames.map(name => voices.find(v => new RegExp(`\\b${name}\\b`, "i").test(v.name))).find(Boolean) ||
+          voices.find(v => /male|man/i.test(v.name)) ||
+          voices.find(v => /en-US|en_US/i.test(v.lang)) ||
+          voices.find(v => /^en/i.test(v.lang)) ||
+          voices[0] ||
+          null
+        );
+      }
+
+      function voiceRank(voice) {
+        if (/\bAaron\b/i.test(voice.name) && /en-US|en_US/i.test(voice.lang)) return -20;
+        const nameIndex = preferredVoiceNames.findIndex(name => new RegExp(`\\b${name}\\b`, "i").test(voice.name));
+        const preferredName = nameIndex >= 0 ? nameIndex : 100;
+        const englishScore = /^en/i.test(voice.lang) ? 0 : 40;
+        const localScore = voice.localService ? 0 : 8;
+        return preferredName + englishScore + localScore;
+      }
+
+      function populateVoiceSelect() {
+        if (!("speechSynthesis" in window) || !voiceSelect) return;
+        availableVoices = window.speechSynthesis
+          .getVoices()
+          .slice()
+          .sort((a, b) => voiceRank(a) - voiceRank(b) || a.name.localeCompare(b.name));
+
+        voiceSelect.innerHTML = "";
+        if (!availableVoices.length) {
+          const option = document.createElement("option");
+          option.textContent = "Browser voices loading...";
+          option.value = "";
+          voiceSelect.append(option);
+          return;
+        }
+
+        const selected = chooseArVAVoice();
+        availableVoices.forEach((voice, voiceIndex) => {
+          const option = document.createElement("option");
+          option.value = voice.voiceURI;
+          option.textContent = `${voiceIndex + 1}. ${voice.name} (${voice.lang})`;
+          if (selected && voice.voiceURI === selected.voiceURI) option.selected = true;
+          voiceSelect.append(option);
+        });
+      }
+
+      function saveSelectedVoice() {
+        if (voiceSelect?.value) localStorage.setItem("arvaBrowserVoiceURI", voiceSelect.value);
+      }
+
+      function speakWithBrowserVoice(text, onend = null) {
+        if (!("speechSynthesis" in window)) {
+          note.textContent = "This browser does not expose speech synthesis. The diagnostic can still run as text-first architecture guidance.";
+          return;
+        }
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.pitch = 0.68;
+        utterance.volume = 1;
+        utterance.voice = chooseArVAVoice();
+        utterance.onend = () => {
+          if (typeof onend === "function") onend();
+        };
+        window.speechSynthesis.speak(utterance);
+      }
+
+      populateVoiceSelect();
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.onvoiceschanged = populateVoiceSelect;
+      }
+      voiceSelect?.addEventListener("change", () => {
+        saveSelectedVoice();
+        note.textContent = "Fallback voice saved. Use Test voice before starting the guided diagnostic.";
+      });
+      voiceTestBtn?.addEventListener("click", () => {
+        saveSelectedVoice();
+        speakWithBrowserVoice("This guided diagnostic will help identify the foundation gap before more AI is added.");
+      });
+
+      async function speakArVA(text = currentSpeechText(), onend = null) {
+        if (arvaAudio) {
+          arvaAudio.pause();
+          URL.revokeObjectURL(arvaAudio.src);
+          arvaAudio = null;
+        }
+        window.speechSynthesis?.cancel?.();
+
+        try {
+          note.textContent = "Guided diagnostic is speaking.";
+          const ttsResponse = await fetch("/api/arva-tts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text })
+          });
+          if (!ttsResponse.ok) throw new Error(`TTS failed: ${ttsResponse.status}`);
+          const audioBlob = await ttsResponse.blob();
+          arvaAudio = new Audio(URL.createObjectURL(audioBlob));
+          arvaAudio.onended = () => {
+            if (typeof onend === "function") onend();
+          };
+          arvaAudio.onerror = () => speakWithBrowserVoice(text, onend);
+          await arvaAudio.play();
+        } catch {
+          speakWithBrowserVoice(text, onend);
+        }
+      }
+
+      const welcomeSfx = new Audio("/bizbuilders-ai/assets/arva-welcome.wav");
+
+      function persistArvaSession() {
+        if (arvaSessionToken) sessionStorage.setItem("arvaSessionToken", arvaSessionToken);
+        else sessionStorage.removeItem("arvaSessionToken");
+        if (arvaSessionId) sessionStorage.setItem("arvaSessionId", arvaSessionId);
+        else sessionStorage.removeItem("arvaSessionId");
+      }
+
+      function answeredQuestionIndex(payload) {
+        if (payload.complete) return questions.length - 1;
+        if (payload.clarification_needed) return payload.current_question_index;
+        return Math.max(0, payload.current_question_index - 1);
+      }
+
+      function setRuntimeStatus(message, ready = arvaRuntimeReady) {
+        arvaRuntimeReady = ready;
+        if (!runtimeStatus) return;
+        runtimeStatus.textContent = message;
+        runtimeStatus.dataset.ready = ready ? "true" : "false";
+      }
+
+      async function checkArvaRuntime() {
+        try {
+          const response = await fetch("/api/arva/health");
+          if (!response.ok) throw new Error(`health ${response.status}`);
+          const health = await response.json();
+          const bits = [];
+          if (health.runtime?.xai_voice_configured) bits.push(`Grok Voice (${health.runtime.xai_voice})`);
+          if (health.runtime?.session_secret_configured) bits.push("session API");
+          else bits.push("session API (dev secret)");
+          if (health.runtime?.tts_configured) bits.push("ElevenLabs fallback");
+          setRuntimeStatus(
+            bits.length
+              ? `Runtime ready: ${bits.join(" + ")}.`
+              : "Runtime online. Add XAI_API_KEY for Grok Voice.",
+            Boolean(health.runtime?.xai_voice_configured && health.runtime?.session_secret_configured)
+          );
+          return health;
+        } catch {
+          setRuntimeStatus(
+            "Runtime API not reachable. Voice mode will use local browser fallback until deployed with vercel dev or Vercel production.",
+            false
+          );
+          return null;
+        }
+      }
+
+      async function startArvaSession(startIndex = index) {
+        const response = await fetch("/api/arva/session/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ channel: "browser", start_index: startIndex })
+        });
+        if (!response.ok) throw new Error(`Session start failed: ${response.status}`);
+        return response.json();
+      }
+
+      async function submitArvaAnswer(spokenAnswer, mode = "voice") {
+        const response = await fetch("/api/arva/session/answer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            session_token: arvaSessionToken,
+            spoken_answer: spokenAnswer,
+            mode
+          })
+        });
+        if (!response.ok) throw new Error(`Session answer failed: ${response.status}`);
+        return response.json();
+      }
+
+      function applySessionPayload(payload) {
+        arvaSessionToken = payload.session_token || arvaSessionToken;
+        arvaSessionId = payload.session_id || arvaSessionId;
+        persistArvaSession();
+        if (typeof payload.current_question_index === "number") {
+          index = payload.current_question_index;
+        }
+        if (payload.complete && payload.result_artifact) {
+          arvaResultArtifact = payload.result_artifact;
+        }
+      }
+
+      async function activateGuidedMode() {
+        window.__arvaGrokStop?.();
+        guidedMode = true;
+        document.body.classList.add("arva-guided");
+        voiceBtn.classList.add("is-active");
+        manualBtn.classList.remove("is-active");
+        voiceBtn.textContent = "Guided mode active";
+        manualBtn.textContent = "Switch to manual";
+        note.textContent = "Legacy browser voice is active. Written mode remains available.";
+        welcomeSfx.volume = 0.42;
+        welcomeSfx.currentTime = 0;
+        welcomeSfx.play().catch(() => {});
+        if (!arvaRuntimeReady) {
+          await checkArvaRuntime();
+        }
+        try {
+          const session = await startArvaSession(index);
+          applySessionPayload(session);
+          renderQuestion();
+          speakArVA(session.speech_prompt || currentSpeechText(), startListening);
+        } catch {
+          note.textContent = "Guided session API unavailable. Falling back to local voice logic.";
+          renderQuestion();
+          speakCurrentQuestion();
+        }
+      }
+
+      function activateManualMode() {
+        window.__arvaGrokStop?.();
+        guidedMode = false;
+        document.body.classList.remove("arva-guided");
+        stopListening();
+        arvaSessionToken = null;
+        arvaSessionId = null;
+        arvaResultArtifact = null;
+        persistArvaSession();
+        if (arvaAudio) arvaAudio.pause();
+        window.speechSynthesis?.cancel?.();
+        voiceBtn.classList.remove("is-active");
+        manualBtn.classList.add("is-active");
+        voiceBtn.textContent = "Start guided diagnostic";
+        manualBtn.textContent = "Manual mode active";
+        renderQuestion();
+        note.textContent = "Manual mode is active. Click the closest truth and continue.";
+      }
+
+      voiceBtn.addEventListener("click", activateGuidedMode);
+      manualBtn.addEventListener("click", activateManualMode);
+
+      function setupRecognition() {
+        if (!Recognition) return null;
+        const rec = new Recognition();
+        rec.lang = "en-US";
+        rec.interimResults = false;
+        rec.continuous = false;
+        rec.onstart = () => {
+          recognitionActive = true;
+          note.textContent = questions[index]?.text
+            ? "Guided mode is listening. Answer in one or two sentences."
+            : "Guided mode is listening. Say the option number.";
+        };
+        rec.onend = () => {
+          recognitionActive = false;
+        };
+        rec.onerror = () => {
+          recognitionActive = false;
+          note.textContent = "Microphone recognition was blocked or unavailable. Switch to manual mode, or enable microphone access and try guided mode again.";
+        };
+        rec.onresult = (event) => {
+          recognitionActive = false;
+          const transcript = Array.from(event.results)
+            .map(result => result[0]?.transcript || "")
+            .join(" ")
+            .trim();
+          handleVoiceAnswer(transcript);
+        };
+        return rec;
+      }
+
+      function stopListening() {
+        if (recognition && recognitionActive) {
+          recognition.stop();
+        }
+        recognitionActive = false;
+      }
+
+      function speakCurrentQuestion(speechText = currentSpeechText()) {
+        if (!guidedMode) return;
+        speakArVA(speechText, startListening);
+      }
+
+      function startListening() {
+        if (!guidedMode) return;
+        recognition ||= setupRecognition();
+        if (!recognition) {
+          note.textContent = "This browser does not support speech recognition. Guided mode needs microphone recognition, so use manual mode here.";
+          return;
+        }
+        try {
+          recognition.start();
+        } catch {
+          note.textContent = "Guided mode is already listening. Say your answer.";
+        }
+      }
+
+      function parseOptionNumber(transcript, optionCount) {
+        const text = transcript.toLowerCase();
+        const numberWords = [
+          ["one", 1], ["first", 1], ["won", 1],
+          ["two", 2], ["second", 2], ["too", 2],
+          ["three", 3], ["third", 3],
+          ["four", 4], ["fourth", 4]
+        ];
+        const digit = text.match(/\b([1-4])\b/);
+        if (digit) {
+          const parsed = Number(digit[1]);
+          if (parsed >= 1 && parsed <= optionCount) return parsed - 1;
+        }
+        for (const [word, value] of numberWords) {
+          if (new RegExp(`\\b${word}\\b`).test(text) && value <= optionCount) return value - 1;
+        }
+        if (/^yes\b| yes\b/.test(text)) return 0;
+        if (/partial|mostly|some/.test(text) && optionCount > 1) return 1;
+        if (/\bno\b|none|default|inconsistent|unclear|reactive/.test(text)) return Math.min(optionCount - 1, 2);
+        return null;
+      }
+
+      async function handleVoiceAnswer(transcript) {
+        const q = questions[index];
+        if (!q) return;
+        if (!transcript) {
+          note.textContent = "I did not catch that. Say the option number again.";
+          startListening();
+          return;
+        }
+
+        if (arvaSessionToken) {
+          try {
+            const payload = await submitArvaAnswer(transcript, "voice");
+            applySessionPayload(payload);
+
+            if (payload.clarification_needed) {
+              note.textContent = payload.clarification_prompt;
+              speakArVA(payload.clarification_prompt, startListening);
+              return;
+            }
+
+            const answeredIndex = answeredQuestionIndex(payload);
+            const answeredQuestion = questions[answeredIndex];
+            if (answeredQuestion?.text) {
+              answers[answeredIndex] = {
+                layer: answeredQuestion.layer,
+                value: transcript,
+                text: transcript,
+                textAnswer: true
+              };
+            } else if (typeof payload.option_index === "number" && answeredQuestion) {
+              const [, optionText] = answeredQuestion.options[payload.option_index] || [];
+              answers[answeredIndex] = {
+                layer: answeredQuestion.layer,
+                value: payload.interpreted_value,
+                text: optionText || payload.option_text,
+                routeAnswer: Boolean(answeredQuestion.routing)
+              };
+            }
+
+            note.textContent = payload.option_text
+              ? `Tallied: ${payload.option_text}`
+              : `Captured: “${transcript}”`;
+
+            if (payload.complete && payload.result_artifact) {
+              setTimeout(() => renderResult(payload.result_artifact), 700);
+              return;
+            }
+
+            renderQuestion();
+            setTimeout(() => speakCurrentQuestion(payload.speech_prompt), 200);
+            return;
+          } catch {
+            note.textContent = "Guided session API unavailable. Using local voice fallback.";
+          }
+        }
+
+        if (q.text) {
+          const textarea = document.getElementById("freeText");
+          if (textarea) textarea.value = transcript;
+          answers[index] = { layer: q.layer, value: transcript, text: transcript, textAnswer: true };
+          note.textContent = `Captured: “${transcript}”`;
+          advanceAfterVoice();
+          return;
+        }
+        const optionIndex = parseOptionNumber(transcript, q.options.length);
+        if (optionIndex === null) {
+          note.textContent = `I heard “${transcript}.” Say option one, two, three, or four.`;
+          startListening();
+          return;
+        }
+        const selected = card.querySelectorAll("input[name='answer']")[optionIndex];
+        if (!selected) {
+          note.textContent = "That option is not available for this question. Say another option number.";
+          startListening();
+          return;
+        }
+        selected.checked = true;
+        answers[index] = {
+          layer: q.layer,
+          value: selected.value,
+          text: selected.dataset.text,
+          routeAnswer: Boolean(q.routing)
+        };
+        note.textContent = `Tallied option ${optionIndex + 1}: ${selected.dataset.text}`;
+        advanceAfterVoice();
+      }
+
+      function advanceAfterVoice() {
+        setTimeout(() => {
+          if (!guidedMode) return;
+          if (index === questions.length - 1) renderResult();
+          else {
+            index += 1;
+            renderQuestion();
+            setTimeout(speakCurrentQuestion, 200);
+          }
+        }, 350);
+      }
+
+      function formatFoundationReportMarkdown(payload) {
+        const lines = [
+          fogEntryMode ? "# Digital Fog Report" : "# AI Infrastructure Report",
+          "",
+          `> Generated: ${payload.generated_at}`,
+          `> Fog index: ${payload.fog_index}/${payload.fog_index_max}`,
+          `> Score band: ${payload.score_band}`,
+          `> Earliest layer: ${payload.earliest_unstable_layer || "No hard gap"}`,
+          `> Route: ${payload.route}`,
+          "",
+          payload.share_headline,
+          "",
+          "## How to read the score",
+          "",
+          payload.score_meaning,
+          "",
+          payload.score_context,
+          "",
+          "## Executive read",
+          "",
+          payload.executive_read,
+          "",
+          "## First 72-hour move",
+          "",
+          payload.first_72_hour_move,
+          "",
+          "## Don't do next",
+          "",
+          payload.do_not_do_next,
+          "",
+          "## Proof to collect",
+          "",
+          payload.proof_to_collect,
+          "",
+          "## What this says",
+          "",
+          payload.route,
+          "",
+          "## Scope",
+          "",
+          payload.route_scope || "Unclear scope",
+          "",
+          "## Sequence rule",
+          "",
+          payload.sequence_rule,
+          "",
+          "## Layer reads",
+          ""
+        ];
+        for (const layer of payload.layer_reads) {
+          lines.push(
+            `### ${layer.layer}: ${layer.level}`,
+            "",
+            `- Score: ${layer.score}/${layer.possible}`,
+            `- Gaps: ${layer.gapCount}`,
+            `- Watch signals: ${layer.watchCount}`,
+            `- Stable signals: ${layer.stableCount}`,
+            `- Meaning: ${layer.meaning}`,
+            `- First fix: ${layer.action}`,
+            `- Risk if ignored: ${layer.risk}`,
+            ""
+          );
+          if (layer.signals?.length) {
+            lines.push("Signals captured:");
+            for (const signal of layer.signals) {
+              lines.push(`- ${signal.level}: ${signal.text}`);
+            }
+            lines.push("");
+          }
+        }
+        if (payload.operational_notes?.length) {
+          lines.push("## Your words captured", "");
+          for (const note of payload.operational_notes) {
+            lines.push(`- ${note}`);
+          }
+          lines.push("");
+        }
+        lines.push(
+          "## Next clean step",
+          "",
+          payload.next_action,
+          "",
+          "---",
+          "",
+          fogEntryMode
+            ? "*Digital Fog Report. Use it as a brief, not a brochure.*"
+            : "*AI Infrastructure Report. Use it as a brief, not a brochure.*"
+        );
+        return lines.join("\n");
+      }
+
+      function renderQuestion() {
+        const q = questions[index];
+        const gate = gateForLayer(q.layer);
+        const answeredCount = answers.filter(Boolean).length;
+        label.textContent = `Question ${index + 1} of ${questions.length}`;
+        fill.style.width = `${((index + 1) / questions.length) * 100}%`;
+        note.textContent = guidedMode
+          ? "Guided mode is active. Listen, answer aloud, and the diagnostic will tally the response."
+          : q.routing
+            ? "Choose who owns the fog. This keeps the readout from forcing one default offer."
+            : q.text
+            ? "Write the friction in your own words. The report gets sharper when the evidence is specific."
+            : "Choose the closest truth. A gap is a signal.";
+
+        const existing = answers[index]?.value || "";
+        const safeExisting = escapeHtml(existing);
+        card.innerHTML = `
+          <div class="gate-status">
+            <span>${gate.gate}</span>
+            <b>${gate.title}</b>
+            <small>${answeredCount} signal${answeredCount === 1 ? "" : "s"} tallied / ${questions.length}</small>
+          </div>
+          <p class="step-label">${q.layer}</p>
+          <h2>${q.prompt}</h2>
+          <div class="question-momentum">
+            <span>Inspect</span>
+            <i></i>
+            <span>Gate</span>
+            <i></i>
+            <span>Route</span>
+          </div>
+          ${q.text ? `
+            <textarea class="free-text" id="freeText" placeholder="${escapeHtml(q.placeholder)}">${safeExisting}</textarea>
+          ` : `
+            <div class="answer-grid">
+              ${q.options.map(([value, text], optionIndex) => `
+                <label class="answer">
+                  <input class="answer-input" type="radio" name="answer" value="${value}" data-text="${escapeHtml(text)}" ${existing === value ? "checked" : ""} />
+                  <span class="answer-marker" aria-hidden="true"></span>
+                  <span class="answer-copy">
+                    <b>Option ${optionIndex + 1}</b>
+                    <span>${escapeHtml(text)}</span>
+                  </span>
+                </label>
+              `).join("")}
+            </div>
+          `}
+          <div class="diagnostic-nav">
+            <button class="selection-control selection-back" type="button" id="backBtn" ${index === 0 ? "disabled" : ""}>
+              <span>Back</span>
+              <small>Previous signal</small>
+            </button>
+            <button class="selection-control selection-next" type="button" id="nextBtn">
+              <span>${index === questions.length - 1 ? "Generate report" : "Confirm selection"}</span>
+              <small>${index === questions.length - 1 ? "Build routed readout" : q.routing ? "Lock routing scope" : "Next assessment signal"}</small>
+            </button>
+          </div>
+        `;
+
+        document.getElementById("backBtn").addEventListener("click", () => {
+          saveAnswer();
+          index = Math.max(0, index - 1);
+          renderQuestion();
+        });
+        document.getElementById("nextBtn").addEventListener("click", () => {
+          if (!saveAnswer()) return;
+          if (q.routing) {
+            questions = buildQuestionFlow(selectedRouteScope());
+            answers.length = 1;
+          }
+          if (index === questions.length - 1) renderResult();
+          else { index += 1; renderQuestion(); }
+        });
+        card.querySelectorAll("input[name='answer']").forEach(input => {
+          input.addEventListener("change", () => {
+            answers[index] = {
+              layer: q.layer,
+              value: input.value,
+              text: input.dataset.text,
+              routeAnswer: Boolean(q.routing)
+            };
+            if (q.routing) {
+              questions = buildQuestionFlow(input.value);
+              answers.length = 1;
+            }
+            note.textContent = q.routing
+              ? `Routing scope selected: ${input.dataset.text}`
+              : `${q.layer} tallied: ${input.dataset.text}`;
+            updateDiagnosticTheater();
+          });
+        });
+        document.getElementById("freeText")?.addEventListener("input", event => {
+          answers[index] = {
+            layer: q.layer,
+            value: event.target.value.trim(),
+            text: event.target.value.trim(),
+            textAnswer: true
+          };
+          updateDiagnosticTheater();
+        });
+        updateDiagnosticTheater();
+      }
+
+      function saveAnswer() {
+        const q = questions[index];
+        if (q.text) {
+          answers[index] = { layer: q.layer, value: document.getElementById("freeText").value.trim(), text: document.getElementById("freeText").value.trim(), textAnswer: true };
+          updateDiagnosticTheater();
+          return true;
+        }
+        const selected = card.querySelector("input[name='answer']:checked");
+        if (!selected) {
+          note.textContent = "Pick one signal so I can route this cleanly.";
+          return false;
+        }
+        answers[index] = {
+          layer: q.layer,
+          value: selected.value,
+          text: selected.dataset.text,
+          routeAnswer: Boolean(q.routing)
+        };
+        updateDiagnosticTheater();
+        return true;
+      }
+
+      function renderResult(artifact = arvaResultArtifact) {
+        saveAnswer();
+        fill.style.width = "100%";
+        label.textContent = fogEntryMode ? "Digital Fog readout generated" : "Infrastructure readout generated";
+        note.textContent = fogEntryMode
+          ? "Your Digital Fog readout is ready."
+          : "Your assessment readout is ready.";
+        updateDiagnosticTheater();
+
+        const layerNames = ["Context", "System Architecture", "Activation", "Interface"];
+        const gaps = artifact?.layer_reads
+          ? artifact.layer_reads.map(read => ({
+              layer: read.layer,
+              gapCount: read.gap_count,
+              watchCount: read.watch_count,
+              stableCount: read.stable_count,
+              flagged: read.flagged,
+              level: read.level,
+              score: typeof read.score === "number" ? read.score : (read.gap_count * 2) + read.watch_count,
+              possible: read.possible || questions.filter(question => question.layer === read.layer && !question.text).length * 2
+            }))
+          : layerNames.map(layer => {
+              const layerAnswers = answers.filter(a => a.layer === layer);
+              const gapCount = layerAnswers.filter(a => a.value === "gap").length;
+              const watchCount = layerAnswers.filter(a => a.value === "watch").length;
+              const stableCount = layerAnswers.filter(a => a.value === "stable").length;
+              const level = gapCount > 0 ? "Fog present" : watchCount > 0 ? "Watch zone" : "Stable signal";
+              const possible = questions.filter(question => question.layer === layer && !question.text).length * 2;
+              return { layer, gapCount, watchCount, stableCount, flagged: gapCount > 0, level, score: (gapCount * 2) + watchCount, possible };
+            });
+
+        const flagged = gaps.filter(g => g.flagged);
+        const firstGap = gaps.find(g => g.flagged);
+        const fogIndex = gaps.reduce((sum, gap) => sum + layerScore(gap), 0);
+        const maxScore = maxFogIndex();
+        const scoreRead = scoreInterpretation(fogIndex, maxScore);
+        const routeScope = selectedRouteScope();
+        const operatingLayerGap = flagged.some(g => ["Context", "System Architecture", "Interface"].includes(g.layer));
+        const activationGap = flagged.some(g => g.layer === "Activation");
+        const hasWatchSignal = gaps.some(g => g.watchCount > 0);
+        const personalDoor = { href: "/fog-free-daily", label: "Fog-Free Daily" };
+        const businessDoor = { href: "/bizbuilders-ai/diagnostic?entry=infrastructure", label: "Operating layer" };
+        const growthDoor = { href: "/bizbot-mrktng/", label: "Growth activation" };
+        const reviewDoor = { href: "/#path", label: "Review the route map" };
+        const routingProfile = (() => {
+          if (routeScope === "personal") {
+            return {
+              route: "Personal fog. Clear the rhythm first.",
+              primaryDoor: personalDoor,
+              nextAction:
+                "Pick one recurring fog loop. Write the trigger, the next move, and proof of done. Keep it personal unless the fog is shared by a team."
+            };
+          }
+          if (routeScope === "business") {
+            return {
+              route: "Operating fog. Fix the layer before adding speed.",
+              primaryDoor: businessDoor,
+              nextAction:
+                "Make the earliest break visible: truth, owner, route, proof. Then decide what needs architecture."
+            };
+          }
+          if (routeScope === "growth") {
+            if (operatingLayerGap) {
+              return {
+                route: "Growth is exposing operating fog.",
+                primaryDoor: businessDoor,
+                nextAction:
+                  "Pause new demand pressure. Find the first break in context, ownership, routing, or proof. Fix that before scaling the channel."
+              };
+            }
+            return {
+              route: "Growth path. The base can carry more motion.",
+              primaryDoor: growthDoor,
+              nextAction:
+                "Choose one demand path. Define capture, follow-up, owner, proof, and weekly review."
+            };
+          }
+          if (operatingLayerGap || flagged.length >= 2) {
+            return {
+              route: "Operating fog. Start at the first unstable layer.",
+              primaryDoor: businessDoor,
+              nextAction:
+                "Name the first unstable layer. Make its truth, owner, route, and proof visible before adding more tools or campaigns."
+            };
+          }
+          if (activationGap) {
+            return {
+              route: "Activation fog. Clean the handoff before adding volume.",
+              primaryDoor: growthDoor,
+              nextAction:
+                "Check that context and architecture can carry the demand. Then clean the capture, follow-up, owner, and proof."
+            };
+          }
+          if (hasWatchSignal) {
+            return {
+              route: "The owner of the fog is not clear yet.",
+              primaryDoor: reviewDoor,
+              nextAction:
+                "Use the readout to name who owns the fog first: personal rhythm, operating layer, or growth path."
+            };
+          }
+          return {
+            route: "No default offer selected.",
+            primaryDoor: reviewDoor,
+            nextAction:
+              "Confirm the real need before adding a product, tool, or campaign. The diagnostic names the fog; the next door depends on who owns it."
+          };
+        })();
+        const route = routingProfile.route;
+        const enforced = artifact?.sequence_rule || (firstGap
+          ? `Address ${firstGap.layer} first. Don't add speed downstream until this layer is clear.`
+          : "No hard layer gap. Confirm the real need before adding tools, growth systems, or new automations.");
+        const executiveRead = flagged.length >= 3
+          ? "Digital Fog is spread across several layers. More speed will add noise. Start with the earliest unstable layer."
+          : flagged.length === 2
+            ? "Two layers are creating Digital Friction. Fix the layer, not the symptom."
+            : flagged.length === 1
+              ? "Fog is concentrated in one layer. Clear that layer first."
+              : gaps.some(g => !g.flagged && g.watchCount > 0)
+                ? "No hard gap, but watch signals suggest memory, habit, or manual correction is still holding the system together."
+                : "The base looks clear enough for the next move. Keep proof visible.";
+        const textAnswers = artifact?.operational_notes?.length
+          ? artifact.operational_notes
+          : answers.filter(a => a.textAnswer && a.text).map(a => a.text);
+        const primaryDoor = routingProfile.primaryDoor;
+        const secondaryDoors = [personalDoor, businessDoor, growthDoor].filter(door => door.href !== primaryDoor.href);
+        const layerDetails = gaps.map(gap => {
+          const reportCopy = layerReportCopy(gap);
+          return {
+            ...gap,
+            ...reportCopy,
+            signals: layerSignals(gap.layer)
+          };
+        });
+        const shareStrategy = buildShareStrategy({
+          gaps,
+          flagged,
+          routeScope,
+          route,
+          fogIndex,
+          maxScore,
+          firstGap
+        });
+        const exportPayload = {
+          generated_at: new Date().toISOString(),
+          product: fogEntryMode ? "digital_fog_diagnostic" : "ai_infrastructure_assessment",
+          route_scope: routeScopeLabel(routeScope),
+          route,
+          fog_index: fogIndex,
+          fog_index_max: maxScore,
+          score_band: scoreRead.band,
+          score_meaning: scoreRead.meaning,
+          score_context: scoreRead.context,
+          executive_read: executiveRead,
+          share_headline: shareStrategy.share_headline,
+          share_subhead: shareStrategy.share_subhead,
+          earliest_unstable_layer: shareStrategy.public_layer_name,
+          first_72_hour_move: shareStrategy.first_72_hour_move,
+          do_not_do_next: shareStrategy.do_not_do_next,
+          proof_to_collect: shareStrategy.proof_to_collect,
+          public_share_text: shareStrategy.public_share_text,
+          team_brief: shareStrategy.team_brief,
+          sequence_rule: enforced,
+          layer_reads: layerDetails,
+          operational_notes: textAnswers,
+          next_action: routingProfile.nextAction
+        };
+        const markdownReport = formatFoundationReportMarkdown(exportPayload);
+        window.__foundationLastReport = exportPayload;
+        window.__foundationLastReportMarkdown = markdownReport;
+        localStorage.setItem("foundationDiagnosticReport", JSON.stringify(exportPayload));
+        localStorage.setItem("foundationDiagnosticReportMarkdown", markdownReport);
+
+        card.className = "result-card";
+        card.innerHTML = `
+          <p class="step-label">${fogEntryMode ? "Digital Fog Report" : "AI Infrastructure Report"}</p>
+          <p class="fog-index-line">Fog index <strong>${fogIndex}</strong> / ${maxScore} ${flagged.length ? `/ ${flagged.length} layer${flagged.length > 1 ? "s" : ""} flagged` : "/ no hard gap"}</p>
+          <div class="score-guide" aria-label="How to read the Fog Index">
+            <b>${escapeHtml(scoreRead.label)}</b>
+            <p>${escapeHtml(scoreRead.meaning)}</p>
+            <span>${escapeHtml(scoreRead.context)}</span>
+          </div>
+          <h2>${escapeHtml(shareStrategy.share_headline)}</h2>
+          <p class="report-lede">${escapeHtml(shareStrategy.share_subhead)} ${escapeHtml(executiveRead)}</p>
+          <div class="share-report" aria-label="Shareable report wrapper">
+            <div class="share-report__copy">
+              <span>Share card</span>
+              <h3>${escapeHtml(shareStrategy.share_headline)}</h3>
+              <p>Private notes stay out. The public version names the pattern, the score, and the first move.</p>
+              <pre class="share-report__text" id="publicSharePreview"></pre>
+            </div>
+            <div class="share-report__receipt">
+              <span>Fog index</span>
+              <b>${fogIndex}/${maxScore}</b>
+              <small>${escapeHtml(shareStrategy.public_layer_name)} first</small>
+              <i>Managing Digital Fog</i>
+            </div>
+          </div>
+          <div class="report-actions">
+            <button class="lever lever-primary" type="button" id="copyShareBtn">Copy public share text</button>
+            <button class="lever lever-secondary" type="button" id="nativeShareBtn">Share report</button>
+            <button class="lever lever-secondary" type="button" id="copyTeamBriefBtn">Copy team brief</button>
+          </div>
+          <div class="report-moves" aria-label="Clear next moves">
+            <div>
+              <b>First move</b>
+              <p>${escapeHtml(exportPayload.first_72_hour_move)}</p>
+            </div>
+            <div>
+              <b>Don't do this next</b>
+              <p>${escapeHtml(exportPayload.do_not_do_next)}</p>
+            </div>
+            <div>
+              <b>What to watch for</b>
+              <p>${escapeHtml(exportPayload.proof_to_collect)}</p>
+            </div>
+          </div>
+          <div class="result-list">
+            ${layerDetails.map(g => `
+              <div class="${g.flagged ? "is-flagged" : g.watchCount ? "is-watch" : "is-stable"}">
+                <b>${escapeHtml(g.layer)} / ${escapeHtml(g.level)}</b>
+                <span>${g.score}/${g.possible} signal weight / ${g.gapCount} gap / ${g.watchCount} watch / ${g.stableCount} stable</span>
+                <p><strong>What it means:</strong> ${escapeHtml(g.meaning)}</p>
+                <p><strong>First fix:</strong> ${escapeHtml(g.action)}</p>
+                <p><strong>Risk if ignored:</strong> ${escapeHtml(g.risk)}</p>
+                ${g.signals.length ? `
+                  <ul class="signal-evidence">
+                    ${g.signals.map(signal => `<li><strong>${escapeHtml(signal.level)}:</strong> ${escapeHtml(signal.text)}</li>`).join("")}
+                  </ul>
+                ` : ""}
+              </div>
+            `).join("")}
+          </div>
+          <div class="report-block">
+            <b>Sequence rule</b>
+            <p>${escapeHtml(enforced)}</p>
+          </div>
+          <div class="report-block">
+              <b>What this says</b>
+              <p>${escapeHtml(route)}</p>
+            </div>
+            <div class="report-block">
+              <b>Fog-Free looks like</b>
+              <p>Truth, ownership, route, and proof hold. You can move without making more fog.</p>
+            </div>
+            <div class="report-block">
+              <b>Next clean step</b>
+              <p>${escapeHtml(exportPayload.next_action)}</p>
+            </div>
+          <div class="report-block report-markdown-block">
+            <b>${fogEntryMode ? "Digital Fog Report (.md)" : "AI Infrastructure Report (.md)"}</b>
+            <pre class="report-markdown" id="reportMarkdownPreview"></pre>
+          </div>
+          <div class="result-doors" aria-label="Responsible next moves">
+            <p class="result-doors__label">If you want help from here</p>
+            <div class="cta-row cta-row--doors">
+              <a class="lever lever-primary" href="${primaryDoor.href}">${escapeHtml(primaryDoor.label)}</a>
+              ${secondaryDoors.map(door => `<a class="lever lever-secondary" href="${door.href}">${escapeHtml(door.label)}</a>`).join("")}
+              ${!fogEntryMode ? '<a class="lever lever-secondary" href="/bizbuilders-ai/#blueprint">Review AI Biz Blueprint path</a>' : ""}
+            </div>
+          </div>
+          <div class="cta-row">
+            <button class="lever lever-secondary" type="button" id="copyReportBtn">Copy markdown</button>
+            <button class="lever lever-secondary" type="button" id="downloadReportBtn">Download .md report</button>
+            <button class="lever lever-secondary" type="button" id="restartBtn">Restart diagnostic</button>
+          </div>
+        `;
+        const markdownPreview = document.getElementById("reportMarkdownPreview");
+        if (markdownPreview) markdownPreview.textContent = markdownReport;
+        const publicSharePreview = document.getElementById("publicSharePreview");
+        if (publicSharePreview) publicSharePreview.textContent = exportPayload.public_share_text;
+        const copyText = async (text, storageKey, successMessage) => {
+          try {
+            await navigator.clipboard.writeText(text);
+            note.textContent = successMessage;
+          } catch {
+            localStorage.setItem(storageKey, text);
+            note.textContent = "Clipboard blocked. Text saved locally for manual copy.";
+          }
+        };
+        if (guidedMode) speakArVA(`Your readout is ready. ${executiveRead} ${enforced}`);
+        document.getElementById("restartBtn").addEventListener("click", () => {
+          answers.length = 0;
+          questions = buildQuestionFlow();
+          index = 0;
+          arvaSessionToken = null;
+          arvaSessionId = null;
+          arvaResultArtifact = null;
+          persistArvaSession();
+          card.className = "question-card";
+          renderQuestion();
+        });
+        document.getElementById("copyShareBtn")?.addEventListener("click", () => {
+          copyText(
+            exportPayload.public_share_text,
+            "foundationDiagnosticPublicShareText",
+            "Public share text copied. Private notes were left out."
+          );
+        });
+        document.getElementById("copyTeamBriefBtn")?.addEventListener("click", () => {
+          copyText(
+            exportPayload.team_brief,
+            "foundationDiagnosticTeamBrief",
+            "Team brief copied. Use it to align the next operating move."
+          );
+        });
+        document.getElementById("nativeShareBtn")?.addEventListener("click", async () => {
+          if (navigator.share) {
+            try {
+              await navigator.share({
+                title: fogEntryMode ? "Digital Fog Report" : "AI Infrastructure Report",
+                text: exportPayload.public_share_text
+              });
+              note.textContent = "Share sheet opened with the public-safe report.";
+              return;
+            } catch {
+              note.textContent = "Share canceled. Public share text is still available.";
+              return;
+            }
+          }
+          copyText(
+            exportPayload.public_share_text,
+            "foundationDiagnosticPublicShareText",
+            "Browser share unavailable. Public share text copied instead."
+          );
+        });
+        document.getElementById("copyReportBtn")?.addEventListener("click", async () => {
+          copyText(
+            markdownReport,
+            "foundationDiagnosticReportMarkdown",
+            "Markdown report copied. Paste into Obsidian, Notes, or your operating brief folder."
+          );
+        });
+        document.getElementById("downloadReportBtn").addEventListener("click", () => {
+          const blob = new Blob([markdownReport], { type: "text/markdown;charset=utf-8" });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `${fogEntryMode ? "digital-fog-diagnostic" : "ai-infrastructure-assessment"}-readout-${Date.now()}.md`;
+          link.click();
+          URL.revokeObjectURL(url);
+          note.textContent = "Markdown report downloaded.";
+        });
+      }
+
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.querySelectorAll("video[autoplay]").forEach((video) => {
+        video.muted = true;
+        video.defaultMuted = true;
+        video.setAttribute("muted", "");
+        video.setAttribute("playsinline", "");
+        if (reduceMotion) {
+          video.removeAttribute("autoplay");
+          video.pause();
+          return;
+        }
+        const startVideo = () => video.play().catch(() => video.classList.add("is-paused"));
+        if (video.readyState >= 2) startVideo();
+        else video.addEventListener("canplay", startVideo, { once: true });
+      });
+
+      renderQuestion();
+
+      window.__arvaDiagnosticHooks = {
+        applySessionPayload,
+        renderResult,
+        renderQuestion,
+        updateDiagnosticTheater,
+        setRuntimeStatus,
+        checkArvaRuntime,
+        getIndex: () => index,
+        setIndex: (value) => { index = value; },
+        getAnswers: () => answers
+      };
+    </script>
+    <script type="module">
+      import { ARVA_VOICE_ENABLED, applyArvaComingSoonUI } from "/bizbuilders-ai/assets/arva-launch.js";
+      import { ArvaGrokVoice } from "/bizbuilders-ai/assets/arva-grok-voice.js";
+      import { ArvaVoiceOrb } from "/bizbuilders-ai/assets/arva-voice-orb.js";
+
+      // P0: keep incomplete voice UI fully off the public path
+      const runtimeControls = document.getElementById("assessmentRuntimeControls");
+      if (runtimeControls) {
+        runtimeControls.hidden = true;
+        runtimeControls.setAttribute("aria-hidden", "true");
+        runtimeControls.style.display = "none";
+      }
+      document.getElementById("arvaOrbOverlay")?.setAttribute("hidden", "");
+
+      applyArvaComingSoonUI(document);
+
+      if (ARVA_VOICE_ENABLED) {
+        window.__arvaDiagnosticHooks?.checkArvaRuntime?.();
+      }
+
+      const grokBtn = document.getElementById("grokVoiceBtn");
+      const heroArvaBtn = document.getElementById("heroArvaBtn");
+      const note = document.getElementById("aivaNote");
+      const orb = new ArvaVoiceOrb(document.getElementById("arvaOrbOverlay"));
+      let grokClient = null;
+      let arvaPartial = "";
+
+      function layerToBeat(layer) {
+        if (layer === "Context") return "Context";
+        if (layer === "System Architecture") return "Architecture";
+        if (layer === "Activation") return "Activation";
+        if (layer === "Interface") return "Interface";
+        if (layer === "Operational Context") return "Your friction";
+        return "Context";
+      }
+
+      function stopGrok() {
+        grokClient?.stop();
+        grokClient = null;
+        grokBtn?.classList.remove("is-active");
+        grokBtn && (grokBtn.textContent = "Use voice guide");
+        document.body.classList.remove("arva-guided", "grok-voice-active");
+      }
+
+      window.__arvaGrokStop = stopGrok;
+      orb.onClose = stopGrok;
+
+      async function startArvaVoice() {
+        const hooks = window.__arvaDiagnosticHooks;
+        if (!hooks) return;
+
+        if (grokClient?.active) {
+          orb.close();
+          return;
+        }
+
+        document.body.classList.add("grok-voice-active");
+        grokBtn?.classList.add("is-active");
+        if (grokBtn) grokBtn.textContent = "Voice guide live";
+        orb.open();
+        arvaPartial = "";
+
+        try {
+          grokClient = new ArvaGrokVoice({
+            onStatus: (message, ready) => {
+              hooks.setRuntimeStatus(message, ready);
+              orb.setStatus(message);
+              if (/live|listening/i.test(message)) orb.setPhase("listening");
+            },
+            onResponseStart: () => {
+              arvaPartial = "";
+            },
+            onAssistantPartial: (delta) => {
+              arvaPartial += delta || "";
+              orb.setArvaLine(arvaPartial);
+            },
+            onTranscript: (role, text) => {
+              if (role === "arva") {
+                arvaPartial = text;
+                orb.setArvaLine(text);
+              } else {
+                orb.setUserLine(text);
+              }
+            },
+            onListening: (on) => orb.setPulse(on),
+            onSpeaking: (on) => {
+              if (on) orb.setPhase("speaking");
+            },
+            onArvaSession: (payload) => {
+              hooks.applySessionPayload(payload);
+              if (typeof payload.current_question_index === "number") {
+                hooks.setIndex(payload.current_question_index);
+                hooks.renderQuestion();
+                hooks.updateDiagnosticTheater();
+              }
+              if (payload.current_question_layer) {
+                orb.setBeat(layerToBeat(payload.current_question_layer));
+              }
+              if (payload.complete) {
+                orb.showComplete("Mapping complete. Readout is below.");
+              }
+            },
+            onComplete: (artifact) => {
+              hooks.renderResult(artifact);
+              orb.showComplete("Diagnostic complete. Your fog map is ready.");
+              note.textContent = "Voice-guided diagnostic complete. Markdown report ready below.";
+              document.getElementById("questionCard")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            },
+            onDisconnect: () => {
+              grokBtn?.classList.remove("is-active");
+              if (grokBtn) grokBtn.textContent = "Use voice guide";
+            }
+          });
+
+          orb.onRetry = () => startArvaVoice();
+          await grokClient.start();
+        } catch (error) {
+          stopGrok();
+          orb.setStatus(error.message || "Voice unavailable");
+          hooks.setRuntimeStatus(
+            `Voice guide unavailable: ${error.message}. Use writing mode or verify the voice runtime configuration.`,
+            false
+          );
+          note.textContent = error.message || "Voice guide failed to start.";
+        }
+      }
+
+      if (ARVA_VOICE_ENABLED) {
+        grokBtn?.removeAttribute("disabled");
+        grokBtn?.removeAttribute("aria-disabled");
+        grokBtn?.classList.remove("arva-soon-cta");
+        grokBtn && (grokBtn.textContent = "Use voice guide");
+        heroArvaBtn?.removeAttribute("disabled");
+        heroArvaBtn?.removeAttribute("aria-disabled");
+        heroArvaBtn?.classList.remove("arva-soon-cta");
+        heroArvaBtn && (heroArvaBtn.textContent = "Use voice guide");
+        grokBtn?.addEventListener("click", startArvaVoice);
+        heroArvaBtn?.addEventListener("click", startArvaVoice);
+        if (new URLSearchParams(location.search).get("arva") === "1") {
+          window.addEventListener("load", () => setTimeout(startArvaVoice, 400));
+        }
+      }
+    </script>
+    <script src="/bizbuilders-ai/assets/bold-media.js" defer></script>
+  </body>
+</html>
