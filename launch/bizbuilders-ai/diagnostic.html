@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Digital Fog Diagnostic: routed questions that surface where tools outpace architecture. Architecture before automation. One readout. One next move."
+      content="Digital Fog Diagnostic: answer a few questions, see what is getting messy, and get one clear next move."
     />
     <title>Digital Fog Diagnostic | TransformBy10X</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="/bizbuilders-ai/styles.css?v=20260718p0" />
     <link rel="stylesheet" href="/css/ecosystem-nav.css?v=20260718p0" />
     <link rel="stylesheet" href="/bizbuilders-ai/diagnostic-refinement.css?v=20260718p0" />
-    <link rel="stylesheet" href="/css/cinematic-site.css?v=20260720e" />
+    <link rel="stylesheet" href="/css/cinematic-site.css?v=20260722a" />
   </head>
   <body class="bold-diagnostic diagnostic-public cinematic-page cinematic-diagnostic" data-eco-layer="tbtx" data-eco-current="diagnostic">
     <a class="skip-link" href="#questionCard">Skip to diagnostic questions</a>
@@ -29,7 +29,7 @@
       </a>
       <div class="cinema-nav__links">
         <a href="/diagnostic" aria-current="page">Diagnose</a>
-        <a href="/bizbuilders-ai/">B2B build</a>
+        <a href="/bizbuilders-ai/">Business</a>
         <a href="/fog-free-daily">Fog-Free Daily</a>
         <a href="/bizbot-mrktng/">Growth</a>
       </div>
@@ -49,9 +49,9 @@
         <div class="assessment-hero__scrim" aria-hidden="true"></div>
         <div class="assessment-hero__copy">
           <p class="kicker" id="assessmentEntryKicker">TRANSFORMBY10X / DIGITAL FOG DIAGNOSTIC</p>
-          <h1 id="assessment-hero-title">Architecture before automation.</h1>
+          <h1 id="assessment-hero-title">Find the fog first.</h1>
           <p id="assessmentEntryLede">
-            Managing Digital Fog starts by finding where truth, ownership, routing, and proof are breaking down. Routed questions. One readout. One next move.
+            Answer a few questions. See what's getting messy. Leave with one clear next move.
           </p>
           <p class="assessment-hero__rule" id="assessmentHeroRule">You can't automate a mess.</p>
           <a class="primary-start" id="assessmentEntryCta" href="#questionCard">Start the Digital Fog Diagnostic</a>
@@ -80,7 +80,7 @@
         <header class="assessment-entry__intro">
           <p class="kicker" id="assessmentSectionKicker">DIGITAL FOG DIAGNOSTIC</p>
           <h2 id="assessment-title">Find the earliest unstable layer.</h2>
-          <p id="assessmentIntroNote">Choose the closest truth. Answers stay in this browser unless you export the result.</p>
+          <p id="assessmentIntroNote">Choose the closest answer. Answers stay in this browser unless you export the result.</p>
         </header>
 
         <div class="diagnostic-shell">
@@ -90,7 +90,7 @@
               <div class="progress-track" aria-hidden="true">
                 <div class="progress-fill" id="progressFill"></div>
               </div>
-              <p id="aivaNote">Choose the closest truth. A gap is a signal.</p>
+              <p id="aivaNote">Choose the closest answer. A gap shows where to start.</p>
             </div>
             <section class="question-card" id="questionCard" aria-live="polite"></section>
           </div>
@@ -112,7 +112,7 @@
         <div>
           <p class="kicker">WHAT HAPPENS NEXT</p>
           <h2 id="result-path-title">Your readout names the path to Fog-Free.</h2>
-          <p id="resultPathLede">Fog-Free means truth, ownership, routing, proof, and enough foundation to move without creating more fog.</p>
+          <p id="resultPathLede">Fog-Free means context, owners, next steps, and checks are clear enough to move.</p>
           <a class="secondary-start" id="resultPathCta" href="/#path">See the route map</a>
         </div>
         <ol id="resultPathSteps" aria-label="Diagnostic path">
@@ -197,7 +197,7 @@
           if (meta) {
             meta.setAttribute(
               "content",
-              "Digital Fog Diagnostic: routed questions that surface where tools outpace architecture. Architecture before automation. One readout. One next move."
+              "Digital Fog Diagnostic: answer a few questions, see what is getting messy, and get one clear next move."
             );
           }
           document.body.dataset.ecoLayer = "tbtx";
@@ -211,7 +211,7 @@
         if (meta) {
           meta.setAttribute(
             "content",
-            "BizBuilders AI Infrastructure Assessment: find where context, ownership, routing, and proof break down before more AI adds pressure."
+            "BizBuilders AI Infrastructure Assessment: find what is unstable in the operating layer before more AI adds pressure."
           );
         }
         document.body.dataset.ecoLayer = "infrastructure";
@@ -221,7 +221,7 @@
         document.getElementById("assessmentEntryKicker").textContent = "BIZBUILDERS AI / AI INFRASTRUCTURE ASSESSMENT";
         document.getElementById("assessment-hero-title").textContent = "You can't automate a mess.";
         document.getElementById("assessmentEntryLede").textContent =
-          "Find where context, ownership, routing, and proof are breaking down before more AI adds speed to the wrong system.";
+          "Find what is unstable in the operating layer before more AI adds speed.";
         document.getElementById("assessmentEntryCta").textContent = "Start the AI Infrastructure Assessment";
         document.getElementById("assessmentSectionKicker").textContent = "THE ASSESSMENT";
         document.getElementById("assessment-title").textContent = "A few questions. One clear readout.";
@@ -239,13 +239,13 @@
           <li><span>05</span><b>AI Biz Blueprint</b></li>
         `;
         const rule = document.getElementById("assessmentHeroRule");
-        if (rule) rule.textContent = "Architecture before automation.";
+        if (rule) rule.textContent = "Find the fog first.";
       }
       applyEntryIdentity();
 
       const routeScopeOptions = [
         ["personal", "Personal: attention, open loops, daily execution"],
-        ["business", "Business: ownership, routing, context, proof"],
+        ["business", "Business: owners, handoffs, context, follow-up"],
         ["growth", "Growth: demand, follow-up, activation"],
         ["not_sure", "Not sure: find the first unstable layer"]
       ];
@@ -381,11 +381,11 @@
           },
           {
             layer: "Activation",
-            prompt: "If one thing improved now, where's the leverage?",
+            prompt: "If one thing improved now, what would help most?",
             options: [
               ["watch", "Gaining clarity on what to prioritize next"],
               ["gap", "Reducing operational strain"],
-              ["watch", "Increasing leverage through better systems or AI"],
+              ["watch", "Making systems or AI easier to use"],
               ["gap", "Getting the right changes implemented"]
             ]
           }
@@ -417,10 +417,10 @@
             layer: "System Architecture",
             prompt: "Can the operating layer carry more demand?",
             options: [
-              ["stable", "Yes: intake, routing, follow-up, and proof are clear"],
+              ["stable", "Yes: intake, follow-up, owners, and checks are clear"],
               ["watch", "Mostly, but a few handoffs still need attention"],
               ["gap", "Not yet: follow-up or ownership breaks under load"],
-              ["gap", "No: more demand would expose the mess"],
+              ["gap", "No: more demand would make the mess louder"],
               ["watch", "I'm not sure"]
             ]
           },
@@ -466,7 +466,7 @@
               ["stable", "The next priority is clear"],
               ["watch", "A few signals are clear, but not the whole picture"],
               ["gap", "Ownership or decision rules are unclear"],
-              ["gap", "The source of truth is scattered"],
+              ["gap", "The main context is scattered"],
               ["watch", "It changes week to week"]
             ]
           },
@@ -518,7 +518,7 @@
             layer: "Context",
             prompt: "What would make the fog easier to clear first?",
             options: [
-              ["stable", "A clearer source of truth"],
+              ["stable", "A clearer source of context"],
               ["watch", "A better way to decide what matters now"],
               ["watch", "A cleaner handoff or owner map"],
               ["gap", "Stopping the open loops from multiplying"],
@@ -544,7 +544,7 @@
           options: [
             ["watch", "Clarifying what to prioritize next"],
             ["gap", "Reducing strain"],
-            ["watch", "Increasing leverage through better systems or AI"],
+            ["watch", "Making systems or AI easier to use"],
             ["gap", "Getting the right changes implemented"]
           ]
         }
@@ -655,27 +655,27 @@
 
       const layerProfiles = {
         "Context": {
-          metaphor: "source-of-truth chamber",
-          meaning: "Truth, language, and decision rules are not yet stable enough for reliable leverage.",
+          metaphor: "context hub",
+          meaning: "The context, language, and decision rules are not clear enough yet.",
           action: "Create one canonical brief: priority, promise, exclusions, language, and decision rules.",
-          risk: "AI will amplify inconsistent context and turn scattered judgment into faster scattered output."
+          risk: "AI will turn unclear context into faster unclear output."
         },
         "System Architecture": {
           metaphor: "routing chassis",
           meaning: "The work may be happening, but the path is not clear enough to repeat without rework.",
-          action: "Document the real path, define owners, and mark which handoffs need proof or approval.",
-          risk: "Automation will move work faster into unclear ownership, missing context, or invisible rework."
+          action: "Write the real path, name the owners, and mark which handoffs need a check or approval.",
+          risk: "Automation will move work faster into unclear owners, missing context, or hidden rework."
         },
         "Activation": {
           metaphor: "revenue conveyor",
           meaning: "Momentum, follow-up, or outreach is not yet moving with dependable rhythm.",
           action: "Stabilize one source of momentum, one follow-up path, and one review cadence before adding more channels.",
-          risk: "Demand or action will leak through unowned follow-up, inconsistent rhythm, or tools disconnected from proof."
+          risk: "Demand will leak through missed follow-up, inconsistent rhythm, or tools that are not checked."
         },
         "Interface": {
           metaphor: "public-facing control panel",
           meaning: "The way people enter the system may not match the way the work actually gets delivered.",
-          action: "Align the visible promise, intake, payment, onboarding, and next step with the real operating layer.",
+          action: "Make the promise, intake, payment, onboarding, and next step match what the business can actually handle.",
           risk: "People may receive promises, instructions, or handoff signals that create friction before the work begins."
         }
       };
@@ -685,14 +685,14 @@
         {
           layer: "Context",
           gate: "Gate 01",
-          title: "See truth",
-          next: "Next: govern structure",
+          title: "See context",
+          next: "Next: clean structure",
           momentum: "Foundation is being inspected."
         },
         {
           layer: "System Architecture",
           gate: "Gate 02",
-          title: "Govern structure",
+          title: "Clean structure",
           next: "Next: route motion",
           momentum: "The backbone is being tested."
         },
@@ -859,43 +859,43 @@
         if (read.watchCount > 0) {
           return {
             meaning: "This layer is holding, but it still depends on memory, habit, or manual correction.",
-            action: "Write the rule, owner, and proof point before scaling the connected workflow.",
+            action: "Write the rule, owner, and check before scaling the workflow.",
             risk: "The layer can look stable until volume increases or a key person steps away."
           };
         }
         return {
           meaning: "This layer reports enough stability to support the next layer.",
-            action: "Keep it as a constraint. Don't let downstream speed rewrite the operating truth.",
-          risk: "Stable layers drift when new tools create new handoffs without proof."
+            action: "Keep it as a guardrail. Don't let more speed rewrite how the work actually runs.",
+          risk: "Stable layers drift when new tools create new handoffs with no check."
         };
       }
 
       function firstMoveForLayer(layer, routeScope, route) {
         if (routeScope === "personal") {
-          return "Pick one recurring fog loop. Write the trigger, next move, and proof of done. Run that rhythm for seven days before adding another app.";
+          return "Pick one recurring fog loop. Write the trigger, next move, and done check. Run that rhythm for seven days before adding another app.";
         }
         if (route.includes("Growth path")) {
-          return "Pick one demand path. Define capture, follow-up, owner, proof, and weekly review before adding another channel.";
+          return "Pick one demand path. Define capture, follow-up, owner, done check, and weekly review before adding another channel.";
         }
         if (layer === "Context") {
           return "Write one operating brief: offer, audience, promise, exclusions, decision rules, and the language everyone must use.";
         }
         if (layer === "System Architecture") {
-          return "Map the real intake-to-delivery path. Put an owner and proof point on every handoff.";
+          return "Map the real intake-to-delivery path. Put an owner and check on every handoff.";
         }
         if (layer === "Activation") {
-          return "Choose one lead source and one follow-up path. Make the owner, timing, and proof visible.";
+          return "Choose one lead source and one follow-up path. Write the owner, timing, and done check.";
         }
         if (layer === "Interface") {
           return "Walk the public path like a new client. Remove every promise, payment step, or intake signal the operating layer cannot support.";
         }
-        return "Choose the earliest unstable layer and make one rule, one owner, and one proof point visible.";
+        return "Choose the earliest unstable layer. Write one rule, one owner, and one done check.";
       }
 
       function doNotDoForLayer(layer, routeScope, route) {
         if (routeScope === "personal") return "Don't turn personal fog into a full business infrastructure project.";
         if (route.includes("Growth path")) return "Don't add channels until follow-up and measurement have one owner.";
-        if (layer === "Context") return "Don't add more AI output until the source of truth is written.";
+        if (layer === "Context") return "Don't add more AI output until the main context is written down.";
         if (layer === "System Architecture") return "Don't automate handoffs that still depend on guessing.";
         if (layer === "Activation") return "Don't pour demand into a follow-up path nobody owns.";
         if (layer === "Interface") return "Don't promise what the operating layer can't deliver consistently.";
@@ -906,10 +906,10 @@
         if (routeScope === "personal") return "A daily rhythm that survives two normal workdays without relying on panic or memory.";
         if (route.includes("Growth path")) return "A lead can be captured, followed up, and reviewed without heroics.";
         if (layer === "Context") return "One operating brief people use when deciding what to say, sell, route, or refuse.";
-        if (layer === "System Architecture") return "Every handoff has an owner, a trigger, and proof that the next step happened.";
-        if (layer === "Activation") return "A visible path from lead source to follow-up to measured outcome.";
+        if (layer === "System Architecture") return "Every handoff has an owner, a trigger, and a check that the next step happened.";
+        if (layer === "Activation") return "A clear path from lead source to follow-up to result.";
         if (layer === "Interface") return "A new client can move from page to intake without mismatched expectations.";
-        return "The next person can run the workflow without asking where truth lives.";
+        return "The next person can run the workflow without asking where the context lives.";
       }
 
       function buildShareStrategy({ gaps, flagged, routeScope, route, fogIndex, maxScore, firstGap }) {
@@ -922,10 +922,10 @@
         const firstMove = noUnstableLayer
           ? route.includes("Growth path")
             ? "Choose one demand path. Define capture, follow-up, owner, proof, and weekly review before adding another channel."
-            : "Pick one workflow to govern first. Confirm the source of truth, owner map, handoff proof, and review rhythm before scaling."
+            : "Pick one workflow to clean first. Confirm the context, owner map, handoff check, and review rhythm before scaling."
           : firstMoveForLayer(anchorName, routeScope, route);
         const doNotDo = noUnstableLayer
-          ? "Don't scale every layer at once. Choose the next governed workflow and make proof visible."
+          ? "Don't scale every layer at once. Choose the next workflow and make the checks clear."
           : doNotDoForLayer(anchorName, routeScope, route);
         const proof = noUnstableLayer
           ? "One workflow can move from trigger to output with clear ownership, evidence, and review."
@@ -943,7 +943,7 @@
             ? "It's not a motivation problem. It's a sequence problem."
             : firstWatch
               ? "Nothing is fully broken. The risk is drift under more volume."
-              : "The next constraint is proof, measurement, and clean activation.";
+              : "The next check is measurement and clean activation.";
         const publicShareText = [
           fogEntryMode ? "Digital Fog Report" : "AI Infrastructure Report",
           "",
@@ -980,11 +980,11 @@
           "Don't do next",
           doNotDo,
           "",
-          "Proof to collect",
+          "What to check",
           proof,
           "",
           "Fog-Free looks like",
-          "Truth, ownership, routing, proof, and enough foundation to move without creating more fog.",
+          "Context, owners, next steps, and checks are clear enough to move without creating more fog.",
           "",
           `Diagnostic: ${diagnosticPublicUrl()}`
         ].join("\n");
@@ -1052,8 +1052,8 @@
         }
         if (frictionBrief) {
           frictionBrief.textContent = strongestLayer.score > 0
-            ? `The strongest friction signal is ${strongestLayer.layer}. Motion should pause there until truth, ownership, and proof are visible.`
-            : "No hard friction has been tallied yet. Keep answering; the route sharpens as the system gets evidence.";
+            ? `The strongest friction signal is ${strongestLayer.layer}. Pause there until context, owners, and checks are clear.`
+            : "No hard friction is showing yet. Keep answering. The route gets clearer as you go.";
         }
         if (currentGateLabel) currentGateLabel.textContent = `${gate.gate} / ${gate.title}`;
         if (momentumLabel) {
@@ -1154,7 +1154,7 @@
 
       function speakWithBrowserVoice(text, onend = null) {
         if (!("speechSynthesis" in window)) {
-          note.textContent = "This browser does not expose speech synthesis. The diagnostic can still run as text-first architecture guidance.";
+          note.textContent = "This browser does not support speech here. The diagnostic still works in text mode.";
           return;
         }
         window.speechSynthesis.cancel();
@@ -1179,7 +1179,7 @@
       });
       voiceTestBtn?.addEventListener("click", () => {
         saveSelectedVoice();
-        speakWithBrowserVoice("This guided diagnostic will help identify the foundation gap before more AI is added.");
+        speakWithBrowserVoice("This guided diagnostic helps find the first gap before more AI gets added.");
       });
 
       async function speakArVA(text = currentSpeechText(), onend = null) {
@@ -1337,7 +1337,7 @@
         voiceBtn.textContent = "Start guided diagnostic";
         manualBtn.textContent = "Manual mode active";
         renderQuestion();
-        note.textContent = "Manual mode is active. Click the closest truth and continue.";
+        note.textContent = "Manual mode is active. Click the closest answer and continue.";
       }
 
       voiceBtn.addEventListener("click", activateGuidedMode);
@@ -1550,7 +1550,7 @@
           "",
           payload.do_not_do_next,
           "",
-          "## Proof to collect",
+          "## What to check",
           "",
           payload.proof_to_collect,
           "",
@@ -1583,7 +1583,7 @@
             ""
           );
           if (layer.signals?.length) {
-            lines.push("Signals captured:");
+            lines.push("Answers captured:");
             for (const signal of layer.signals) {
               lines.push(`- ${signal.level}: ${signal.text}`);
             }
@@ -1622,8 +1622,8 @@
           : q.routing
             ? "Choose who owns the fog. This keeps the readout from forcing one default offer."
             : q.text
-            ? "Write the friction in your own words. The report gets sharper when the evidence is specific."
-            : "Choose the closest truth. A gap is a signal.";
+            ? "Add anything important in your own words. The report gets clearer when the details are specific."
+            : "Choose the closest answer. A gap shows where to start.";
 
         const existing = answers[index]?.value || "";
         const safeExisting = escapeHtml(existing);
@@ -1786,7 +1786,7 @@
               route: "Personal fog. Clear the rhythm first.",
               primaryDoor: personalDoor,
               nextAction:
-                "Pick one recurring fog loop. Write the trigger, the next move, and proof of done. Keep it personal unless the fog is shared by a team."
+                "Pick one recurring fog loop. Write the trigger, the next move, and the done check. Keep it personal unless the fog is shared by a team."
             };
           }
           if (routeScope === "business") {
@@ -1794,7 +1794,7 @@
               route: "Operating layer gap. Fix the base before adding speed.",
               primaryDoor: businessDoor,
               nextAction:
-                "Make the earliest break visible: truth, owner, route, proof. Then decide what needs architecture."
+                "Write down the earliest break: context, owner, route, check. Then decide what needs architecture."
             };
           }
           if (routeScope === "growth") {
@@ -1803,14 +1803,14 @@
                 route: "Growth is exposing an operating-layer gap.",
                 primaryDoor: businessDoor,
                 nextAction:
-                  "Pause new demand pressure. Find the first break in context, ownership, routing, or proof. Fix that before scaling the channel."
+                  "Pause new demand pressure. Find the first break in context, owner, route, or check. Fix that before scaling the channel."
               };
             }
             return {
               route: "Growth path. The base can carry more motion.",
               primaryDoor: growthDoor,
               nextAction:
-                "Choose one demand path. Define capture, follow-up, owner, proof, and weekly review."
+                "Choose one demand path. Define capture, follow-up, owner, done check, and weekly review."
             };
           }
           if (operatingLayerGap || flagged.length >= 2) {
@@ -1818,7 +1818,7 @@
               route: "Operating layer gap. Start at the first unstable layer.",
               primaryDoor: businessDoor,
               nextAction:
-                "Name the first unstable layer. Make its truth, owner, route, and proof visible before adding more tools or campaigns."
+                "Name the first unstable layer. Write its context, owner, route, and check before adding more tools or campaigns."
             };
           }
           if (activationGap) {
@@ -1826,7 +1826,7 @@
               route: "Activation fog. Clean the handoff before adding volume.",
               primaryDoor: growthDoor,
               nextAction:
-                "Check that context and architecture can carry the demand. Then clean the capture, follow-up, owner, and proof."
+                "Check that context and architecture can carry the demand. Then clean the capture, follow-up, owner, and done check."
             };
           }
           if (hasWatchSignal) {
@@ -1856,7 +1856,7 @@
               ? "Fog is concentrated in one layer. Clear that layer first."
               : gaps.some(g => !g.flagged && g.watchCount > 0)
                 ? "No hard gap, but watch signals suggest memory, habit, or manual correction is still holding the system together."
-                : "The base looks clear enough for the next move. Keep proof visible.";
+                : "The base looks clear enough for the next move. Keep the checks clear.";
         const textAnswers = artifact?.operational_notes?.length
           ? artifact.operational_notes
           : answers.filter(a => a.textAnswer && a.text).map(a => a.text);
@@ -1990,7 +1990,7 @@
             </div>
             <div class="report-block">
               <b>Fog-Free looks like</b>
-              <p>Truth, ownership, route, and proof hold. You can move without making more fog.</p>
+              <p>Context, owners, route, and checks hold. You can move without making more fog.</p>
             </div>
             <div class="report-block">
               <b>Next clean step</b>

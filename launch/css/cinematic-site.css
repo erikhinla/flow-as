@@ -6,8 +6,11 @@
   --film-line: rgba(244, 239, 228, 0.16);
   --film-panel: rgba(7, 8, 7, 0.58);
   --film-panel-strong: rgba(7, 8, 7, 0.78);
-  --film-accent: #ee6f3d;
-  --film-hot: #d9ff62;
+  --lane-personal: #d652ff;
+  --lane-business: #8fa0ff;
+  --lane-growth: #d9ff62;
+  --film-accent: var(--lane-personal);
+  --film-hot: var(--lane-growth);
   --film-paper: #f4efe4;
   min-width: 20rem;
   margin: 0;
@@ -20,12 +23,17 @@
 }
 
 .cinematic-bbm {
-  --film-accent: #d9ff62;
-  --film-hot: #ee6f3d;
+  --film-accent: var(--lane-growth);
+  --film-hot: var(--lane-personal);
+}
+
+.cinematic-bbai {
+  --film-accent: var(--lane-business);
+  --film-hot: var(--lane-personal);
 }
 
 .cinematic-diagnostic {
-  --film-accent: #ee4e2f;
+  --film-accent: var(--lane-personal);
 }
 
 .cinematic-page::before {
@@ -106,7 +114,7 @@
   45% {
     filter:
       drop-shadow(0 0 0.9rem rgba(255, 76, 224, 0.62))
-      drop-shadow(0 0 1.8rem rgba(238, 111, 61, 0.28))
+      drop-shadow(0 0 1.8rem rgba(214, 82, 255, 0.28))
       drop-shadow(0 0.75rem 1.6rem rgba(0, 0, 0, 0.46));
     transform: rotate(7deg) scale(1.045);
   }
@@ -134,6 +142,7 @@
   position: relative;
   color: rgba(244, 239, 228, 0.76);
   white-space: nowrap;
+  --nav-lane: var(--film-accent);
 }
 
 .cinema-nav__links a::after {
@@ -143,7 +152,7 @@
   bottom: -0.35rem;
   left: 0;
   height: 1px;
-  background: currentColor;
+  background: var(--nav-lane);
   transform: scaleX(0);
   transform-origin: right;
   transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -152,7 +161,20 @@
 .cinema-nav__links a:hover,
 .cinema-nav__links a:focus-visible,
 .cinema-nav__links a[aria-current="page"] {
-  color: var(--film-ink);
+  color: color-mix(in srgb, var(--nav-lane) 78%, var(--film-ink));
+}
+
+.cinema-nav__links a[href*="/diagnostic"],
+.cinema-nav__links a[href*="/fog-free-daily"] {
+  --nav-lane: var(--lane-personal);
+}
+
+.cinema-nav__links a[href*="/bizbuilders-ai"] {
+  --nav-lane: var(--lane-business);
+}
+
+.cinema-nav__links a[href*="/bizbot-mrktng"] {
+  --nav-lane: var(--lane-growth);
 }
 
 .cinema-nav__links a:hover::after,
@@ -225,7 +247,7 @@
 
 .cinematic-bbai .cinema-scene--blueprint {
   background:
-    radial-gradient(circle at 82% 22%, rgba(238, 111, 61, 0.16), transparent 26rem),
+    radial-gradient(circle at 82% 22%, rgba(214, 82, 255, 0.16), transparent 26rem),
     linear-gradient(135deg, #080908, #111512 52%, #080908);
 }
 
@@ -327,30 +349,40 @@
 
 .cinema-button {
   padding: 0.9rem 1.3rem;
-  border: 1px solid var(--film-ink);
+  border: 1px solid color-mix(in srgb, var(--film-accent) 74%, var(--film-ink));
   border-radius: 999px;
-  background: var(--film-ink);
-  color: #15120f;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--film-accent) 24%, transparent), rgba(244, 239, 228, 0.06)),
+    rgba(7, 8, 7, 0.54);
+  color: var(--film-ink);
+  box-shadow:
+    inset 0 0 0 1px rgba(244, 239, 228, 0.08),
+    0 0 1.35rem color-mix(in srgb, var(--film-accent) 26%, transparent);
   text-shadow: none;
+  backdrop-filter: blur(10px);
 }
 
 .cinematic-page a.cinema-button,
 .cinematic-page button.cinema-button,
 .cinematic-page .cinema-footer a.cinema-button {
-  color: #15120f;
+  color: var(--film-ink);
   text-shadow: none;
 }
 
 .cinema-button--accent {
-  border-color: var(--film-accent);
-  background: var(--film-accent);
-  color: #150d09;
+  border-color: color-mix(in srgb, var(--film-accent) 86%, var(--film-ink));
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--film-accent) 90%, var(--film-ink) 10%), var(--film-accent));
+  color: #0c0710;
+  box-shadow:
+    0 0 1.7rem color-mix(in srgb, var(--film-accent) 34%, transparent),
+    0 0.85rem 2rem rgba(0, 0, 0, 0.28);
   text-shadow: none;
 }
 
 .cinematic-page a.cinema-button--accent,
 .cinematic-page button.cinema-button--accent {
-  color: #150d09;
+  color: #0c0710;
 }
 
 .cinema-button--ghost {
@@ -622,7 +654,7 @@
 /* Fog-Free Daily: full-bleed personal offer page */
 .foglift-share-scene::after {
   background:
-    radial-gradient(circle at 72% 20%, rgba(238, 111, 61, 0.18), transparent 22rem),
+    radial-gradient(circle at 72% 20%, rgba(214, 82, 255, 0.18), transparent 22rem),
     linear-gradient(90deg, rgba(7, 8, 7, 0.9) 0%, rgba(7, 8, 7, 0.38) 52%, rgba(7, 8, 7, 0.78) 100%),
     linear-gradient(0deg, rgba(7, 8, 7, 0.92) 0%, rgba(7, 8, 7, 0.18) 52%, rgba(7, 8, 7, 0.76) 100%);
 }
@@ -726,7 +758,7 @@
 
 .fogfree-daily::after {
   background:
-    radial-gradient(circle at 72% 18%, rgba(238, 111, 61, 0.22), transparent 24rem),
+    radial-gradient(circle at 72% 18%, rgba(214, 82, 255, 0.22), transparent 24rem),
     linear-gradient(90deg, rgba(7, 8, 7, 0.92) 0%, rgba(7, 8, 7, 0.54) 50%, rgba(7, 8, 7, 0.78) 100%),
     linear-gradient(0deg, rgba(7, 8, 7, 0.94) 0%, rgba(7, 8, 7, 0.18) 48%, rgba(7, 8, 7, 0.74) 100%);
 }
@@ -944,7 +976,7 @@
 .cinematic-diagnostic .assessment-hero__scrim,
 .cinematic-diagnostic .friction-cinema__scrim {
   background:
-    radial-gradient(circle at 78% 16%, rgba(238, 78, 47, 0.26), transparent 25rem),
+    radial-gradient(circle at 78% 16%, rgba(214, 82, 255, 0.26), transparent 25rem),
     linear-gradient(90deg, rgba(7, 8, 7, 0.94) 0%, rgba(7, 8, 7, 0.48) 52%, rgba(7, 8, 7, 0.88) 100%),
     linear-gradient(0deg, rgba(7, 8, 7, 0.94) 0%, transparent 42%, rgba(7, 8, 7, 0.76) 100%);
 }

@@ -23,12 +23,12 @@
   ],
   "rewrites": [
     {
-      "source": "/fog-free-daily",
-      "destination": "/foglift-kit.html"
+      "source": "/fog-free-daily/share-video",
+      "destination": "/fog-free-daily-share.html"
     },
     {
-      "source": "/foglift-kit",
-      "destination": "/foglift-kit.html"
+      "source": "/fog-free-daily",
+      "destination": "/fog-free-daily.html"
     },
     {
       "source": "/erikhbush",
@@ -44,6 +44,11 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/foglift-kit",
+      "destination": "/fog-free-daily",
+      "permanent": true
+    },
     {
       "source": "/campaign",
       "destination": "/",

@@ -1,6 +1,6 @@
 # TransformBy10X — launch hub
 
-Static ecosystem site: TransformBy10X hub, Digital Fog Diagnostic, Digital Fog-Lift Kit, BizBuilders AI, and BizBot Mrktng.
+Static ecosystem site: TransformBy10X hub, Digital Fog Diagnostic, Fog-Free Daily, BizBuilders AI, and BizBot Mrktng.
 
 ## Production (canonical)
 
@@ -38,7 +38,7 @@ Static ecosystem site: TransformBy10X hub, Digital Fog Diagnostic, Digital Fog-L
 |---|---|---|
 | `/` | TransformBy10X | Ecosystem hub, Digital Fog, routing, campaign proof |
 | `/diagnostic` | TransformBy10X | Digital Fog Diagnostic |
-| `/foglift-kit` | TransformBy10X | Digital Fog-Lift Kit |
+| `/fog-free-daily` | TransformBy10X | Fog-Free Daily |
 | `/bizbuilders-ai/` | BizBuilders AI | Operating architecture and governed execution |
 | `/bizbuilders-ai/diagnostic` | BizBuilders AI | AI Infrastructure Assessment |
 | `/bizbot-mrktng/` | BizBot Mrktng | Growth Products, Reddit package, RevAnew, and ArVA |

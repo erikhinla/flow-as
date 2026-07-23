@@ -142,7 +142,7 @@ export const questions = [
     prompt: "What one thing, if resolved, would most change how your business operates?",
     text: true,
     placeholder:
-      "Example: a single source of truth for offers, intake, and client status..."
+      "Example: one clear source of context for offers, intake, and client status..."
   },
   {
     layer: "Operational Context",

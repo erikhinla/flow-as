@@ -13,7 +13,7 @@
     home: "/",
     fog: "/#fog",
     diagnostic: "/diagnostic",
-    kit: "/foglift-kit",
+    kit: "/fog-free-daily",
     bbai: "/bizbuilders-ai/",
     bbm: "/bizbot-mrktng/",
   };
@@ -51,8 +51,8 @@
       '<nav class="eco-nav__links" aria-label="Ecosystem">' +
       navLink(PATHS.home, "Home", current, "home") +
       navLink(PATHS.diagnostic, "Diagnose", current, "diagnostic") +
-      navLink(PATHS.bbai, "B2B build", current, "bbai") +
-      navLink(PATHS.kit, "B2C kit", current, "kit") +
+      navLink(PATHS.bbai, "Business", current, "bbai") +
+      navLink(PATHS.kit, "Personal", current, "kit") +
       navLink(PATHS.bbm, "Growth", current, "bbm") +
       "</nav>" +
       '<a class="eco-nav__cta" href="' + cta.href + '">' + cta.label + "</a>" +
