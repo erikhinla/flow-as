@@ -1,0 +1,36 @@
+# Deploy only launch (tbtx-cinema rootDirectory = launch)
+.git
+.venv
+.claude
+.vscode
+.openclaw
+.DS_Store
+node_modules
+**/node_modules
+.env
+.env.*
+*.zip
+/assets
+BIZBUILDERS
+FAAS
+FLOW_AGENT_AS
+state
+runtime
+services
+deploy
+tmp
+scratch
+generated
+output
+**/.vercel/output
+# heavy launch paths (also in launch/.vercelignore)
+launch/profile-bio-pack
+launch/campaign-command-center
+launch/transformby10x-campaign
+launch/Archive.zip
+launch/docs
+launch/output
+launch/verification-screenshots
+launch/scripts/_build_hero
+launch/**/*.md
+!launch/README.md
