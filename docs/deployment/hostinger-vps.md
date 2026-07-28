@@ -22,7 +22,7 @@ Required minimum values:
 - `FLOW_DB_PASSWORD`
 - `BIZBRAIN_API_TOKEN`
 - `WEBHOOK_API_KEY`
-- `OPENAI_API_KEY` (or point `OPENAI_BASE_URL` to your model gateway)
+- `OPENAI_API_KEY` or `OPENROUTER_API_KEY` (or point `OPENAI_BASE_URL` to your model gateway)
 
 ## 3) Deploy
 
@@ -49,7 +49,7 @@ bash scripts/hostinger/rollback.sh /opt/flow-as
 - `22` SSH
 - `9443` Portainer HTTPS
 - `9000` Portainer HTTP
-- `18000` FLOW orchestrator API
+- `18001` FLOW orchestrator API (external port; container internal port is 8000)
 - `8080` FLOW gateway intake API
 - `50090` FLOW worker gateway
 

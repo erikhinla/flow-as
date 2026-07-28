@@ -2,8 +2,6 @@ services:
   bizbrain-lite:
     restart: always
 
-  agent-zero-gamma:
-    restart: always
 
   flow-dashboard:
     restart: always
