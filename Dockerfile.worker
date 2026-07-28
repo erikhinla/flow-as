@@ -1,0 +1,26 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Install bizbrain_lite package dependencies (needed for flow_filesystem_control)
+COPY services/bizbrain_lite/pyproject.toml /app/services/bizbrain_lite/pyproject.toml
+RUN pip install --no-cache-dir \
+    fastapi>=0.116.0 \
+    uvicorn[standard]>=0.35.0 \
+    redis>=5.0.0 \
+    pydantic>=2.8.0 \
+    pydantic-settings>=2.4.0 \
+    sqlalchemy>=2.0.36 \
+    asyncpg>=0.30.0 \
+    alembic>=1.14.0 \
+    jsonschema>=4.23.0 \
+    httpx>=0.27.0
+
+# Copy full repo so scripts/ and services/ are both available
+COPY . /app
+
+# Run as root so the shared state volume is writable
+CMD ["python", "scripts/openclaw_runtime.py", "--role", "alpha", "--port", "18789"]

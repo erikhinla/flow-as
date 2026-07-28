@@ -65,6 +65,84 @@ services:
     networks:
       - flow-internal
 
+  openclaw-alpha:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: openclaw-alpha
+    restart: unless-stopped
+    command: ["python", "scripts/openclaw_runtime.py", "--role", "alpha", "--port", "18789"]
+    environment:
+      FLOW_STATE_DIR: /root/.openclaw/state
+      BIZBRAIN_URL: http://bizbrain-lite:8000
+      BIZBRAIN_API_TOKEN: ${BIZBRAIN_API_TOKEN:-change-me}
+    volumes:
+      - ${HOME}/.openclaw/state:/root/.openclaw/state
+    expose:
+      - "18789"
+    depends_on:
+      bizbrain-lite:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:18789/health', timeout=5)"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+    networks:
+      - flow-internal
+
+  openclaw-beta:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: openclaw-beta
+    restart: unless-stopped
+    command: ["python", "scripts/openclaw_runtime.py", "--role", "beta", "--port", "18790"]
+    environment:
+      FLOW_STATE_DIR: /root/.openclaw/state
+      BIZBRAIN_URL: http://bizbrain-lite:8000
+      BIZBRAIN_API_TOKEN: ${BIZBRAIN_API_TOKEN:-change-me}
+    volumes:
+      - ${HOME}/.openclaw/state:/root/.openclaw/state
+    expose:
+      - "18790"
+    depends_on:
+      bizbrain-lite:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:18790/health', timeout=5)"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+    networks:
+      - flow-internal
+
+  agent-zero-gamma:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: agent-zero-gamma
+    restart: unless-stopped
+    command: ["python", "scripts/gamma_runtime.py", "--port", "18800"]
+    environment:
+      FLOW_STATE_DIR: /root/.openclaw/state
+      BIZBRAIN_URL: http://bizbrain-lite:8000
+      BIZBRAIN_API_TOKEN: ${BIZBRAIN_API_TOKEN:-change-me}
+    volumes:
+      - ${HOME}/.openclaw/state:/root/.openclaw/state
+    expose:
+      - "18800"
+    depends_on:
+      bizbrain-lite:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:18800/health', timeout=5)"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+    networks:
+      - flow-internal
+
   flow-discord-bot:
     build:
       context: .
