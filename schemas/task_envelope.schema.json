@@ -30,7 +30,7 @@
     },
     "source": {
       "type": "string",
-      "enum": ["manual", "webhook", "github_action", "scheduled", "discord", "landing_page", "proof"],
+      "enum": ["manual", "webhook", "github_action", "scheduled", "discord", "landing_page", "dashboard", "proof"],
       "description": "Origin of the task"
     },
     "title": {

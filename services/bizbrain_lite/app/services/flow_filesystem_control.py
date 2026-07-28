@@ -37,9 +37,9 @@ ROUTING = {
     "downtime_security_money": "gamma",
 }
 AGENTS = {
-    "alpha": {"name": "Alpha", "process": "openclaw-alpha", "port": 18789},
-    "beta": {"name": "Beta", "process": "openclaw-beta", "port": 18790},
-    "gamma": {"name": "Gamma", "container": "agent-zero-gamma", "port": 18800},
+    "alpha": {"name": "Alpha", "host": "openclaw-alpha", "port": 18789},
+    "beta": {"name": "Beta", "host": "openclaw-beta", "port": 18790},
+    "gamma": {"name": "Gamma", "host": "agent-zero-gamma", "port": 18800},
 }
 
 
@@ -356,10 +356,10 @@ def queue_counts(root: Path | None = None) -> dict[str, int]:
     return {queue: len(list((root / "tasks" / queue).glob("*.json"))) for queue in QUEUE_NAMES}
 
 
-def port_open(port: int) -> bool:
+def port_open(port: int, host: str = "127.0.0.1") -> bool:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.settimeout(0.2)
-        return sock.connect_ex(("127.0.0.1", port)) == 0
+        return sock.connect_ex((host, port)) == 0
 
 
 def _pm2_names() -> set[str]:
@@ -390,16 +390,13 @@ def _docker_names() -> set[str]:
 
 def runtime_status(root: Path | None = None) -> dict[str, Any]:
     root = ensure_state_tree(root)
-    pm2_names = _pm2_names()
-    docker_names = _docker_names()
     agents = {}
     for role, info in AGENTS.items():
-        port_ok = port_open(info["port"])
-        runtime_ok = (
-            info.get("process") in pm2_names
-            if "process" in info
-            else info.get("container") in docker_names
-        )
+        port_ok = port_open(info["port"], info["host"])
+        # The orchestrator runs in a separate container. Service DNS plus a
+        # reachable health port is the dependable runtime signal here; host
+        # PM2 and Docker process lists are not available inside this container.
+        runtime_ok = port_ok
         agents[role] = {
             **info,
             "port_open": port_ok,

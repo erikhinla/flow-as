@@ -57,6 +57,7 @@ services:
     environment:
       DASHBOARD_BASIC_AUTH_USER: ${DASHBOARD_BASIC_AUTH_USER:-admin}
       DASHBOARD_BASIC_AUTH_PASSWORD: ${DASHBOARD_BASIC_AUTH_PASSWORD:-change-me-dashboard-password}
+      BIZBRAIN_API_TOKEN: ${BIZBRAIN_API_TOKEN:?BIZBRAIN_API_TOKEN must be set}
     ports:
       - "5173:80"
     depends_on:
@@ -161,10 +162,12 @@ services:
       FLOW_QUEUE_OWNER: ${FLOW_QUEUE_OWNER:-alpha}
       FLOW_QUEUE_TIMEOUT_SECONDS: ${FLOW_QUEUE_TIMEOUT_SECONDS:-5}
       FLOW_WORKER_LOG_LEVEL: ${FLOW_WORKER_LOG_LEVEL:-INFO}
+      TBTX_CANON_ROOT: /app/canon/TBTX_CANON
     volumes:
       - ${HOME}/.openclaw/state:/root/.openclaw/state
       - ./runtime/reviews:/app/runtime/reviews
       - ./runtime/queues:/app/runtime/queues
+      - ./canon/TBTX_CANON:/app/canon/TBTX_CANON:ro
     depends_on:
       bizbrain-lite:
         condition: service_healthy

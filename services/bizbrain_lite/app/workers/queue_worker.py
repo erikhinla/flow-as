@@ -60,6 +60,39 @@ SYSTEM_PROMPTS: dict[str, str] = {
 }
 
 
+def load_tbtx_canon_context() -> str:
+    """Load the smallest authoritative TBTX context needed for model work.
+
+    The Canon is mounted read-only in the worker. It is intentionally loaded at
+    execution time so a Canon update is used without rebuilding model prompts.
+    """
+    root = Path(os.getenv("TBTX_CANON_ROOT", "/app/canon/TBTX_CANON"))
+    relative_paths = (
+        "00_CANON/00_READ_FIRST.md",
+        "00_CANON/03_MUST_Framework.md",
+        "00_CANON/06_Brand_Constitution.md",
+        "00_CANON/07_Vocabulary.md",
+        "03_PRODUCTS/Digital_Fog.md",
+        "03_PRODUCTS/Digital_Friction.md",
+    )
+    sections: list[str] = []
+    remaining = 28_000
+    for relative_path in relative_paths:
+        path = root / relative_path
+        if not path.is_file() or remaining <= 0:
+            continue
+        text = path.read_text(encoding="utf-8").strip()
+        if not text:
+            continue
+        excerpt = text[:remaining]
+        sections.append(f"## {relative_path}\n{excerpt}")
+        remaining -= len(excerpt)
+    if not sections:
+        logger.warning("No TBTX Canon files were available at %s", root)
+        return ""
+    return "\n\n".join(sections)
+
+
 # ── OpenRouter call ───────────────────────────────────────────────────────────
 
 async def call_openrouter(
@@ -102,6 +135,16 @@ async def call_openrouter(
 
     # Build enhanced user message
     user_message = f"**Task:** {title}\n\n**Goal:** {goal}\n\n**Task type:** {task_type}\n\n"
+
+    canon_context = load_tbtx_canon_context()
+    if canon_context:
+        user_message += (
+            "## Authoritative TBTX Canon\n"
+            "Follow this Canon exactly. Do not invent offers, products, frameworks, "
+            "claims, or terminology. Lead with the customer's lived experience, not "
+            "technology or internal process.\n\n"
+            f"{canon_context}\n\n"
+        )
 
     if performance_context:
         user_message += performance_context

@@ -68,7 +68,7 @@ class EnvelopeValidationService:
     """
     
     # Valid values
-    VALID_SOURCES = ['manual', 'webhook', 'github_action', 'scheduled', 'discord', 'landing_page', 'proof']
+    VALID_SOURCES = ['manual', 'webhook', 'github_action', 'scheduled', 'discord', 'landing_page', 'dashboard', 'proof']
     VALID_TASK_TYPES = ['classification', 'rewrite', 'content_prep', 'implementation', 'skill_extraction', 'healthcheck']
     VALID_RISK_TIERS = ['reputation', 'time_loss', 'downtime_security_money']
     VALID_OWNERS = ['alpha', 'beta', 'gamma']
