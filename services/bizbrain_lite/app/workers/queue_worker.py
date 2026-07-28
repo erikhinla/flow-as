@@ -146,6 +146,20 @@ async def call_openrouter(
             f"{canon_context}\n\n"
         )
 
+    user_message += (
+        "## Production quality rules\n"
+        "Treat the task's stated scope as binding. When reviewing one component, "
+        "such as a hook or CTA, judge that component only; do not reject it because "
+        "later MUST stages belong to the next section of the asset. MUST scores must "
+        "use the Canon's 1-10 scale and cite the exact source sentence. A truthful "
+        "Mirror hook and relief-oriented CTA can be approval-ready as opening components "
+        "when their downstream explanation, prescription, and future state are specified.\n\n"
+        "For a production-packet task, never create a packet without a real assigned "
+        "backlog item and source path. Report the exact blocker instead. Never add "
+        "generic performance language, invented evidence, internal commentary, or "
+        "unapproved claims. Keep the response to the requested artifact only.\n\n"
+    )
+
     if performance_context:
         user_message += performance_context
 
