@@ -143,6 +143,38 @@ services:
     networks:
       - flow-internal
 
+  flow-queue-worker:
+    build:
+      context: .
+      dockerfile: services/bizbrain_lite/Dockerfile
+    container_name: flow-queue-worker
+    restart: unless-stopped
+    command: ["python", "-m", "app.workers.queue_worker"]
+    environment:
+      BIZBRAIN_ENV: ${BIZBRAIN_ENV:-prod}
+      BIZBRAIN_API_TOKEN: ${BIZBRAIN_API_TOKEN:-change-me}
+      BIZBRAIN_REDIS_URL: redis://redis:6379/0
+      DATABASE_URL: postgresql+asyncpg://flow_user:${FLOW_DB_PASSWORD:-change-me}@postgres:5432/flow_agent_os
+      FLOW_STATE_DIR: /root/.openclaw/state
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+      FLOW_QUEUE_OWNER: ${FLOW_QUEUE_OWNER:-openclaw}
+      FLOW_QUEUE_TIMEOUT_SECONDS: ${FLOW_QUEUE_TIMEOUT_SECONDS:-5}
+      FLOW_WORKER_LOG_LEVEL: ${FLOW_WORKER_LOG_LEVEL:-INFO}
+    volumes:
+      - ${HOME}/.openclaw/state:/root/.openclaw/state
+      - ./runtime/reviews:/app/runtime/reviews
+      - ./runtime/queues:/app/runtime/queues
+    depends_on:
+      bizbrain-lite:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - flow-internal
+
   flow-discord-bot:
     build:
       context: .
