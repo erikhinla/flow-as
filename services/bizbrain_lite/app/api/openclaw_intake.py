@@ -183,8 +183,8 @@ async def intake_task(
     )
     await db.commit()
 
-    # High-risk Agent Zero work must wait for review artifacts before entering the queue.
-    if job.owner == 'agent_zero' and job.risk_tier == 'high' and envelope.review_required:
+    # Gamma is executed by Agent Zero and must wait for explicit approval.
+    if job.owner == 'gamma' and job.risk_tier == 'downtime_security_money' and envelope.review_required:
         job.status = JobStatus.REVIEW_REQUIRED.value
         db.add(job)
         await db.commit()

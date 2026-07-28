@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-07-28T00:00:00Z",
+  "agents": {
+    "hermes": {
+      "repository": "https://github.com/NousResearch/hermes-agent",
+      "commit": "7bfbfa3e341a8fe0315170bb7e2ad79e2af44da4",
+      "image": "nousresearch/hermes-agent@sha256:ca249f4d78f317a6cd3f785940c72801b8abe8c7c4fa019d0c3cd25e5966ca74",
+      "entrypoint": "hermes --oneshot"
+    },
+    "openclaw": {
+      "repository": "https://github.com/openclaw/openclaw",
+      "commit": "ad3f74f296e5d82009a55d922159713f691e842e",
+      "image": "ghcr.io/openclaw/openclaw@sha256:25f5bacf51742c3231d7dd1d319fede009a9d5aeab8b6232cd309ac6475fe82c",
+      "entrypoint": "openclaw agent exec"
+    },
+    "agent_zero": {
+      "repository": "https://github.com/agent0ai/agent-zero",
+      "commit": "87e1e591e1ba2e8b1a19d34e134fcae490c8dded",
+      "image": "agent0ai/agent-zero@sha256:a7f5ccf351d612c3eaafc708251490277e1d731afe71a2eaf8aa3d871a55ece4",
+      "entrypoint": "POST /api/message"
+    }
+  }
+}

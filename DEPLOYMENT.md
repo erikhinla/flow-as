@@ -11,12 +11,18 @@ FLOW Agent AS is deployed as a Docker Compose stack with:
 
 - `flow-gateway` for intake webhook traffic
 - `flow-orchestrator` for the BizBrain Lite control plane
-- `flow-worker` services for queued execution
+- `flow-hermes-worker` routing Alpha work to the official Hermes Agent runtime
+- `flow-openclaw-worker` routing Beta work to the official OpenClaw runtime
+- `flow-agent-zero-worker` routing approval-gated Gamma work to the official Agent Zero runtime
 - `postgres` for durable job, audit, and learning state
 - `redis` for queues and cache
 - optional local LLM services when the `local-llm` profile is enabled
 
-The standalone Hermes container is not part of the production readiness gate unless it is explicitly reintroduced and verified. The validated production path is through FLOW workers.
+The agent runtimes are digest-pinned official images. Their repositories, upstream
+commits, image digests, and noninteractive entrypoints are locked in
+`config/agent-sources.lock.json`. A healthy control plane does not prove that an
+agent is working; each runtime must complete a task-specific job through its
+assigned FLOW queue.
 
 ## Local Or VPS Quick Start
 
@@ -42,7 +48,7 @@ At minimum, configure:
 - `FLOW_DB_PASSWORD`
 - `BIZBRAIN_API_TOKEN`
 - `WEBHOOK_API_KEY`
-- `OPENAI_API_KEY` or an OpenAI-compatible provider configuration
+- `OPENROUTER_API_KEY`
 
 Use `.env.example` as the full reference and keep production secrets out of git.
 
@@ -81,7 +87,7 @@ Post-deploy checks:
 ```bash
 docker compose ps
 docker compose logs --tail=100 flow-orchestrator
-curl -fsS http://<VPS_IP>:18000/v1/health
+curl -fsS http://<VPS_IP>:18001/v1/health
 curl -fsS http://<VPS_IP>:8080/health
 ```
 
@@ -89,21 +95,22 @@ curl -fsS http://<VPS_IP>:8080/health
 
 Before trusting a GO decision, verify all of the following:
 
-```bash
-python3 scripts/proof_flow_control.py
-curl -fsS http://localhost:18789/health
-curl -fsS http://localhost:18790/health
-curl -fsS http://localhost:18800/health
-```
+Treat production as NO-GO until all of these are true:
 
-The generated `FLOW_AGENT_AS_CONTROL_LAYER_REPORT.md` is authoritative for the Alpha/Beta/Gamma control-layer gate. Treat production as NO-GO if Alpha, Beta, or Gamma are not healthy.
+1. `hermes-agent`, `openclaw-agent`, and `agent-zero` are healthy on the internal Docker network.
+2. The Hermes container executes the real `hermes` binary.
+3. The OpenClaw container executes the real `/app/openclaw.mjs` CLI.
+4. The Agent Zero container answers through its official `/api/message` endpoint.
+5. Three distinct FLOW jobs complete through Alpha, Beta, and approved Gamma.
+6. Each artifact records its execution engine and upstream provenance.
+7. The proof survives a stack restart.
 
 ## Public Ports
 
 - `22` SSH
 - `9443` Portainer HTTPS
 - `9000` Portainer HTTP
-- `18000` FLOW orchestrator API
+- `18001` FLOW orchestrator API
 - `8080` FLOW gateway intake API
 - `50090` FLOW worker gateway, if enabled
 

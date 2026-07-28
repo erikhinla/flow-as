@@ -1,5 +1,10 @@
 # FLOW Agent AS - Final Deployment Report v3
 
+> **SUPERSEDED AND INVALID AS AGENT-RUNTIME PROOF.** This report proved a
+> generic provider call and placeholder filesystem workers, not execution by
+> the official Hermes Agent, OpenClaw, and Agent Zero runtimes. This GO decision
+> is withdrawn.
+
 **Status:** GO (Filesystem & Provider-Backed Paths Verified)
 **Deployed Commit SHA:** `6f029447fad9e8a74880cbbf87af110b630486e6`
 **Branch:** `fix/hostinger-runtime-completion`

@@ -12,8 +12,8 @@ import json
 import os
 import shutil
 import socket
-import subprocess
 import uuid
+import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -37,9 +37,30 @@ ROUTING = {
     "downtime_security_money": "gamma",
 }
 AGENTS = {
-    "alpha": {"name": "Alpha", "host": "openclaw-alpha", "port": 18789},
-    "beta": {"name": "Beta", "host": "openclaw-beta", "port": 18790},
-    "gamma": {"name": "Gamma", "host": "agent-zero-gamma", "port": 18800},
+    "alpha": {
+        "name": "Hermes Agent",
+        "engine": "hermes",
+        "host": "hermes-agent",
+        "port": 18789,
+        "health_path": "/health",
+        "upstream_repository": "https://github.com/NousResearch/hermes-agent",
+    },
+    "beta": {
+        "name": "OpenClaw",
+        "engine": "openclaw",
+        "host": "openclaw-agent",
+        "port": 18790,
+        "health_path": "/health",
+        "upstream_repository": "https://github.com/openclaw/openclaw",
+    },
+    "gamma": {
+        "name": "Agent Zero",
+        "engine": "agent_zero",
+        "host": "agent-zero",
+        "port": 80,
+        "health_path": "/api/health",
+        "upstream_repository": "https://github.com/agent0ai/agent-zero",
+    },
 }
 
 
@@ -362,30 +383,18 @@ def port_open(port: int, host: str = "127.0.0.1") -> bool:
         return sock.connect_ex((host, port)) == 0
 
 
-def _pm2_names() -> set[str]:
+def runtime_health(info: dict[str, Any]) -> tuple[bool, dict[str, Any]]:
+    """Verify the runtime's own health endpoint, not just an open socket."""
+    url = f"http://{info['host']}:{info['port']}{info['health_path']}"
     try:
-        result = subprocess.run(["pm2", "jlist"], capture_output=True, text=True, timeout=2, check=False)
-        if result.returncode != 0:
-            return set()
-        return {item.get("name") for item in json.loads(result.stdout or "[]")}
-    except Exception:
-        return set()
-
-
-def _docker_names() -> set[str]:
-    try:
-        result = subprocess.run(
-            ["docker", "ps", "--format", "{{.Names}}"],
-            capture_output=True,
-            text=True,
-            timeout=2,
-            check=False,
-        )
-        if result.returncode != 0:
-            return set()
-        return {line.strip() for line in result.stdout.splitlines() if line.strip()}
-    except Exception:
-        return set()
+        with urllib.request.urlopen(url, timeout=5) as response:
+            payload = json.loads(response.read().decode("utf-8") or "{}")
+        expected_engine = info["engine"]
+        if expected_engine in {"hermes", "openclaw"}:
+            return bool(payload.get("ok") and payload.get("engine") == expected_engine), payload
+        return response.status == 200, payload
+    except Exception as exc:
+        return False, {"error": str(exc)}
 
 
 def runtime_status(root: Path | None = None) -> dict[str, Any]:
@@ -393,15 +402,13 @@ def runtime_status(root: Path | None = None) -> dict[str, Any]:
     agents = {}
     for role, info in AGENTS.items():
         port_ok = port_open(info["port"], info["host"])
-        # The orchestrator runs in a separate container. Service DNS plus a
-        # reachable health port is the dependable runtime signal here; host
-        # PM2 and Docker process lists are not available inside this container.
-        runtime_ok = port_ok
+        runtime_ok, health_evidence = runtime_health(info) if port_ok else (False, {})
         agents[role] = {
             **info,
             "port_open": port_ok,
             "runtime_registered": runtime_ok,
             "healthy": port_ok and runtime_ok,
+            "health_evidence": health_evidence,
         }
     dirs = {relative: (root / relative).exists() for relative in REQUIRED_DIRS}
     return {

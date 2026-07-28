@@ -3,7 +3,7 @@ FLOW queue worker — full execution loop.
 
 1. BRPOP job_id from Redis owner queue
 2. Mark job ACTIVE in Postgres
-3. Call OpenRouter LLM with task context
+3. Execute the task through the assigned real agent runtime
 4. Write output artifact to runtime/reviews/{job_id}/output.md
 5. Mark job COMPLETED in Postgres
 6. POST completion embed to Discord webhook
@@ -20,6 +20,7 @@ from pathlib import Path
 
 import httpx
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.database import async_session
 from app.config.settings import get_settings
@@ -93,25 +94,16 @@ def load_tbtx_canon_context() -> str:
     return "\n\n".join(sections)
 
 
-# ── OpenRouter call ───────────────────────────────────────────────────────────
+# ── Agent runtime execution ───────────────────────────────────────────────────
 
-async def call_openrouter(
+async def build_execution_prompt(
     goal: str,
     title: str,
     task_type: str,
     owner: str,
     session: AsyncSession = None
 ) -> str:
-    """Call OpenRouter LLM with skill-enhanced context and return response text."""
-    settings = get_settings()
-    api_key = settings.openrouter_api_key
-    if not api_key:
-        logger.warning("OPENROUTER_API_KEY not set — returning placeholder output")
-        return f"# {title}\n\n**[OpenRouter API key not configured]**\n\nGoal: {goal}\n"
-
-    system_prompt = SYSTEM_PROMPTS.get(owner, SYSTEM_PROMPTS["hermes"])
-
-    # Load relevant skills and performance context if session available
+    """Build the Canon-bound prompt handed to the assigned agent runtime."""
     skills_context = ""
     performance_context = ""
 
@@ -133,8 +125,13 @@ async def call_openrouter(
         except Exception as e:
             logger.warning("Skill loading failed, proceeding without enhancement: %s", e)
 
-    # Build enhanced user message
-    user_message = f"**Task:** {title}\n\n**Goal:** {goal}\n\n**Task type:** {task_type}\n\n"
+    execution_engine = os.getenv("FLOW_EXECUTION_ENGINE", owner)
+    system_prompt = SYSTEM_PROMPTS.get(execution_engine, SYSTEM_PROMPTS["hermes"])
+    user_message = (
+        f"# Role\n{system_prompt}\n\n"
+        f"# Task\n**Title:** {title}\n\n**Goal:** {goal}\n\n"
+        f"**Task type:** {task_type}\n\n"
+    )
 
     canon_context = load_tbtx_canon_context()
     if canon_context:
@@ -166,46 +163,103 @@ async def call_openrouter(
     if skills_context:
         user_message += skills_context
 
-    user_message += "Please complete this task now."
+    user_message += (
+        "# Completion instruction\n"
+        "Complete the requested work now. Return the finished artifact, not a plan "
+        "for producing it. Do not publish, deploy, schedule, or change an external "
+        "account unless the task contains a recorded approval authorizing that exact action."
+    )
+    return user_message
 
-    payload = {
-        "model": settings.openrouter_model,
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_message},
-        ],
-        "max_tokens": 2048,
-        "temperature": 0.7,
-    }
 
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://flow-agent-as.io",
-        "X-Title": "FLOW Agent AS",
-    }
+async def call_agent_zero(runtime_url: str, prompt: str, job_id: str, timeout: float) -> dict:
+    """Execute one synchronous turn through Agent Zero's official HTTP API."""
+    base_url = runtime_url.rstrip("/")
+    origin = base_url
+    async with httpx.AsyncClient(base_url=base_url, timeout=timeout) as client:
+        csrf_response = await client.get("/api/csrf_token", headers={"Origin": origin})
+        csrf_response.raise_for_status()
+        csrf = csrf_response.json()
+        if not csrf.get("ok"):
+            raise RuntimeError(f"Agent Zero CSRF initialization failed: {csrf.get('error')}")
 
-    try:
-        async with httpx.AsyncClient(timeout=120) as client:
-            resp = await client.post(
-                f"{settings.openrouter_base_url}/chat/completions",
-                json=payload,
-                headers=headers,
-            )
-            resp.raise_for_status()
-            data = resp.json()
-            return data["choices"][0]["message"]["content"]
-    except httpx.HTTPStatusError as e:
-        logger.error("OpenRouter HTTP error %s: %s", e.response.status_code, e.response.text[:300])
-        raise
-    except Exception as e:
-        logger.error("OpenRouter call failed: %s", e)
-        raise
+        token = str(csrf["token"])
+        runtime_id = str(csrf["runtime_id"])
+        client.cookies.set(f"csrf_token_{runtime_id}", token)
+        response = await client.post(
+            "/api/message",
+            headers={"Origin": origin, "X-CSRF-Token": token},
+            json={
+                "text": prompt,
+                "context": f"flow-{job_id}",
+                "message_id": job_id,
+            },
+        )
+        response.raise_for_status()
+        payload = response.json()
+        message = payload.get("message")
+        if isinstance(message, str):
+            final = message.strip()
+        elif message is not None:
+            final = json.dumps(message, indent=2)
+        else:
+            final = ""
+        if not final:
+            raise RuntimeError("Agent Zero returned an empty response")
+        return {
+            "ok": True,
+            "engine": "agent_zero",
+            "final": final,
+            "context": payload.get("context"),
+            "upstream_repository": "https://github.com/agent0ai/agent-zero",
+            "upstream_commit": os.getenv("AGENT_ZERO_UPSTREAM_COMMIT", "87e1e591e1ba2e8b1a19d34e134fcae490c8dded"),
+        }
+
+
+async def call_agent_runtime(prompt: str, job_id: str) -> dict:
+    """Call the assigned installed agent. No direct model fallback is permitted."""
+    engine = os.getenv("FLOW_EXECUTION_ENGINE", "").strip()
+    runtime_url = os.getenv("FLOW_RUNTIME_URL", "").strip()
+    timeout = float(os.getenv("FLOW_RUNTIME_TIMEOUT_SECONDS", "900"))
+    if engine not in {"hermes", "openclaw", "agent_zero"}:
+        raise RuntimeError(f"Unsupported FLOW_EXECUTION_ENGINE: {engine or '<missing>'}")
+    if not runtime_url:
+        raise RuntimeError("FLOW_RUNTIME_URL is not configured")
+
+    if engine == "agent_zero":
+        return await call_agent_zero(runtime_url, prompt, job_id, timeout)
+
+    async with httpx.AsyncClient(timeout=timeout) as client:
+        response = await client.post(
+            f"{runtime_url.rstrip('/')}/run",
+            json={"prompt": prompt, "job_id": job_id},
+        )
+        response.raise_for_status()
+        payload = response.json()
+    if not payload.get("ok"):
+        raise RuntimeError(str(payload.get("error") or f"{engine} execution failed"))
+    if payload.get("engine") != engine:
+        raise RuntimeError(
+            f"Runtime identity mismatch: expected {engine}, received {payload.get('engine')}"
+        )
+    final = str(payload.get("final") or "").strip()
+    if not final:
+        raise RuntimeError(f"{engine} returned an empty response")
+    payload["final"] = final
+    return payload
 
 
 # ── Output writer ─────────────────────────────────────────────────────────────
 
-def write_output(job_id: str, title: str, owner: str, content: str, output_base: str) -> str:
+def write_output(
+    job_id: str,
+    title: str,
+    owner: str,
+    engine: str,
+    content: str,
+    output_base: str,
+    runtime_evidence: dict | None = None,
+) -> str:
     """Write LLM output to disk. Returns the path written."""
     output_dir = Path(output_base) / job_id
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -219,8 +273,10 @@ def write_output(job_id: str, title: str, owner: str, content: str, output_base:
         "job_id": job_id,
         "title": title,
         "owner": owner,
+        "execution_engine": engine,
         "completed_at": datetime.utcnow().isoformat(),
         "output_file": str(output_path),
+        "runtime_evidence": runtime_evidence or {},
     }
     metadata_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
 
@@ -393,16 +449,18 @@ async def worker_loop(owner: str, timeout: int) -> None:
             effective_title = title or f"Job {job_id}"
             effective_task_type = task_type or "content_prep"
 
-            # Step 2: Generate with skill enhancement
+            # Step 2: Execute through the real assigned agent runtime
             try:
                 async with async_session() as llm_session:
-                    output = await call_openrouter(
+                    prompt = await build_execution_prompt(
                         goal=effective_goal,
                         title=effective_title,
                         task_type=effective_task_type,
                         owner=owner,
                         session=llm_session,
                     )
+                runtime_result = await call_agent_runtime(prompt=prompt, job_id=job_id)
+                output = runtime_result["final"]
             except Exception as e:
                 await fail_job(job_id, str(e))
                 continue
@@ -412,8 +470,14 @@ async def worker_loop(owner: str, timeout: int) -> None:
                 job_id=job_id,
                 title=effective_title,
                 owner=owner,
+                engine=str(runtime_result.get("engine")),
                 content=output,
                 output_base=settings.output_dir,
+                runtime_evidence={
+                    key: value
+                    for key, value in runtime_result.items()
+                    if key not in {"final"}
+                },
             )
 
             # Step 4: Mark completed

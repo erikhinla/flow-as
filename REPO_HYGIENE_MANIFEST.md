@@ -26,7 +26,6 @@ These files represent source, schema, deployment, security, control surface, or 
 - `discord-bot.py`
 - `docker-compose.yml`
 - `docker-compose.prod.yml`
-- `ecosystem.config.cjs`
 - `schemas/task_envelope.schema.json`
 - `alembic/env.py`
 - `alembic/versions/flow_003_add_priority_column.py`
@@ -34,10 +33,9 @@ These files represent source, schema, deployment, security, control surface, or 
 - `docs/deployment/`
 - `rollback/`
 - `scripts/flow-ask-hermes.sh`
-- `scripts/gamma_runtime.py`
 - `scripts/hostinger/`
-- `scripts/openclaw_runtime.py`
-- `scripts/proof_flow_control.py`
+- `services/agent_runtimes/`
+- `config/agent-sources.lock.json`
 - `services/bizbrain_lite/`
 - `services/dashboard/`
 - `test_dashboard_auth.sh`
@@ -108,6 +106,8 @@ Use Hetzner only as an attached Gamma / Agent Zero execution node after Hostinge
    - `/v1/health`
    - `/v1/flow/health`
    - `/v1/intake/task`
-   - queue transition
-   - artifact creation
+   - Hermes Agent execution through the Alpha queue
+   - OpenClaw execution through the Beta queue
+   - Agent Zero review hold and approved execution through the Gamma queue
+   - task-specific artifact creation with runtime provenance
    - audit trail

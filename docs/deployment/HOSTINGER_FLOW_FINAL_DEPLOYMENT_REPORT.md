@@ -1,5 +1,10 @@
 # Hostinger FLOW Final Deployment Report
 
+> **SUPERSEDED AND INVALID AS AGENT-RUNTIME PROOF.** The services named
+> `openclaw-alpha`, `openclaw-beta`, and `agent-zero-gamma` were placeholder
+> Python workers. They did not contain the official upstream agents. This GO
+> decision is withdrawn.
+
 **Repository:** https://github.com/erikhinla/flow-as.git
 **Branch:** fix/hostinger-runtime-completion
 **Deployed Commit SHA:** 7547d539397de1e2e86a0f6029272a4a4cf4d22d

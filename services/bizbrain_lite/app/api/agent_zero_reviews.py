@@ -14,6 +14,7 @@ from fastapi import APIRouter, Depends, HTTPException, Body
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.deps import require_api_token
 from app.config.database import get_db_session
 from app.models.flow_job_record import JobRecord, JobStatus
 from app.api.openclaw_intake import get_redis_queue_service
@@ -21,7 +22,11 @@ from app.services.review_enforcement_service import ReviewEnforcementService
 from app.services.redis_queue_service import RedisQueueService
 from sqlalchemy import select
 
-router = APIRouter(tags=["agent-zero"], prefix="/agent-zero")
+router = APIRouter(
+    tags=["agent-zero"],
+    prefix="/agent-zero",
+    dependencies=[Depends(require_api_token)],
+)
 
 
 # ============================================================================

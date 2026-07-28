@@ -1,5 +1,10 @@
 # FLOW Agent AS Control Layer Report
 
+> **SUPERSEDED AND INVALID AS AGENT-RUNTIME PROOF.** This historical report
+> tested placeholder Python queue pollers, not the official Hermes Agent,
+> OpenClaw, or Agent Zero runtimes. Do not use its GO status. Current proof must
+> follow `DEPLOYMENT.md` and `config/agent-sources.lock.json`.
+
 Generated: `2026-05-06T13:12:45.074920+00:00`
 State root: `/Users/guest1/.openclaw/state`
 

@@ -55,7 +55,8 @@ def _handle_flow_error(exc: FlowControlError) -> HTTPException:
 def _model_job_payload(job: JobRecord) -> dict[str, Any]:
     """Return dashboard-safe model job state without exposing provider secrets."""
     return {
-        "task_id": job.task_id,
+        "task_id": job.job_id,
+        "source_task_id": job.task_id,
         "title": job.title,
         "goal": job.goal,
         "task_type": job.task_type,

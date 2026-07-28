@@ -18,7 +18,11 @@ git pull --ff-only
 
 test -f .env || { echo "Missing .env file. Copy .env.example first."; exit 1; }
 
+install -d -m 0777 runtime/agent-workspace
+install -d -m 0755 runtime/reviews runtime/queues
+
 docker compose -f docker-compose.yml -f docker-compose.prod.yml config >/dev/null
+docker compose -f docker-compose.yml -f docker-compose.prod.yml pull hermes-agent openclaw-agent agent-zero
 docker compose -f docker-compose.yml -f docker-compose.prod.yml build
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
