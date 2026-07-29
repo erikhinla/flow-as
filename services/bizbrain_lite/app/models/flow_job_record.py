@@ -10,7 +10,7 @@ from enum import Enum
 from typing import Optional
 from uuid import uuid4
 
-from sqlalchemy import Column, DateTime, Integer, String, Text, Index, create_engine
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text, Index, create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.dialects.postgresql import JSONB
 
@@ -102,6 +102,9 @@ class JobRecord(Base):
     title = Column(String(500), nullable=True)
     goal = Column(Text, nullable=True)
     source = Column(String(50), nullable=True)
+    output_required = Column(Text, nullable=True)
+    inputs = Column(JSONB, nullable=False, default=dict)
+    review_required = Column(Boolean, nullable=False, default=False)
 
     # Retry management
     retry_count = Column(Integer, default=0)

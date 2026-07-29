@@ -32,6 +32,7 @@ type ModelTask = {
   created_at?: string
   updated_at?: string
   completed_at?: string
+  output_required?: string
 }
 
 type AgentStatus = {
@@ -62,7 +63,13 @@ type ReviewStatus = {
   review_approver?: { name?: string; date?: string }
 }
 
-type ArtifactResponse = { path: string; content: string }
+type ArtifactFile = {
+  name: string
+  relative_path: string
+  size_bytes: number
+  url: string
+}
+type ArtifactResponse = { path: string; content: string; files: ArtifactFile[] }
 type TaskFilter = 'all' | 'in_flight' | 'review' | 'ready' | 'failed'
 
 const agentDisplay = {
@@ -144,6 +151,20 @@ function shortId(value: string) {
   return value.slice(0, 8)
 }
 
+function humanFileSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
+
+function isVideoFile(name: string) {
+  return /\.(mp4|mov|m4v|webm)$/i.test(name)
+}
+
+function isImageFile(name: string) {
+  return /\.(png|jpe?g|webp|gif)$/i.test(name)
+}
+
 function statusTone(status: string) {
   if (status === 'completed') return 'bg-emerald-50 text-emerald-800'
   if (status === 'failed' || status === 'blocked') return 'bg-red-50 text-red-800'
@@ -198,6 +219,7 @@ export function FlowControl() {
   const [submitting, setSubmitting] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [artifactContent, setArtifactContent] = useState('')
+  const [artifactFiles, setArtifactFiles] = useState<ArtifactFile[]>([])
   const [artifactLoading, setArtifactLoading] = useState(false)
   const [filter, setFilter] = useState<TaskFilter>('all')
   const [reviewStatus, setReviewStatus] = useState<ReviewStatus | null>(null)
@@ -267,6 +289,7 @@ export function FlowControl() {
 
   useEffect(() => {
     setArtifactContent('')
+    setArtifactFiles([])
     setReviewStatus(null)
     setReviewPack(reviewTemplates(selected))
     if (selected?.status === 'review_required') {
@@ -331,6 +354,7 @@ export function FlowControl() {
   async function loadTask(taskId: string) {
     setSelectedId(taskId)
     setArtifactContent('')
+    setArtifactFiles([])
     setSelected(await api<ModelTask>(`/flow/model/jobs/${taskId}`))
   }
 
@@ -341,6 +365,7 @@ export function FlowControl() {
     try {
       const artifact = await api<ArtifactResponse>(`/flow/model/jobs/${selected.task_id}/artifact`)
       setArtifactContent(artifact.content)
+      setArtifactFiles(artifact.files || [])
     } catch (error) {
       setNotice({
         tone: 'error',
@@ -410,7 +435,7 @@ export function FlowControl() {
       goal: selected.goal,
       task_type: selected.task_type,
       risk_tier: selected.risk_tier,
-      output_required: 'A finished Markdown artifact ready for human review.',
+      output_required: selected.output_required || 'A finished artifact ready for human review.',
     })
     document.getElementById('new-task')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
@@ -716,6 +741,14 @@ export function FlowControl() {
                 <section>
                   <h3 className="text-xs font-semibold text-flow-muted">Finished result</h3>
                   <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-flow-ink">{selected.goal}</p>
+                  {selected.output_required && (
+                    <>
+                      <h3 className="mt-5 text-xs font-semibold text-flow-muted">Completion contract</h3>
+                      <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-flow-ink">
+                        {selected.output_required}
+                      </p>
+                    </>
+                  )}
                 </section>
 
                 <dl className="grid grid-cols-2 gap-x-5 gap-y-4 border-y border-flow-line py-4 text-sm">
@@ -861,9 +894,47 @@ export function FlowControl() {
                       </button>
                     </div>
                     {artifactContent && (
-                      <pre className="flow-scrollbar font-flow-mono mt-4 max-h-[34rem] overflow-auto whitespace-pre-wrap rounded-xl bg-[#17201d] p-4 text-xs leading-6 text-[#e6eee9]">
-                        {artifactContent}
-                      </pre>
+                      <>
+                        {artifactFiles.length > 0 && (
+                          <div className="mt-4 grid gap-4">
+                            {artifactFiles.map((file) => (
+                              <article key={file.relative_path} className="overflow-hidden rounded-xl border border-flow-line bg-white">
+                                {isVideoFile(file.name) && (
+                                  <video
+                                    controls
+                                    preload="metadata"
+                                    src={file.url}
+                                    className="aspect-video w-full bg-black object-contain"
+                                  />
+                                )}
+                                {isImageFile(file.name) && (
+                                  <img
+                                    src={file.url}
+                                    alt={file.name}
+                                    className="max-h-[32rem] w-full bg-stone-100 object-contain"
+                                  />
+                                )}
+                                <div className="flex items-center justify-between gap-3 px-3.5 py-3">
+                                  <div className="min-w-0">
+                                    <p className="truncate text-xs font-semibold text-flow-ink">{file.name}</p>
+                                    <p className="mt-0.5 text-[0.68rem] text-flow-muted">{humanFileSize(file.size_bytes)}</p>
+                                  </div>
+                                  <a
+                                    href={file.url}
+                                    download={file.name}
+                                    className="flow-button shrink-0 rounded-md bg-flow-ink px-3 py-2 text-[0.68rem] font-semibold text-white"
+                                  >
+                                    Download
+                                  </a>
+                                </div>
+                              </article>
+                            ))}
+                          </div>
+                        )}
+                        <pre className="flow-scrollbar font-flow-mono mt-4 max-h-[34rem] overflow-auto whitespace-pre-wrap rounded-xl bg-[#17201d] p-4 text-xs leading-6 text-[#e6eee9]">
+                          {artifactContent}
+                        </pre>
+                      </>
                     )}
                   </section>
                 )}

@@ -78,6 +78,7 @@ services:
       HERMES_UPSTREAM_COMMIT: 7bfbfa3e341a8fe0315170bb7e2ad79e2af44da4
       HERMES_UID: "1000"
       HERMES_GID: "1000"
+      HERMES_WRITE_SAFE_ROOT: /opt/data:/workspace
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:?OPENROUTER_API_KEY must be set}
     volumes:
       - hermes_data:/opt/data
@@ -112,6 +113,7 @@ services:
     volumes:
       - openclaw_data:/home/node/.openclaw
       - ./runtime/agent-workspace:/home/node/.openclaw/workspace
+      - ./runtime/agent-workspace:/workspace
       - ./canon/TBTX_CANON:/home/node/.openclaw/workspace/TBTX_CANON:ro
       - ./services/agent_runtimes/openclaw_runner.mjs:/flow/openclaw_runner.mjs:ro
     expose:
@@ -171,18 +173,26 @@ services:
       FLOW_QUEUE_OWNER: alpha
       FLOW_EXECUTION_ENGINE: hermes
       FLOW_RUNTIME_URL: http://hermes-agent:18789
+      FLOW_AGENT_ZERO_RUNTIME_URL: http://agent-zero
+      FLOW_OPENCLAW_RUNTIME_URL: http://openclaw-agent:18790
       FLOW_QUEUE_TIMEOUT_SECONDS: ${FLOW_QUEUE_TIMEOUT_SECONDS:-5}
       FLOW_WORKER_LOG_LEVEL: ${FLOW_WORKER_LOG_LEVEL:-INFO}
       TBTX_CANON_ROOT: /app/canon/TBTX_CANON
+      FLOW_AGENT_WORKSPACE: /workspace
     volumes:
       - ${HOME}/.openclaw/state:/root/.openclaw/state
       - ./runtime/reviews:/app/runtime/reviews
       - ./runtime/queues:/app/runtime/queues
+      - ./runtime/agent-workspace:/workspace
       - ./canon/TBTX_CANON:/app/canon/TBTX_CANON:ro
     depends_on:
       bizbrain-lite:
         condition: service_healthy
       hermes-agent:
+        condition: service_healthy
+      openclaw-agent:
+        condition: service_healthy
+      agent-zero:
         condition: service_healthy
       postgres:
         condition: service_healthy
@@ -211,10 +221,12 @@ services:
       FLOW_QUEUE_TIMEOUT_SECONDS: ${FLOW_QUEUE_TIMEOUT_SECONDS:-5}
       FLOW_WORKER_LOG_LEVEL: ${FLOW_WORKER_LOG_LEVEL:-INFO}
       TBTX_CANON_ROOT: /app/canon/TBTX_CANON
+      FLOW_AGENT_WORKSPACE: /workspace
     volumes:
       - ${HOME}/.openclaw/state:/root/.openclaw/state
       - ./runtime/reviews:/app/runtime/reviews
       - ./runtime/queues:/app/runtime/queues
+      - ./runtime/agent-workspace:/workspace
       - ./canon/TBTX_CANON:/app/canon/TBTX_CANON:ro
     depends_on:
       bizbrain-lite:
@@ -248,10 +260,12 @@ services:
       FLOW_QUEUE_TIMEOUT_SECONDS: ${FLOW_QUEUE_TIMEOUT_SECONDS:-5}
       FLOW_WORKER_LOG_LEVEL: ${FLOW_WORKER_LOG_LEVEL:-INFO}
       TBTX_CANON_ROOT: /app/canon/TBTX_CANON
+      FLOW_AGENT_WORKSPACE: /workspace
     volumes:
       - ${HOME}/.openclaw/state:/root/.openclaw/state
       - ./runtime/reviews:/app/runtime/reviews
       - ./runtime/queues:/app/runtime/queues
+      - ./runtime/agent-workspace:/workspace
       - ./canon/TBTX_CANON:/app/canon/TBTX_CANON:ro
     depends_on:
       bizbrain-lite:

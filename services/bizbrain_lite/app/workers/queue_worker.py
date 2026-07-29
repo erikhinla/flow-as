@@ -15,6 +15,7 @@ import asyncio
 import json
 import logging
 import os
+import shutil
 from datetime import datetime
 from pathlib import Path
 
@@ -29,7 +30,11 @@ from app.services.redis_queue_service import RedisQueueService, get_redis_client
 from app.services.audit_service import record_audit_event
 from app.services.automated_learning_service import AutomatedLearningService
 from app.services.skill_loader import SkillLoader, PerformanceContextLoader
-from app.services.runtime_output_validation import validate_runtime_output
+from app.services.runtime_output_validation import (
+    requires_media_artifacts,
+    validate_artifact_contract,
+    validate_runtime_output,
+)
 from app.models.audit_log import AuditEventType
 
 
@@ -43,21 +48,21 @@ logger = logging.getLogger("flow.queue_worker")
 
 SYSTEM_PROMPTS: dict[str, str] = {
     "hermes": (
-        "You are Hermes, an expert marketing strategist and copywriter. "
-        "You produce high-quality, conversion-focused content: emails, social captions, "
-        "campaign briefs, ad copy, and content strategy. Be direct, punchy, and professional. "
-        "Return well-structured Markdown with clear sections."
+        "You are Hermes Agent, the creative production lead. Use your installed tools to "
+        "create the finished deliverables requested by the task. Strategy and prose are not "
+        "substitutes for requested media or files. Follow the supplied output contract exactly."
     ),
     "openclaw": (
         "You are OpenClaw, a sharp business analyst and operations strategist. "
         "You handle classification, routing decisions, research briefs, and structured analysis. "
-        "Return clear, structured Markdown with actionable outputs."
+        "Create the requested inspectable files when the output contract requires them. "
+        "Do not claim completion when a required file is missing."
     ),
     "agent_zero": (
         "You are Agent Zero, a senior full-stack developer and implementation specialist. "
         "You build landing pages, write code, create structured deliverables, and handle "
-        "complex multi-step implementations. Return complete, production-ready output in Markdown. "
-        "For HTML/CSS tasks, include full working code blocks."
+        "complex multi-step implementations. Create complete, inspectable deliverables in the "
+        "assigned workspace. Do not return code blocks when the task requires actual files."
     ),
 }
 
@@ -101,6 +106,9 @@ async def build_execution_prompt(
     title: str,
     task_type: str,
     owner: str,
+    output_required: str,
+    inputs: dict,
+    job_workspace: Path,
     session: AsyncSession = None
 ) -> str:
     """Build the Canon-bound prompt handed to the assigned agent runtime."""
@@ -131,7 +139,11 @@ async def build_execution_prompt(
         f"# Role\n{system_prompt}\n\n"
         f"# Task\n**Title:** {title}\n\n**Goal:** {goal}\n\n"
         f"**Task type:** {task_type}\n\n"
+        f"**Required observable output:** {output_required or 'A finished text artifact.'}\n\n"
+        f"**Job workspace:** {job_workspace}\n\n"
     )
+    if inputs:
+        user_message += f"**Inputs:**\n```json\n{json.dumps(inputs, indent=2)}\n```\n\n"
 
     canon_context = load_tbtx_canon_context()
     if canon_context:
@@ -165,9 +177,13 @@ async def build_execution_prompt(
 
     user_message += (
         "# Completion instruction\n"
-        "Complete the requested work now. Return the finished artifact, not a plan "
-        "for producing it. Do not publish, deploy, schedule, or change an external "
-        "account unless the task contains a recorded approval authorizing that exact action."
+        "Complete the requested work now. If the required output names files, video, audio, "
+        "images, code, or a report, create those real files under the exact job workspace above. "
+        "Do not return a plan, storyboard, specification, shell command, or Markdown description "
+        "as a substitute. End with a concise manifest of the files you actually created. "
+        "If a required source or capability is unavailable, say so truthfully and do not claim "
+        "completion. Do not publish, deploy, schedule, or change an external account unless the "
+        "task contains a recorded approval authorizing that exact action."
     )
     return user_message
 
@@ -216,10 +232,16 @@ async def call_agent_zero(runtime_url: str, prompt: str, job_id: str, timeout: f
         }
 
 
-async def call_agent_runtime(prompt: str, job_id: str) -> dict:
+async def call_agent_runtime(
+    prompt: str,
+    job_id: str,
+    *,
+    engine: str | None = None,
+    runtime_url: str | None = None,
+) -> dict:
     """Call the assigned installed agent. No direct model fallback is permitted."""
-    engine = os.getenv("FLOW_EXECUTION_ENGINE", "").strip()
-    runtime_url = os.getenv("FLOW_RUNTIME_URL", "").strip()
+    engine = (engine or os.getenv("FLOW_EXECUTION_ENGINE", "")).strip()
+    runtime_url = (runtime_url or os.getenv("FLOW_RUNTIME_URL", "")).strip()
     timeout = float(os.getenv("FLOW_RUNTIME_TIMEOUT_SECONDS", "900"))
     if engine not in {"hermes", "openclaw", "agent_zero"}:
         raise RuntimeError(f"Unsupported FLOW_EXECUTION_ENGINE: {engine or '<missing>'}")
@@ -249,6 +271,93 @@ async def call_agent_runtime(prompt: str, job_id: str) -> dict:
     return payload
 
 
+async def run_creative_review_pipeline(
+    *,
+    job_id: str,
+    title: str,
+    goal: str,
+    output_required: str,
+    job_workspace: Path,
+) -> list[dict]:
+    """Run the real Agent Zero review and OpenClaw packaging stages."""
+    agent_zero_url = os.getenv("FLOW_AGENT_ZERO_RUNTIME_URL", "http://agent-zero").strip()
+    openclaw_url = os.getenv(
+        "FLOW_OPENCLAW_RUNTIME_URL",
+        "http://openclaw-agent:18790",
+    ).strip()
+
+    review_prompt = (
+        "# Role\n"
+        "You are Agent Zero acting as the independent creative completion validator.\n\n"
+        "# Task\n"
+        f"Title: {title}\n"
+        f"Goal: {goal}\n"
+        f"Required output: {output_required}\n"
+        f"Workspace: {job_workspace}\n\n"
+        "Inspect the real files in the workspace. Use ffprobe or equivalent checks for every "
+        "video. Verify file count, dimensions, duration, readability, safe text placement, "
+        "logo transparency, and the exact requested creative constraints. Do not approve a "
+        "plan or a prose-only substitute. Do not alter the creative files. Write the factual "
+        "result to validation-report.md in the workspace. The report must list every inspected "
+        "file and show pass or fail for each requirement. End the report with exactly "
+        "OVERALL: PASS or OVERALL: FAIL."
+    )
+    review_result = await call_agent_runtime(
+        review_prompt,
+        f"{job_id}-agent-zero-review",
+        engine="agent_zero",
+        runtime_url=agent_zero_url,
+    )
+    validate_runtime_output(str(review_result["final"]))
+
+    package_prompt = (
+        "# Role\n"
+        "You are OpenClaw acting as the delivery packager for a staged creative review.\n\n"
+        "# Task\n"
+        f"Title: {title}\n"
+        f"Required output: {output_required}\n"
+        f"Workspace: {job_workspace}\n\n"
+        "Inspect the existing files only. Do not rewrite, rerender, publish, upload, or delete "
+        "anything. Create package-manifest.json in the workspace with each deliverable's relative "
+        "path, byte size, and role. Include validation-report.md. Return a concise statement of "
+        "the manifest path after the file has actually been written."
+    )
+    package_result = await call_agent_runtime(
+        package_prompt,
+        f"{job_id}-openclaw-package",
+        engine="openclaw",
+        runtime_url=openclaw_url,
+    )
+    validate_runtime_output(str(package_result["final"]))
+
+    validation_report = job_workspace / "validation-report.md"
+    package_manifest = job_workspace / "package-manifest.json"
+    missing = [
+        path.name
+        for path in (validation_report, package_manifest)
+        if not path.is_file() or path.stat().st_size == 0
+    ]
+    if missing:
+        raise RuntimeError(
+            "Creative workflow completion gate failed: missing "
+            + ", ".join(missing)
+        )
+    report_text = validation_report.read_text(encoding="utf-8").upper()
+    if "OVERALL: PASS" not in report_text or "OVERALL: FAIL" in report_text:
+        raise RuntimeError("Agent Zero creative validation did not return OVERALL: PASS")
+
+    return [
+        {
+            "stage": "agent_zero_validation",
+            **{key: value for key, value in review_result.items() if key != "final"},
+        },
+        {
+            "stage": "openclaw_packaging",
+            **{key: value for key, value in package_result.items() if key != "final"},
+        },
+    ]
+
+
 # ── Output writer ─────────────────────────────────────────────────────────────
 
 def write_output(
@@ -258,6 +367,8 @@ def write_output(
     engine: str,
     content: str,
     output_base: str,
+    job_workspace: Path,
+    produced_files: list[Path],
     runtime_evidence: dict | None = None,
 ) -> str:
     """Write LLM output to disk. Returns the path written."""
@@ -266,8 +377,23 @@ def write_output(
 
     output_path = output_dir / "output.md"
     metadata_path = output_dir / "metadata.json"
+    files_dir = output_dir / "files"
 
     output_path.write_text(content, encoding="utf-8")
+
+    staged_files: list[dict[str, object]] = []
+    for source_path in produced_files:
+        relative_path = source_path.relative_to(job_workspace)
+        destination = files_dir / relative_path
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source_path, destination)
+        staged_files.append(
+            {
+                "relative_path": str(relative_path),
+                "review_path": str(destination),
+                "size_bytes": destination.stat().st_size,
+            }
+        )
 
     metadata = {
         "job_id": job_id,
@@ -276,6 +402,8 @@ def write_output(
         "execution_engine": engine,
         "completed_at": datetime.utcnow().isoformat(),
         "output_file": str(output_path),
+        "job_workspace": str(job_workspace),
+        "artifacts": staged_files,
         "runtime_evidence": runtime_evidence or {},
     }
     metadata_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
@@ -323,14 +451,17 @@ async def notify_discord(webhook_url: str, job_id: str, title: str, owner: str, 
 
 # ── Postgres transitions ──────────────────────────────────────────────────────
 
-async def activate_job(job_id: str, owner: str) -> tuple[str | None, str | None, str | None]:
-    """Mark job ACTIVE. Returns (goal, title, task_type) for LLM use."""
+async def activate_job(
+    job_id: str,
+    owner: str,
+) -> tuple[str | None, str | None, str | None, str | None, dict]:
+    """Mark job ACTIVE and return the persisted execution contract."""
     async with async_session() as session:
         result = await session.execute(select(JobRecord).where(JobRecord.job_id == job_id))
         job = result.scalar_one_or_none()
         if not job:
             logger.warning("Dequeued unknown job_id=%s owner=%s", job_id, owner)
-            return None, None, None
+            return None, None, None, None, {}
 
         now = datetime.utcnow()
         job.status = JobStatus.ACTIVE.value
@@ -354,7 +485,7 @@ async def activate_job(job_id: str, owner: str) -> tuple[str | None, str | None,
 
         await session.commit()
         logger.info("Activated job_id=%s owner=%s", job_id, owner)
-        return job.goal, job.title, job.task_type
+        return job.goal, job.title, job.task_type, job.output_required, job.inputs or {}
 
 
 async def complete_job(job_id: str, result_pointer: str) -> None:
@@ -443,13 +574,22 @@ async def worker_loop(owner: str, timeout: int) -> None:
                 continue
 
             # Step 1: Activate
-            goal, title, task_type = await activate_job(job_id, owner)
+            goal, title, task_type, output_required, inputs = await activate_job(job_id, owner)
             if goal is None:
                 continue
 
             effective_goal = goal or "Complete the assigned task."
             effective_title = title or f"Job {job_id}"
             effective_task_type = task_type or "content_prep"
+            effective_output_required = output_required or "A finished text artifact."
+            run_stamp = datetime.utcnow().strftime("%Y%m%dT%H%M%S%f")
+            job_workspace = (
+                Path(os.getenv("FLOW_AGENT_WORKSPACE", "/workspace"))
+                / "jobs"
+                / job_id
+                / f"run-{run_stamp}"
+            )
+            job_workspace.mkdir(parents=True, exist_ok=False)
 
             # Step 2: Execute through the real assigned agent runtime
             try:
@@ -459,10 +599,26 @@ async def worker_loop(owner: str, timeout: int) -> None:
                         title=effective_title,
                         task_type=effective_task_type,
                         owner=owner,
+                        output_required=effective_output_required,
+                        inputs=inputs,
+                        job_workspace=job_workspace,
                         session=llm_session,
                     )
                 runtime_result = await call_agent_runtime(prompt=prompt, job_id=job_id)
                 output = validate_runtime_output(runtime_result["final"])
+                workflow_evidence: list[dict] = []
+                if requires_media_artifacts(effective_output_required):
+                    workflow_evidence = await run_creative_review_pipeline(
+                        job_id=job_id,
+                        title=effective_title,
+                        goal=effective_goal,
+                        output_required=effective_output_required,
+                        job_workspace=job_workspace,
+                    )
+                produced_files = validate_artifact_contract(
+                    effective_output_required,
+                    job_workspace,
+                )
             except Exception as e:
                 await fail_job(job_id, str(e))
                 continue
@@ -475,11 +631,14 @@ async def worker_loop(owner: str, timeout: int) -> None:
                 engine=str(runtime_result.get("engine")),
                 content=output,
                 output_base=settings.output_dir,
+                job_workspace=job_workspace,
+                produced_files=produced_files,
                 runtime_evidence={
                     key: value
                     for key, value in runtime_result.items()
                     if key not in {"final"}
-                },
+                }
+                | {"workflow_stages": workflow_evidence},
             )
 
             # Step 4: Mark completed

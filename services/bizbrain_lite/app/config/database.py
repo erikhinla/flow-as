@@ -89,6 +89,25 @@ async def init_db():
         await conn.execute(
             text("ALTER TABLE job_records ALTER COLUMN risk_tier TYPE VARCHAR(64)")
         )
+        # Persist the observable output contract used by workers to decide
+        # whether a job is genuinely complete. Existing VPS installs are
+        # migrated idempotently at startup because create_all does not add
+        # columns to an existing table.
+        await conn.execute(
+            text("ALTER TABLE job_records ADD COLUMN IF NOT EXISTS output_required TEXT")
+        )
+        await conn.execute(
+            text(
+                "ALTER TABLE job_records ADD COLUMN IF NOT EXISTS inputs JSONB "
+                "NOT NULL DEFAULT '{}'::jsonb"
+            )
+        )
+        await conn.execute(
+            text(
+                "ALTER TABLE job_records ADD COLUMN IF NOT EXISTS review_required BOOLEAN "
+                "NOT NULL DEFAULT FALSE"
+            )
+        )
 
 
 async def health_check() -> bool:

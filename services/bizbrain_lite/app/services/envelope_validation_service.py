@@ -231,6 +231,9 @@ class EnvelopeValidationService:
                 title=envelope.get('title'),
                 goal=envelope.get('goal'),
                 source=envelope.get('source'),
+                output_required=envelope.get('output_required'),
+                inputs=envelope.get('inputs') or {},
+                review_required=bool(envelope.get('review_required')),
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow(),
             )
