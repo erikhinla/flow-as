@@ -1,7 +1,7 @@
 - name: Default
   chat:
     provider: openrouter
-    name: openai/gpt-oss-20b:free
+    name: cohere/north-mini-code:free
     api_base: ''
     ctx_length: 131072
     ctx_history: 0.7
@@ -13,7 +13,7 @@
     kwargs: {}
   utility:
     provider: openrouter
-    name: openai/gpt-oss-20b:free
+    name: cohere/north-mini-code:free
     api_base: ''
     ctx_length: 131072
     ctx_input: 0.7
@@ -32,14 +32,14 @@
 - name: Efficiency
   chat:
     provider: openrouter
-    name: openai/gpt-oss-20b:free
+    name: cohere/north-mini-code:free
     api_base: ''
     ctx_length: 131072
     ctx_history: 0.7
     vision: false
   utility:
     provider: openrouter
-    name: openai/gpt-oss-20b:free
+    name: cohere/north-mini-code:free
 
 - name: Power
   chat:
