@@ -144,7 +144,7 @@ services:
     expose:
       - "80"
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1/api/health', timeout=10)"]
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1/api/health"]
       interval: 30s
       timeout: 15s
       retries: 10
