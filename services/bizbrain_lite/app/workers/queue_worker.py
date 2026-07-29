@@ -29,6 +29,7 @@ from app.services.redis_queue_service import RedisQueueService, get_redis_client
 from app.services.audit_service import record_audit_event
 from app.services.automated_learning_service import AutomatedLearningService
 from app.services.skill_loader import SkillLoader, PerformanceContextLoader
+from app.services.runtime_output_validation import validate_runtime_output
 from app.models.audit_log import AuditEventType
 
 
@@ -59,7 +60,6 @@ SYSTEM_PROMPTS: dict[str, str] = {
         "For HTML/CSS tasks, include full working code blocks."
     ),
 }
-
 
 def load_tbtx_canon_context() -> str:
     """Load the smallest authoritative TBTX context needed for model work.
@@ -462,7 +462,7 @@ async def worker_loop(owner: str, timeout: int) -> None:
                         session=llm_session,
                     )
                 runtime_result = await call_agent_runtime(prompt=prompt, job_id=job_id)
-                output = runtime_result["final"]
+                output = validate_runtime_output(runtime_result["final"])
             except Exception as e:
                 await fail_job(job_id, str(e))
                 continue
