@@ -3,18 +3,18 @@
  */
 
 import { createServer } from "node:http";
-import { mkdir } from "node:fs/promises";
+import { mkdir, unlink, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 
 const host = "0.0.0.0";
 const port = Number(process.env.FLOW_RUNTIME_PORT || "18790");
 const model = process.env.OPENCLAW_AGENT_MODEL || "openrouter/openai/gpt-4o-mini";
 const timeoutMs = Number(process.env.FLOW_RUNTIME_TIMEOUT_SECONDS || "900") * 1000;
-const stateDir = "/home/node/.openclaw/flow-state";
+const promptDir = "/home/node/.openclaw/flow-prompts";
 const upstreamRepository = "https://github.com/openclaw/openclaw";
 const upstreamCommit = process.env.OPENCLAW_UPSTREAM_COMMIT || "unknown";
 
-await mkdir(stateDir, { recursive: true });
+await mkdir(promptDir, { recursive: true });
 
 function execute(args, input = "") {
   return new Promise((resolve, reject) => {
@@ -57,32 +57,37 @@ async function version() {
   return result.stdout || result.stderr;
 }
 
-async function run(prompt) {
-  const result = await execute(
-    [
+async function run(prompt, jobId) {
+  const promptPath = `${promptDir}/${jobId}.md`;
+  await writeFile(promptPath, prompt, { encoding: "utf8", mode: 0o600 });
+  try {
+    const result = await execute([
       "agent",
-      "exec",
+      "--local",
       "--message-file",
-      "-",
-      "--cwd",
-      "/workspace",
-      "--state-dir",
-      stateDir,
+      promptPath,
       "--model",
       model,
+      "--session-id",
+      `flow-${jobId}`,
       "--json",
-    ],
-    prompt,
-  );
-  const envelope = JSON.parse(result.stdout);
-  if (!envelope.ok || envelope.status !== "ok") {
-    throw new Error(envelope?.error?.message || `OpenClaw status: ${envelope.status}`);
+    ]);
+    const envelope = JSON.parse(result.stdout);
+    if (envelope.aborted) {
+      throw new Error("OpenClaw execution was aborted");
+    }
+    const final = String(
+      envelope.finalAssistantVisibleText ||
+        envelope.payloads?.map((payload) => payload?.text).filter(Boolean).join("\n\n") ||
+        "",
+    ).trim();
+    if (!final) {
+      throw new Error("OpenClaw returned an empty response");
+    }
+    return { final, envelope };
+  } finally {
+    await unlink(promptPath).catch(() => {});
   }
-  const final = String(envelope.final || "").trim();
-  if (!final) {
-    throw new Error("OpenClaw returned an empty response");
-  }
-  return { final, envelope };
 }
 
 function send(response, status, payload) {
@@ -127,14 +132,14 @@ const server = createServer(async (request, response) => {
         send(response, 400, { ok: false, error: "prompt is required" });
         return;
       }
-      const result = await run(prompt);
+      const result = await run(prompt, String(payload.job_id || "anonymous"));
       send(response, 200, {
         ok: true,
         engine: "openclaw",
         final: result.final,
-        usage: result.envelope.usage,
-        model: result.envelope.model,
-        provider: result.envelope.provider,
+        usage: result.envelope.meta?.agentMeta?.usage,
+        model: result.envelope.meta?.agentMeta?.model,
+        provider: result.envelope.meta?.agentMeta?.provider,
         upstream_repository: upstreamRepository,
         upstream_commit: upstreamCommit,
       });

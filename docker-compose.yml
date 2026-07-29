@@ -111,9 +111,9 @@ services:
       OPENCLAW_STATE_DIR: /home/node/.openclaw
     volumes:
       - openclaw_data:/home/node/.openclaw
+      - ./runtime/agent-workspace:/home/node/.openclaw/workspace
+      - ./canon/TBTX_CANON:/home/node/.openclaw/workspace/TBTX_CANON:ro
       - ./services/agent_runtimes/openclaw_runner.mjs:/flow/openclaw_runner.mjs:ro
-      - ./runtime/agent-workspace:/workspace
-      - ./canon/TBTX_CANON:/workspace/TBTX_CANON:ro
     expose:
       - "18790"
     healthcheck:
