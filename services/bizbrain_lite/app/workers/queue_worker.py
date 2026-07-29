@@ -359,11 +359,11 @@ async def run_creative_review_pipeline(
     ]
 
 
-def run_render_profile(inputs: dict, job_workspace: Path) -> None:
+def run_render_profile(inputs: dict, job_workspace: Path) -> dict | None:
     """Execute a repository-backed renderer for an explicitly requested profile."""
     profile = str(inputs.get("render_profile") or "").strip()
     if not profile:
-        return
+        return None
     if profile != "tbtx_social_concepts_v1":
         raise RuntimeError(f"Unsupported creative render profile: {profile}")
 
@@ -400,6 +400,12 @@ def run_render_profile(inputs: dict, job_workspace: Path) -> None:
         profile,
         job_workspace,
     )
+    manifest_path = job_workspace / "render-manifest.json"
+    if not manifest_path.is_file():
+        raise RuntimeError(
+            "Creative renderer exited successfully without render-manifest.json"
+        )
+    return json.loads(manifest_path.read_text(encoding="utf-8"))
 
 
 # ── Output writer ─────────────────────────────────────────────────────────────
@@ -649,8 +655,15 @@ async def worker_loop(owner: str, timeout: int) -> None:
                         session=llm_session,
                     )
                 runtime_result = await call_agent_runtime(prompt=prompt, job_id=job_id)
-                output = validate_runtime_output(runtime_result["final"])
-                run_render_profile(inputs, job_workspace)
+                render_manifest = run_render_profile(inputs, job_workspace)
+                if render_manifest is None:
+                    output = validate_runtime_output(runtime_result["final"])
+                else:
+                    output = (
+                        "Repository-backed creative renderer completed the assigned "
+                        "profile and staged the following manifest:\n\n"
+                        + json.dumps(render_manifest, indent=2)
+                    )
                 produced_files = validate_artifact_contract(
                     effective_output_required,
                     job_workspace,
