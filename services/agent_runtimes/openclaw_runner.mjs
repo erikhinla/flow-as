@@ -19,7 +19,7 @@ await mkdir(promptDir, { recursive: true });
 function execute(args, input = "") {
   return new Promise((resolve, reject) => {
     const child = spawn("node", ["/app/openclaw.mjs", ...args], {
-      cwd: "/workspace",
+      cwd: "/home/node/.openclaw/workspace",
       env: process.env,
       stdio: ["pipe", "pipe", "pipe"],
     });
