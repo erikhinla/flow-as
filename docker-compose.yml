@@ -134,6 +134,7 @@ services:
       ALLOWED_ORIGINS: http://agent-zero
       A0_SET_chat_model_provider: openrouter
       A0_SET_chat_model_name: ${AGENT_ZERO_MODEL:-openai/gpt-4o-mini}
+      A0_SET_litellm_global_kwargs: '{"max_tokens": ${AGENT_ZERO_MAX_TOKENS:-2048}}'
       A0_SET_workdir_path: /workspace
       API_KEY_OPENROUTER: ${OPENROUTER_API_KEY:?OPENROUTER_API_KEY must be set}
       AGENT_ZERO_UPSTREAM_COMMIT: 87e1e591e1ba2e8b1a19d34e134fcae490c8dded
