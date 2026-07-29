@@ -14,6 +14,12 @@ class RuntimeOutputValidationTests(unittest.TestCase):
                 "It appears that I cannot access the file. Please provide the relevant text."
             )
 
+    def test_rejects_missing_file_response(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "incomplete artifact"):
+            validate_runtime_output(
+                "The required file does not exist, so I am unable to retrieve its contents."
+            )
+
     def test_rejects_empty_artifact(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "empty artifact"):
             validate_runtime_output("  \n")

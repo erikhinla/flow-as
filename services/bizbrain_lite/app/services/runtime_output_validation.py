@@ -7,9 +7,12 @@ INCOMPLETE_OUTPUT_MARKERS: tuple[str, ...] = (
     "i'm unable to complete",
     "i cannot complete",
     "i can't complete",
+    "i am unable to retrieve",
+    "i'm unable to retrieve",
     "not able to complete",
     "not able to fulfill",
     "not available in the system",
+    "does not exist, so i am unable",
     "please provide the relevant text",
 )
 
