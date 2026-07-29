@@ -83,6 +83,12 @@ async def init_db():
         await conn.run_sync(JobBase.metadata.create_all)
         await conn.run_sync(ReflectionBase.metadata.create_all)
         await conn.run_sync(SkillBase.metadata.create_all)
+        # Existing installations created risk_tier as VARCHAR(10), which cannot
+        # store the canonical downtime_security_money routing value. Keep this
+        # startup migration idempotent for installations that predate flow_005.
+        await conn.execute(
+            text("ALTER TABLE job_records ALTER COLUMN risk_tier TYPE VARCHAR(64)")
+        )
 
 
 async def health_check() -> bool:

@@ -51,9 +51,9 @@ class TaskType(str, Enum):
 
 class RiskTier(str, Enum):
     """Risk assessment levels"""
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
+    REPUTATION = "reputation"
+    TIME_LOSS = "time_loss"
+    DOWNTIME_SECURITY_MONEY = "downtime_security_money"
 
 
 class Priority(str, Enum):
@@ -84,7 +84,7 @@ class JobRecord(Base):
     owner = Column(String(20), nullable=False)  # openclaw, hermes, agent_zero
     status = Column(String(20), nullable=False, default=JobStatus.PENDING.value, index=True)
     task_type = Column(String(20), nullable=False, index=True)
-    risk_tier = Column(String(10), nullable=False)
+    risk_tier = Column(String(64), nullable=False)
     priority = Column(String(20), nullable=False, default=Priority.NORMAL.value, index=True)
     
     # Timing
