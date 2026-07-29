@@ -26,6 +26,14 @@ class RuntimeOutputValidationTests(unittest.TestCase):
                 "The file does not exist in the specified path, and I am unable to return it."
             )
 
+    def test_rejects_tool_failure_artifact(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "incomplete artifact"):
+            validate_runtime_output(
+                "I encountered an issue while trying to access the file. "
+                "It does not exist and permission restrictions are preventing access.\n\n"
+                "⚠️ Write failed"
+            )
+
     def test_rejects_empty_artifact(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "empty artifact"):
             validate_runtime_output("  \n")
