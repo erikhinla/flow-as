@@ -335,6 +335,7 @@ async def activate_job(job_id: str, owner: str) -> tuple[str | None, str | None,
         now = datetime.utcnow()
         job.status = JobStatus.ACTIVE.value
         job.updated_at = now
+        job.error_message = None
         if job.started_at is None:
             job.started_at = now
 
@@ -368,6 +369,7 @@ async def complete_job(job_id: str, result_pointer: str) -> None:
         job.updated_at = now
         job.completed_at = now
         job.result_pointer = result_pointer
+        job.error_message = None
 
         # Record job completion in audit log
         await record_audit_event(
