@@ -16,6 +16,7 @@ import json
 import logging
 import os
 import shutil
+import subprocess
 from datetime import datetime
 from pathlib import Path
 
@@ -358,6 +359,49 @@ async def run_creative_review_pipeline(
     ]
 
 
+def run_render_profile(inputs: dict, job_workspace: Path) -> None:
+    """Execute a repository-backed renderer for an explicitly requested profile."""
+    profile = str(inputs.get("render_profile") or "").strip()
+    if not profile:
+        return
+    if profile != "tbtx_social_concepts_v1":
+        raise RuntimeError(f"Unsupported creative render profile: {profile}")
+
+    source_files = inputs.get("source_files")
+    if not isinstance(source_files, list) or len(source_files) < 2:
+        raise RuntimeError(
+            "tbtx_social_concepts_v1 requires at least two source_files"
+        )
+    command = [
+        "python3",
+        "/app/scripts/render_tbtx_social_concepts.py",
+        "--workspace",
+        str(job_workspace),
+        "--source-a",
+        str(source_files[0]),
+        "--source-b",
+        str(source_files[1]),
+    ]
+    completed = subprocess.run(
+        command,
+        capture_output=True,
+        text=True,
+        timeout=int(os.getenv("FLOW_RENDER_TIMEOUT_SECONDS", "900")),
+        check=False,
+    )
+    if completed.returncode != 0:
+        details = (completed.stderr or completed.stdout).strip()
+        raise RuntimeError(
+            "Creative renderer failed: "
+            + (details[-1_500:] if details else f"exit {completed.returncode}")
+        )
+    logger.info(
+        "Creative render profile completed profile=%s workspace=%s",
+        profile,
+        job_workspace,
+    )
+
+
 # ── Output writer ─────────────────────────────────────────────────────────────
 
 def write_output(
@@ -606,9 +650,11 @@ async def worker_loop(owner: str, timeout: int) -> None:
                     )
                 runtime_result = await call_agent_runtime(prompt=prompt, job_id=job_id)
                 output = validate_runtime_output(runtime_result["final"])
+                run_render_profile(inputs, job_workspace)
                 produced_files = validate_artifact_contract(
                     effective_output_required,
                     job_workspace,
+                    pre_review=requires_media_artifacts(effective_output_required),
                 )
                 workflow_evidence: list[dict] = []
                 if requires_media_artifacts(effective_output_required):

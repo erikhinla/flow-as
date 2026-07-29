@@ -164,7 +164,12 @@ def validate_runtime_output(content: str) -> str:
     return content.strip()
 
 
-def validate_artifact_contract(output_required: str | None, workspace: Path) -> list[Path]:
+def validate_artifact_contract(
+    output_required: str | None,
+    workspace: Path,
+    *,
+    pre_review: bool = False,
+) -> list[Path]:
     """Reject a claimed completion when required production files do not exist.
 
     The task's observable output contract is authoritative. A prose response is
@@ -225,10 +230,19 @@ def validate_artifact_contract(output_required: str | None, workspace: Path) -> 
                     if not bool(probe.get("has_audio")):
                         errors.append(f"{video_path.name} has no audio stream")
 
-    if "contact sheet" in contract and not any("contact" in path.stem.lower() for path in image_files):
+    if (
+        any(token in contract for token in ("contact sheet", "contact-sheet"))
+        and not any("contact" in path.stem.lower() for path in image_files)
+    ):
         errors.append("expected a contact-sheet image, found none")
 
-    if any(token in contract for token in ("transparent wordmark", "transparent logo")):
+    transparent_mark_requested = bool(
+        re.search(
+            r"\btransparent\b(?:\s+\w+){0,4}\s+\b(?:wordmark|logo)\b",
+            contract,
+        )
+    )
+    if transparent_mark_requested:
         transparent_marks = [
             path
             for path in image_files
@@ -242,7 +256,7 @@ def validate_artifact_contract(output_required: str | None, workspace: Path) -> 
     if any(token in contract for token in ("audio file", "sound design file", "sound file")) and not audio_files:
         errors.append("expected an audio file, found none")
 
-    if "validation report" in contract and not report_files:
+    if not pre_review and "validation report" in contract and not report_files:
         errors.append("expected a validation report file, found none")
 
     if requested_media:
