@@ -134,7 +134,7 @@ services:
     environment:
       WEB_UI_HOST: 0.0.0.0
       ALLOWED_ORIGINS: http://agent-zero
-      A0_SET_litellm_global_kwargs: '{"max_tokens": ${AGENT_ZERO_MAX_TOKENS:-480}}'
+      A0_SET_litellm_global_kwargs: '{"max_tokens": ${AGENT_ZERO_MAX_TOKENS:-4096}}'
       A0_SET_workdir_path: /workspace
       API_KEY_OPENROUTER: ${OPENROUTER_API_KEY:?OPENROUTER_API_KEY must be set}
       AGENT_ZERO_UPSTREAM_COMMIT: 87e1e591e1ba2e8b1a19d34e134fcae490c8dded
