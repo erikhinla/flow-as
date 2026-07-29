@@ -2,53 +2,201 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+:root {
+  color-scheme: light;
+  --flow-canvas: 244 244 239;
+  --flow-surface: 252 252 248;
+  --flow-ink: 20 28 26;
+  --flow-muted: 94 104 100;
+  --flow-line: 211 215 207;
+  --flow-accent: 104 226 158;
+  --flow-accent-deep: 24 114 73;
+  --flow-warn: 202 126 41;
+  --flow-danger: 174 55 55;
+}
+
 @layer base {
+  * {
+    box-sizing: border-box;
+  }
+
   html {
-    font-family: 'Inter', system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-width: 320px;
+    margin: 0;
+    background:
+      radial-gradient(circle at 15% -10%, rgba(104, 226, 158, 0.12), transparent 28rem),
+      rgb(var(--flow-canvas));
+    color: rgb(var(--flow-ink));
+    font-family: 'Avenir Next', 'SF Pro Display', 'Helvetica Neue', system-ui, sans-serif;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    outline: none;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    box-shadow: 0 0 0 3px rgba(24, 114, 73, 0.24);
+  }
+
+  ::selection {
+    background: rgba(104, 226, 158, 0.48);
   }
 }
 
-@layer components {
-  .status-dot {
-    @apply w-2 h-2 rounded-full;
+@layer utilities {
+  .bg-flow-canvas {
+    background-color: rgb(var(--flow-canvas));
   }
-  
-  .status-dot.active {
-    @apply bg-green-500;
+
+  .bg-flow-surface {
+    background-color: rgb(var(--flow-surface));
   }
-  
-  .status-dot.inactive {
-    @apply bg-red-500;
+
+  .bg-flow-ink {
+    background-color: rgb(var(--flow-ink));
   }
-  
-  .status-dot.pending {
-    @apply bg-yellow-500;
+
+  .bg-flow-accent {
+    background-color: rgb(var(--flow-accent));
   }
-  
-  .metric-card {
-    @apply bg-white rounded-lg shadow p-6;
+
+  .text-flow-ink {
+    color: rgb(var(--flow-ink));
   }
-  
-  .metric-value {
-    @apply text-2xl font-bold text-gray-900;
+
+  .text-flow-muted {
+    color: rgb(var(--flow-muted));
   }
-  
-  .metric-label {
-    @apply text-sm font-medium text-gray-500;
+
+  .text-flow-accent {
+    color: rgb(var(--flow-accent));
   }
-  
-  .table-row {
-    @apply hover:bg-gray-50 border-b border-gray-200;
+
+  .text-flow-accent-deep {
+    color: rgb(var(--flow-accent-deep));
+  }
+
+  .border-flow-line {
+    border-color: rgb(var(--flow-line));
+  }
+
+  .font-flow-mono {
+    font-family: 'SFMono-Regular', 'Cascadia Code', 'Roboto Mono', monospace;
+    font-variant-numeric: tabular-nums;
   }
 }
 
-/* Loading spinner */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+.flow-mark {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.18rem;
+  align-items: end;
+  padding: 0.32rem;
+  border-radius: 0.55rem;
+  background: rgb(var(--flow-ink));
+  box-shadow: 0 0.35rem 1rem rgba(20, 28, 26, 0.14);
 }
 
-.animate-spin {
-  animation: spin 1s linear infinite;
+.flow-mark span {
+  display: block;
+  border-radius: 0.12rem;
+  background: rgb(var(--flow-accent));
+}
+
+.flow-mark span:nth-child(1) {
+  height: 42%;
+}
+
+.flow-mark span:nth-child(2) {
+  height: 72%;
+}
+
+.flow-mark span:nth-child(3) {
+  height: 100%;
+}
+
+.flow-surface {
+  border: 1px solid rgba(var(--flow-line), 0.88);
+  background: rgba(var(--flow-surface), 0.96);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 1.2rem 3rem rgba(38, 49, 44, 0.055);
+}
+
+.flow-input {
+  width: 100%;
+  border: 1px solid rgb(var(--flow-line));
+  border-radius: 0.65rem;
+  background: white;
+  color: rgb(var(--flow-ink));
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.flow-input:hover {
+  border-color: rgba(var(--flow-muted), 0.62);
+}
+
+.flow-input:focus {
+  border-color: rgb(var(--flow-accent-deep));
+  box-shadow: 0 0 0 3px rgba(24, 114, 73, 0.12);
+}
+
+.flow-button {
+  transition: transform 160ms ease, background-color 160ms ease, color 160ms ease, opacity 160ms ease;
+}
+
+.flow-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.flow-button:active:not(:disabled) {
+  transform: translateY(1px) scale(0.99);
+}
+
+.flow-scrollbar {
+  scrollbar-color: rgba(var(--flow-muted), 0.35) transparent;
+  scrollbar-width: thin;
+}
+
+.flow-scrollbar::-webkit-scrollbar {
+  width: 0.45rem;
+}
+
+.flow-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(var(--flow-muted), 0.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

@@ -1,107 +1,49 @@
-import React, { useState } from 'react'
-import { Activity, BarChart3, Settings, ShieldCheck, Zap } from 'lucide-react'
-import { QueueMonitor } from './components/QueueMonitor'
-import { PerformanceChart } from './components/PerformanceChart'
-import { JobsTable } from './components/JobsTable'
-import { SystemHealth } from './components/SystemHealth'
-import { SkillsPanel } from './components/SkillsPanel'
+import { Activity, Lock } from 'lucide-react'
 import { FlowControl } from './components/FlowControl'
 
-type Tab = 'overview' | 'flow-control' | 'performance' | 'jobs' | 'skills' | 'settings'
-
 function App() {
-  const initialTab: Tab = window.location.pathname === '/flow-control' ? 'flow-control' : 'overview'
-  const [activeTab, setActiveTab] = useState<Tab>(initialTab)
-
-  const tabs = [
-    { id: 'overview' as Tab, label: 'Overview', icon: Activity },
-    { id: 'flow-control' as Tab, label: 'FLOW Control', icon: ShieldCheck },
-    { id: 'performance' as Tab, label: 'Performance', icon: BarChart3 },
-    { id: 'jobs' as Tab, label: 'Jobs', icon: Zap },
-    { id: 'skills' as Tab, label: 'Skills', icon: Settings },
-  ]
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-white" />
-                </div>
-                <h1 className="text-xl font-semibold text-gray-900">FLOW Agent AS</h1>
+    <div className="min-h-screen bg-flow-canvas text-flow-ink">
+      <a
+        href="#task-workspace"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-flow-ink focus:px-4 focus:py-2 focus:text-white"
+      >
+        Skip to task workspace
+      </a>
+
+      <header className="border-b border-flow-line/80 bg-flow-canvas/95 backdrop-blur">
+        <div className="mx-auto flex max-w-[1500px] items-center justify-between px-5 py-4 sm:px-8 lg:px-10">
+          <div className="flex items-center gap-3">
+            <div className="flow-mark" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </div>
+            <div>
+              <div className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-flow-muted">
+                TransformBy10X
               </div>
-              <div className="hidden md:block">
-                <div className="ml-10 flex items-baseline space-x-4">
-                  {tabs.map((tab) => {
-                    const Icon = tab.icon
-                    return (
-                      <button
-                        key={tab.id}
-                        onClick={() => {
-                          setActiveTab(tab.id)
-                          window.history.replaceState(null, '', tab.id === 'flow-control' ? '/flow-control' : '/')
-                        }}
-                        className={`px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-2 ${
-                          activeTab === tab.id
-                            ? 'bg-blue-100 text-blue-700'
-                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-                        }`}
-                      >
-                        <Icon className="w-4 h-4" />
-                        <span>{tab.label}</span>
-                      </button>
-                    )
-                  })}
-                </div>
+              <div className="text-lg font-semibold tracking-[-0.025em] text-flow-ink">
+                FLOW Agent AS
               </div>
             </div>
-            <SystemHealth />
+          </div>
+
+          <div className="flex items-center gap-4 text-sm text-flow-muted">
+            <div className="hidden items-center gap-2 sm:flex">
+              <Lock className="h-4 w-4" />
+              <span>Private operator workspace</span>
+            </div>
+            <div className="flex items-center gap-2 rounded-full bg-flow-ink px-3 py-1.5 text-xs font-semibold text-white">
+              <Activity className="h-3.5 w-3.5 text-flow-accent" />
+              Live
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'overview' && (
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2">
-                <QueueMonitor />
-              </div>
-              <div>
-                <PerformanceChart />
-              </div>
-            </div>
-            <JobsTable limit={10} />
-          </div>
-        )}
-
-        {activeTab === 'flow-control' && <FlowControl />}
-
-        {activeTab === 'performance' && (
-          <div className="space-y-8">
-            <PerformanceChart expanded />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <QueueMonitor />
-              <SkillsPanel />
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'jobs' && <JobsTable />}
-
-        {activeTab === 'skills' && <SkillsPanel expanded />}
-
-        {activeTab === 'settings' && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Settings</h2>
-            <p className="text-gray-600">Configuration options coming soon...</p>
-          </div>
-        )}
+      <main id="task-workspace">
+        <FlowControl />
       </main>
     </div>
   )

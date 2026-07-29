@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Avenir Next', 'SF Pro Display', 'Helvetica Neue', 'system-ui', 'sans-serif'],
       },
       colors: {
         blue: {
