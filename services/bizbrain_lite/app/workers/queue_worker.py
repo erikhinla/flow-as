@@ -606,6 +606,10 @@ async def worker_loop(owner: str, timeout: int) -> None:
                     )
                 runtime_result = await call_agent_runtime(prompt=prompt, job_id=job_id)
                 output = validate_runtime_output(runtime_result["final"])
+                produced_files = validate_artifact_contract(
+                    effective_output_required,
+                    job_workspace,
+                )
                 workflow_evidence: list[dict] = []
                 if requires_media_artifacts(effective_output_required):
                     workflow_evidence = await run_creative_review_pipeline(
@@ -615,10 +619,10 @@ async def worker_loop(owner: str, timeout: int) -> None:
                         output_required=effective_output_required,
                         job_workspace=job_workspace,
                     )
-                produced_files = validate_artifact_contract(
-                    effective_output_required,
-                    job_workspace,
-                )
+                    produced_files = validate_artifact_contract(
+                        effective_output_required,
+                        job_workspace,
+                    )
             except Exception as e:
                 await fail_job(job_id, str(e))
                 continue
