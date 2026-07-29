@@ -25,9 +25,14 @@ def validate_runtime_output(content: str) -> str:
 
     opening = normalized[:1_200]
     marker = next((value for value in INCOMPLETE_OUTPUT_MARKERS if value in opening), None)
-    if marker:
+    missing_source_refusal = (
+        any(value in opening for value in ("does not exist", "not found", "no such file"))
+        and any(value in opening for value in ("unable to", "cannot", "can't"))
+    )
+    if marker or missing_source_refusal:
+        detected = marker or "missing source and unable to complete"
         raise RuntimeError(
             "Agent returned an incomplete artifact instead of the requested result "
-            f"(detected: {marker})"
+            f"(detected: {detected})"
         )
     return content.strip()
