@@ -25,6 +25,16 @@ INCOMPLETE_OUTPUT_MARKERS: tuple[str, ...] = (
     "does not exist, so i am unable",
     "preventing access",
     "please provide the relevant text",
+    # Chat-only Hermes capability refusals must never count as finished work
+    "don't have the capability",
+    "do not have the capability",
+    "beyond the toolset",
+    "beyond the tools available",
+    "blocker summary",
+    "no graphic editors",
+    "no video rendering",
+    "cannot generate the full set",
+    "goes beyond the toolset",
 )
 
 MEDIA_EXTENSIONS = {
