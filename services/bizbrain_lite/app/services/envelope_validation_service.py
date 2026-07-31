@@ -56,6 +56,88 @@ def _load_task_envelope_schema() -> Dict[str, Any]:
 
 TASK_ENVELOPE_SCHEMA = _load_task_envelope_schema()
 
+# Default campaign plates for the repository-backed social render lane.
+# Worker also resolves these; stamping at intake makes the job contract explicit.
+DEFAULT_CREATIVE_RENDER_PROFILE = "tbtx_social_concepts_v1"
+DEFAULT_CREATIVE_SOURCE_FILES = [
+    "/workspace/source/campaign/managing-digital-fog-studio.mp4",
+    "/workspace/source/campaign/managing-digital-fog-remote.mp4",
+]
+
+
+def _looks_like_media_or_creative(envelope: Dict[str, Any]) -> bool:
+    """Detect jobs that must not complete as chat-only Hermes prose."""
+    try:
+        from app.services.runtime_output_validation import requires_media_artifacts
+    except Exception:  # pragma: no cover - import path differences in tests
+        requires_media_artifacts = None  # type: ignore
+
+    output_required = str(envelope.get("output_required") or "")
+    if requires_media_artifacts and requires_media_artifacts(output_required):
+        return True
+
+    blob = " ".join(
+        [
+            str(envelope.get("title") or ""),
+            str(envelope.get("goal") or ""),
+            str(envelope.get("task_type") or ""),
+            output_required,
+        ]
+    ).lower()
+    tokens = (
+        "creative",
+        "concept",
+        "video",
+        "mp4",
+        "still",
+        "contact sheet",
+        "wordmark",
+        "campaign",
+        "billboard",
+        "animatic",
+        "render",
+        "asset",
+        "visual",
+        "fog report",
+        "homepage preview",
+    )
+    return any(token in blob for token in tokens)
+
+
+def normalize_creative_envelope_inputs(envelope: Dict[str, Any]) -> Dict[str, Any]:
+    """Stamp render_profile + source_files onto creative/media envelopes at intake.
+
+    Without this, operators submit vague creative jobs and Hermes --oneshot returns
+    markdown only. The worker also auto-routes, but intake should store the real
+    contract so dashboards and retries show the render lane explicitly.
+    """
+    if not _looks_like_media_or_creative(envelope):
+        return envelope
+
+    inputs = dict(envelope.get("inputs") or {})
+    profile = str(inputs.get("render_profile") or "").strip()
+    if not profile:
+        inputs["render_profile"] = DEFAULT_CREATIVE_RENDER_PROFILE
+        logger.info(
+            "Intake auto-set render_profile=%s task_id=%s",
+            DEFAULT_CREATIVE_RENDER_PROFILE,
+            envelope.get("task_id"),
+        )
+
+    sources = inputs.get("source_files")
+    if not isinstance(sources, list) or len([s for s in sources if str(s).strip()]) < 2:
+        inputs["source_files"] = list(DEFAULT_CREATIVE_SOURCE_FILES)
+        logger.info(
+            "Intake auto-set source_files=%s task_id=%s",
+            inputs["source_files"],
+            envelope.get("task_id"),
+        )
+
+    inputs.setdefault("execution_mode", "repository_render_profile")
+    envelope = dict(envelope)
+    envelope["inputs"] = inputs
+    return envelope
+
 
 class EnvelopeValidationService:
     """
@@ -68,7 +150,7 @@ class EnvelopeValidationService:
     """
     
     # Valid values
-    VALID_SOURCES = ['manual', 'webhook', 'github_action', 'scheduled', 'discord', 'landing_page', 'proof']
+    VALID_SOURCES = ['manual', 'webhook', 'github_action', 'scheduled', 'discord', 'landing_page', 'dashboard', 'proof']
     VALID_TASK_TYPES = ['classification', 'rewrite', 'content_prep', 'implementation', 'skill_extraction', 'healthcheck']
     VALID_RISK_TIERS = ['reputation', 'time_loss', 'downtime_security_money']
     VALID_OWNERS = ['alpha', 'beta', 'gamma']
@@ -203,6 +285,9 @@ class EnvelopeValidationService:
         """
         
         logger.info(f"Starting envelope validation: {envelope.get('task_id')}")
+
+        # Step 0: Creative/media jobs get an explicit render contract (not chat-only)
+        envelope = normalize_creative_envelope_inputs(envelope)
         
         # Step 1: Schema validation
         schema_valid, schema_error = EnvelopeValidationService.validate_schema(envelope)
@@ -231,6 +316,9 @@ class EnvelopeValidationService:
                 title=envelope.get('title'),
                 goal=envelope.get('goal'),
                 source=envelope.get('source'),
+                output_required=envelope.get('output_required'),
+                inputs=envelope.get('inputs') or {},
+                review_required=bool(envelope.get('review_required')),
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow(),
             )

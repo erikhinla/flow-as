@@ -1,0 +1,26 @@
+{
+  "_comment": "GOLDEN creative media job. Hermes chat-only will NOT produce mp4s — this envelope forces the repository render lane (ffmpeg via render_tbtx_social_concepts.py). Copy, mint a new task_id UUID, POST to /intake/task with X-API-Token. Artifacts land under /workspace/jobs/{task_id}/run-*/ and stay staged for review (no public publish).",
+  "task_id": "00000000-0000-4000-8000-000000000001",
+  "created_at": "2026-07-31T16:00:00Z",
+  "source": "manual",
+  "title": "TBTX social concept renders — Managing Digital Fog",
+  "goal": "Produce three review-ready concept video packages from campaign source plates using the repository render profile.",
+  "task_type": "content_prep",
+  "risk_tier": "reputation",
+  "preferred_owner": "alpha",
+  "owner_role": "alpha",
+  "inputs": {
+    "render_profile": "tbtx_social_concepts_v1",
+    "execution_mode": "repository_render_profile",
+    "source_files": [
+      "/workspace/source/campaign/managing-digital-fog-studio.mp4",
+      "/workspace/source/campaign/managing-digital-fog-remote.mp4"
+    ],
+    "reviewer": "Erik H Bush",
+    "publish": false
+  },
+  "output_required": "Three mp4 concept videos, one contact sheet png, one transparent wordmark png, and render-manifest.json under the job workspace. Staged for review only — do not publish or schedule.",
+  "review_required": true,
+  "rollback_required": false,
+  "status": "pending"
+}
