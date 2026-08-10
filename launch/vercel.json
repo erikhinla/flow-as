@@ -45,6 +45,16 @@
   ],
   "redirects": [
     {
+      "source": "/flow",
+      "destination": "https://flow.srv1863070.hstgr.cloud/",
+      "permanent": false
+    },
+    {
+      "source": "/flow/(.*)",
+      "destination": "https://flow.srv1863070.hstgr.cloud/$1",
+      "permanent": false
+    },
+    {
       "source": "/foglift-kit",
       "destination": "/fog-free-daily",
       "permanent": true
