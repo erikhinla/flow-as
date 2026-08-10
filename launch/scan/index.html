@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Digital Fog Scan — 15 questions on a sliding scale producing your personal Digital Fog & Business Friction Diagnostic." />
+    <title>Digital Fog Scan | TransformBy10X</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/canon.css?v=20260810d" />
+    <link rel="stylesheet" href="/css/cinematic-home.css?v=20260810d" />
+    <style>
+      .scan-wrapper {
+        max-width: 840px;
+        margin: 0 auto;
+        padding: 4rem 1.5rem;
+      }
+      .scan-header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+      .scan-card {
+        background: rgba(20, 22, 20, 0.75);
+        border: 1px solid var(--film-line);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(10px);
+      }
+      .question-row {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--film-line);
+      }
+      .question-text {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        color: var(--film-ink);
+      }
+      .range-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: var(--film-muted);
+        margin-top: 0.5rem;
+      }
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--museum-gold);
+      }
+      .scan-results {
+        display: none;
+        background: rgba(15, 18, 15, 0.95);
+        border: 1px solid var(--museum-gold);
+        border-radius: 12px;
+        padding: 2.5rem;
+        text-align: center;
+      }
+      .result-score {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--museum-gold-hi);
+        margin: 1rem 0;
+      }
+      .route-box {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+      @media (max-width: 640px) {
+        .route-box { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body class="canon-page cinematic-home museum-direction">
+    <nav class="cinema-nav" aria-label="Primary">
+      <a class="cinema-nav__brand" href="/">
+        <span class="cinema-kicker" style="color:var(--museum-gold)">TransformBy10X</span>
+      </a>
+      <div class="cinema-nav__links">
+        <a href="/">Home</a>
+        <a href="/scan" class="is-active">Digital Fog Scan</a>
+        <a href="/foglift-kit.html">Fog-Lift Kit ($7.77)</a>
+      </div>
+    </nav>
+
+    <main class="scan-wrapper">
+      <header class="scan-header">
+        <p class="cinema-kicker">15-Question Interactive Mirror</p>
+        <h1 class="cinema-title">Digital Fog Scan</h1>
+        <p class="cinema-lede">Locate where tools multiply faster than context in your personal day and business operations.</p>
+      </header>
+
+      <form id="fog-scan-form" class="scan-card">
+        <!-- 15 Questions -->
+        <div id="questions-container"></div>
+        <button type="submit" class="cinema-button" style="width:100%; margin-top:1rem;">Generate My Digital Fog Diagnostic</button>
+      </form>
+
+      <section id="scan-results" class="scan-results">
+        <p class="cinema-kicker">Diagnostic Complete</p>
+        <h2>Your Digital Drag Profile</h2>
+        <div id="result-score" class="result-score">0%</div>
+        <p id="result-summary" class="cinema-copy"></p>
+
+        <div class="route-box">
+          <div class="door-card">
+            <p class="door-card__kicker">Personal Fog Primary</p>
+            <h3>Digital Fog-Lift Kit</h3>
+            <p>Get the 15-day protocol to clear daily noise and reset focus.</p>
+            <a href="/foglift-kit.html" class="cinema-button cinema-button--light">Download Kit ($7.77 / Honor)</a>
+          </div>
+          <div class="door-card">
+            <p class="door-card__kicker">Business Friction Primary</p>
+            <h3>BizBuilders AI</h3>
+            <p>Architect your Quad Keystones before adding more software tool debt.</p>
+            <a href="/bizbuilders-ai/" class="cinema-button">Explore BizBuilders AI</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const questions = [
+        "1. I generate AI drafts, notes, or code that sit unorganized in tabs or chats.",
+        "2. At the end of the day, I feel like I did a lot of work but didn't finish main goals.",
+        "3. I spend significant time explaining context over and over to different AI tools.",
+        "4. My team/business uses multiple tools, but nobody knows the single source of truth.",
+        "5. I feel overwhelmed by notification chatter and scattered file versions.",
+        "6. Adding a new AI tool created extra cleanup work instead of saving time.",
+        "7. Important decisions get buried in chat threads or forgotten docs.",
+        "8. My daily schedule feels reactive to incoming digital noise rather than structured.",
+        "9. Workflow handoffs between people or software require constant manual fixup.",
+        "10. I have multiple half-built automations or ideas I haven't implemented.",
+        "11. Our business output has increased, but operational clarity has decreased.",
+        "12. I spend time organizing folders/files that immediately get messy again.",
+        "13. Software subscriptions multiply faster than measurable business progress.",
+        "14. I feel friction between personal task management and company operations.",
+        "15. I want a simple, load-bearing architecture instead of more tool features."
+      ];
+
+      const container = document.getElementById("questions-container");
+      questions.forEach((q, idx) => {
+        const div = document.createElement("div");
+        div.className = "question-row";
+        div.innerHTML = `
+          <div class="question-text">${q}</div>
+          <input type="range" min="1" max="5" value="3" name="q${idx}" id="q${idx}">
+          <div class="range-labels">
+            <span>Never (1)</span>
+            <span>Sometimes (3)</span>
+            <span>Constantly (5)</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+
+      document.getElementById("fog-scan-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        let total = 0;
+        for (let i = 0; i < 15; i++) {
+          total += parseInt(document.getElementById(`q${i}`).value, 10);
+        }
+        const maxScore = 75;
+        const percentage = Math.round((total / maxScore) * 100);
+        
+        document.getElementById("fog-scan-form").style.display = "none";
+        const resultsEl = document.getElementById("scan-results");
+        resultsEl.style.display = "block";
+        document.getElementById("result-score").textContent = `${percentage}% Drag Index`;
+        
+        let summary = "";
+        if (percentage > 70) {
+          summary = "Heavy Digital Fog & Friction present. Tools have reassigned manual cleanup and coordination to you. Foundation required before growth.";
+        } else if (percentage > 40) {
+          summary = "Moderate Digital Drag. Output is outpacing your infrastructure. Quad Keystones will restore clear momentum.";
+        } else {
+          summary = "Low Digital Drag. Your current structure holds well. Ready for focused growth or targeted protocols.";
+        }
+        document.getElementById("result-summary").textContent = summary;
+      });
+    </script>
+  </body>
+</html>
