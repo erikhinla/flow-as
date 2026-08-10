@@ -35,15 +35,39 @@
       "destination": "/erikhbush.html"
     },
     {
-      "source": "/diagnostic",
-      "destination": "/bizbuilders-ai/diagnostic"
+      "source": "/fog-to-flow",
+      "destination": "/fog-to-flow.html"
     },
     {
-      "source": "/diagnostic.html",
-      "destination": "/bizbuilders-ai/diagnostic"
+      "source": "/scan",
+      "destination": "/scan/index.html"
+    },
+    {
+      "source": "/scan/(.*)",
+      "destination": "/scan/index.html"
     }
   ],
   "redirects": [
+    {
+      "source": "/flow",
+      "destination": "https://flow.srv1863070.hstgr.cloud/",
+      "permanent": false
+    },
+    {
+      "source": "/flow/(.*)",
+      "destination": "https://flow.srv1863070.hstgr.cloud/$1",
+      "permanent": false
+    },
+    {
+      "source": "/diagnostic",
+      "destination": "/scan",
+      "permanent": false
+    },
+    {
+      "source": "/diagnostic.html",
+      "destination": "/scan",
+      "permanent": false
+    },
     {
       "source": "/foglift-kit",
       "destination": "/fog-free-daily",
