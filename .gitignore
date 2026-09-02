@@ -34,3 +34,13 @@ generated/
 launch/output/
 launch/verification-screenshots/
 github ssh key*
+*.pem
+*.ppk
+id_rsa
+id_ed25519
+*_passphrase
+*passphrase*
+htpasswd
+.htpasswd
+**/secrets/**
+!**/secrets/.gitkeep

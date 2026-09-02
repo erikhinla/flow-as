@@ -80,6 +80,15 @@ services:
       DASHBOARD_BASIC_AUTH_PASSWORD: ${DASHBOARD_BASIC_AUTH_PASSWORD:-change-me-dashboard-password}
     ports:
       - "5173:80"
+    labels:
+      # Live Hostinger Traefik route (verified HTTPS 401 unauthenticated).
+      # Do not remove flow.srv1863070.hstgr.cloud until flow.transformby10x.ai is proven.
+      - traefik.enable=true
+      - traefik.http.routers.flow-dashboard.rule=Host(`flow.srv1863070.hstgr.cloud`)
+      - traefik.http.routers.flow-dashboard.entrypoints=websecure
+      - traefik.http.routers.flow-dashboard.tls=true
+      - traefik.http.routers.flow-dashboard.tls.certresolver=letsencrypt
+      - traefik.http.services.flow-dashboard.loadbalancer.server.port=80
     depends_on:
       bizbrain-lite:
         condition: service_healthy
