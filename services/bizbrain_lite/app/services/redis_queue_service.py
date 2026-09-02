@@ -99,7 +99,14 @@ class RedisQueueService:
                 logger.debug(f"No jobs available in {queue_name} after {timeout}s")
                 return None
         
+        except TimeoutError:
+            # BRPOP idle wait expired — normal, not an error
+            return None
         except Exception as e:
+            # redis-py may surface idle BRPOP as TimeoutError subclasses
+            name = type(e).__name__
+            if "Timeout" in name or "timeout" in str(e).lower():
+                return None
             logger.error(f"Error dequeuing from {owner} queue: {e}")
             return None
     
@@ -232,7 +239,13 @@ async def get_redis_client(redis_url: str = "redis://localhost:6379") -> Redis:
     """
     
     try:
-        redis = await aioredis.from_url(redis_url)
+        # socket_timeout must exceed BRPOP timeout or idle workers log false errors
+        redis = await aioredis.from_url(
+            redis_url,
+            socket_connect_timeout=10,
+            socket_timeout=60,
+            decode_responses=False,
+        )
         logger.info(f"Connected to Redis at {redis_url}")
         return redis
     except Exception as e:
